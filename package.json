@@ -1,0 +1,11 @@
+{
+  "name": "HellBot",
+  "version": "1.0.0",
+  "description": "Made for the HellNet server.",
+  "main": "app.js",
+  "author": "Schluffe",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^11.5.1"
+  }
+}
