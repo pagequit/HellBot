@@ -1,5 +1,5 @@
 {
-  "name": "HellBot",
+  "name": "hellbot",
   "version": "1.0.0",
   "description": "Made for the HellNet server.",
   "main": "app.js",
