@@ -23,21 +23,53 @@ class HellBot {
 		});
 
 		this.client.on('message', message => {
-			if ( message.content.startsWith(this.config.prefix) && !message.author.bot ) {
-				try {
-					this.commands.get(this.parseCommand(message)).execute(message);
-				}
-				catch (error) {
-					console.log(error);
-				}
-			}
+			this.handleMessage(message);
 		});
 
 		this.client.login(this.config.token);
 	}
 
+	handleMessage(message) {
+		if ( message.author.bot ) {
+			return;
+		}
+
+		if ( message.channel.type === 'dm' ) {
+			this.handleDircetMessage(message);
+			return;
+		}
+
+		if ( message.isMentioned(this.client.user) ) {
+			const { command, args } = this.parseCommand(message);
+			try {
+				command.execute(args, message);
+			}
+			catch (error) {
+				console.log(error);
+			}
+		}
+	}
+
+	handleDircetMessage(message) {
+		message.reply('I cannot address direct messages so far.');
+	}
+
 	parseCommand(message) {
-		return message.content.split(' ', 1)[0].substr(this.config.prefix.length);
+		const messageChunks = message.content.split(/ +/);
+		const commandStartIndex = messageChunks.findIndex(chunk => chunk === `<@${this.client.user.id}>`);
+		const rawCommand = messageChunks.slice(commandStartIndex + 1);
+		const commandName = rawCommand[0] ? rawCommand[0].toLowerCase() : '';
+
+		if ( this.commands.some(command => commandName === command.name) ) {
+			return {
+				command: this.commands.get(commandName),
+				args: rawCommand.slice(1),
+			};
+		}
+
+		return {
+			command: { execute: (args, message) => { message.reply('I don\'t understand.'); } },
+		};
 	}
 }
 
