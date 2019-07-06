@@ -16,7 +16,6 @@ class HellBot {
 			const command = new commandClass(this);
 
 			this.commands.set(command.constructor.name.toLowerCase(), command);
-
 		}
 	}
 
