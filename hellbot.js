@@ -12,8 +12,11 @@ class HellBot {
 		;
 
 		for ( const file of commandFiles ) {
-			const command = require(`${this.config.commandsDirectory}/${file}`);
-			this.commands.set(command.name, command);
+			const commandClass = require(`${this.config.commandsDirectory}/${file}`);
+			const command = new commandClass(this);
+
+			this.commands.set(command.constructor.name.toLowerCase(), command);
+
 		}
 	}
 
@@ -58,11 +61,11 @@ class HellBot {
 		const messageChunks = message.content.split(/ +/);
 		const commandStartIndex = messageChunks.findIndex(chunk => chunk === `<@${this.client.user.id}>`);
 		const rawCommand = messageChunks.slice(commandStartIndex + 1);
-		const commandName = rawCommand[0] ? rawCommand[0].toLowerCase() : '';
+		const trigger = rawCommand[0] ? rawCommand[0].toLowerCase() : '';
 
-		if ( this.commands.some(command => commandName === command.name) ) {
+		if ( this.commands.some(command => command.trigger.includes(trigger)) ) {
 			return {
-				command: this.commands.get(commandName),
+				command: this.commands.find(command => command.trigger.includes(trigger)),
 				args: rawCommand.slice(1),
 			};
 		}

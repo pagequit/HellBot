@@ -1,3 +1,5 @@
+#!/usr/bin/node
+
 const HellBot = require('./hellbot');
 const config = require('./config.json');
 
