@@ -6,26 +6,35 @@ class HellBot {
 		this.client = new Discord.Client();
 		this.commands = new Discord.Collection();
 		this.config = config;
+		this.guild = null;
 
-		const commandFiles = fs.readdirSync(this.config.commandsDirectory)
-			.filter(file => file.endsWith('.js'))
-		;
-
-		for ( const file of commandFiles ) {
-			const commandClass = require(`${this.config.commandsDirectory}/${file}`);
-			const command = new commandClass(this);
-
-			this.commands.set(command.constructor.name.toLowerCase(), command);
+		const accessRights = new Discord.Collection();
+		for ( const accessLevel in config.accessRights ) {
+			accessRights.set(parseInt(accessLevel), config.accessRights[accessLevel]);
 		}
+		this.config.accessRights = accessRights;
 	}
 
 	run() {
 		this.client.once('ready', () => {
-			console.log(`Logged in as: ${this.client.user.tag}`);
-		});
+			this.guild = this.client.guilds.find(guild => guild.name === 'HellNet');
 
-		this.client.on('message', message => {
-			this.handleMessage(message);
+			const commandFiles = fs.readdirSync(this.config.commandsDirectory)
+				.filter(file => file.endsWith('.js'))
+			;
+
+			for ( const file of commandFiles ) {
+				const commandClass = require(`${this.config.commandsDirectory}/${file}`);
+				const command = new commandClass(this);
+
+				this.commands.set(command.constructor.name.toLowerCase(), command);
+			}
+
+			this.client.on('message', message => {
+				this.handleMessage(message);
+			});
+
+			console.log(`Logged in as: ${this.client.user.tag}`);
 		});
 
 		this.client.login(this.config.token);

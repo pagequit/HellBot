@@ -3,13 +3,18 @@ const Command = require('../command');
 class Help extends Command {
 	constructor(owner) {
 		super(owner);
-		this.trigger = ['help', 'commands'];
-		this.info.description = 'Shows a list of all commands.';
+		this.trigger = ['help', 'hilfe'];
+		this.info.arguments = 'optional';
+		this.info.description = 'Shows a list with all commands.';
+		this.icon = '<:angel:597524236810321931>';
 	}
 
 	execute(args, message) {
 		if ( args.length === 0 ) {
-			this.showCommandList(message.channel);
+			message.reply('Here is a list of all my commands:')
+				.then(() => this.showCommandList(message.channel))
+			;
+
 			return;
 		}
 
@@ -17,13 +22,18 @@ class Help extends Command {
 			.find(c => c.constructor.name.toLowerCase() === args[0].toLowerCase())
 		;
 
-		const response = targetCommand ? targetCommand.info.description : `I don't know a command like '${args[0]}'.`;
-
-		message.reply(response);
+		if ( targetCommand ) {
+			message.channel.send({ embed: targetCommand.getEmbed() });
+		}
+		else {
+			message.reply(`I don't know a command named '${args[0]}'.`);
+		}
 	}
 
 	showCommandList(channel) {
-		channel.send(this.owner.commands.map(c => c.constructor.name).join('\n'));
+		this.owner.commands.forEach(command => {
+			channel.send({ embed: command.getEmbed() });
+		});
 	}
 }
 
