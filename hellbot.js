@@ -2,10 +2,11 @@ const fs = require('fs');
 const Discord = require('discord.js');
 
 class HellBot {
-	constructor(config) {
+	constructor(config, tokens) {
 		this.client = new Discord.Client();
 		this.commands = new Discord.Collection();
 		this.config = config;
+		this.tokens = tokens;
 		this.guild = null;
 
 		const accessRights = new Discord.Collection();
@@ -37,7 +38,7 @@ class HellBot {
 			console.log(`Logged in as: ${this.client.user.tag}`);
 		});
 
-		this.client.login(this.config.token);
+		this.client.login(this.tokens.discord);
 	}
 
 	handleMessage(message) {

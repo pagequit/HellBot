@@ -1,0 +1,8 @@
+{
+	"commandsDirectory": "./commands",
+	"accessRights": {
+		"0": "admin",
+		"1": "moderator",
+		"2": "member"
+	}
+}
