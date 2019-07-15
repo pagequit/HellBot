@@ -9,7 +9,7 @@ class Weather extends Command {
 		this.icon = '<:white_sun_rain_cloud:598218200542347276>';
 	}
 
-	embedResponse(data) {
+	responseToEmbed(data) {
 		return {
 			color: 0xffffff,
 			title: 'Powered by Dark Sky',
@@ -42,7 +42,7 @@ class Weather extends Command {
 			});
 
 			res.on('end', () => {
-				message.channel.send({ embed: this.embedResponse(response) });
+				message.channel.send({ embed: this.responseToEmbed(JSON.parse(response)) });
 			});
 
 		}).on('error', (error) => {
