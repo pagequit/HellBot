@@ -23,7 +23,7 @@ class Help extends Command {
 		;
 
 		if ( targetCommand ) {
-			message.channel.send({ embed: targetCommand.getEmbed() });
+			message.channel.send({ embed: targetCommand.toEmbed() });
 		}
 		else {
 			message.reply(`I don't know a command named '${args[0]}'.`);
@@ -32,7 +32,7 @@ class Help extends Command {
 
 	showCommandList(channel) {
 		this.owner.commands.forEach(command => {
-			channel.send({ embed: command.getEmbed() });
+			channel.send({ embed: command.toEmbed() });
 		});
 	}
 }

@@ -9,7 +9,7 @@ class Weather extends Command {
 		this.icon = '<:white_sun_rain_cloud:598218200542347276>';
 	}
 
-	toEmbed(data) {
+	embedResponse(data) {
 		return {
 			color: 0xffffff,
 			title: 'Powered by Dark Sky',
@@ -29,23 +29,24 @@ class Weather extends Command {
 	}
 
 	execute(args, message) {
+		let response = '';
+		let location = '50.7359,7.1007';
+		const url = `https://api.darksky.net/forecast/${this.owner.tokens.darksky}/${location}?lang=de&units=auto`;
 
-		let output = '';
-
-		https.get(`https://api.darksky.net/forecast/${this.owner.tokens.darksky}/50.7359,7.1007?lang=de&units=auto`, (res) => {
+		https.get(url, (res) => {
 			console.log('statusCode:', res.statusCode);
 			console.log('headers:', res.headers);
 
 			res.on('data', data => {
-				output += data;
+				response += data;
 			});
 
 			res.on('end', () => {
-				message.channel.send({ embed: this.toEmbed(JSON.parse(output)) });
+				message.channel.send({ embed: this.embedResponse(response) });
 			});
 
 		}).on('error', (error) => {
-			console.error(error);
+			console.log(error);
 			message.reply('My Wetterfrosch is not responding.');
 		});
 	}

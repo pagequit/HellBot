@@ -4,13 +4,14 @@ class Sleep extends Command {
 	constructor(owner) {
 		super(owner);
 		this.trigger = ['sleep', 'schlaf'];
-		this.info.description = 'Not implemented yet.';
+		this.info.description = 'Makes me unresponsive.';
 		this.icon = '<:zzz:597864891579105290>';
 		this.accessLevel = 0;
 	}
 
 	execute(args, message) {
-		message.reply('NIY');
+		this.owner.awake = false;
+		message.reply('good night...');
 	}
 }
 

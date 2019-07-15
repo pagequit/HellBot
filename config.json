@@ -4,5 +4,6 @@
 		"0": "admin",
 		"1": "moderator",
 		"2": "member"
-	}
+	},
+	"guild": "HellNet"
 }

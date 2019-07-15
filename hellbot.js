@@ -8,37 +8,43 @@ class HellBot {
 		this.config = config;
 		this.tokens = tokens;
 		this.guild = null;
+		this.awake = true;
 
+		this.assignAccessRights(config);
+		this.assignCommands(config);
+	}
+
+	run() {
+		this.client.once('ready', this.getReady.bind(this));
+		this.client.on('message', this.handleMessage.bind(this));
+		this.client.login(this.tokens.discord);
+	}
+
+	getReady() {
+		this.guild = this.client.guilds.find(guild => guild.name === this.config.guild);
+		console.log(`Logged in as: ${this.client.user.tag}`);
+	}
+
+	assignAccessRights(config) {
 		const accessRights = new Discord.Collection();
 		for ( const accessLevel in config.accessRights ) {
 			accessRights.set(parseInt(accessLevel), config.accessRights[accessLevel]);
 		}
+
 		this.config.accessRights = accessRights;
 	}
 
-	run() {
-		this.client.once('ready', () => {
-			this.guild = this.client.guilds.find(guild => guild.name === 'HellNet');
+	assignCommands(config) {
+		const commandFiles = fs.readdirSync(config.commandsDirectory)
+			.filter(file => file.endsWith('.js'))
+		;
 
-			const commandFiles = fs.readdirSync(this.config.commandsDirectory)
-				.filter(file => file.endsWith('.js'))
-			;
+		for ( const file of commandFiles ) {
+			const commandClass = require(`${config.commandsDirectory}/${file}`);
+			const command = new commandClass(this);
 
-			for ( const file of commandFiles ) {
-				const commandClass = require(`${this.config.commandsDirectory}/${file}`);
-				const command = new commandClass(this);
-
-				this.commands.set(command.constructor.name.toLowerCase(), command);
-			}
-
-			this.client.on('message', message => {
-				this.handleMessage(message);
-			});
-
-			console.log(`Logged in as: ${this.client.user.tag}`);
-		});
-
-		this.client.login(this.tokens.discord);
+			this.commands.set(command.constructor.name.toLowerCase(), command);
+		}
 	}
 
 	handleMessage(message) {
@@ -53,11 +59,18 @@ class HellBot {
 
 		if ( message.isMentioned(this.client.user) ) {
 			const { command, args } = this.parseCommand(message);
-			try {
-				command.execute(args, message);
-			}
-			catch (error) {
-				console.log(error);
+
+			if ( this.awake || command.constructor.name === 'WakeUp' ) {
+				if ( command.isNotPermittedFor(message.author) ) {
+					message.reply('You can\'t command that to me!');
+					return;
+				}
+				try {
+					command.execute(args, message);
+				}
+				catch (error) {
+					console.log(error);
+				}
 			}
 		}
 	}

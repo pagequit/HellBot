@@ -11,22 +11,43 @@ class Command {
 		this.icon = '<:hellnet:597529630114578463>';
 	}
 
-	getEmbed() {
-		const accessRole = this.owner.config.accessRights.get(this.accessLevel);
-		const targetRole = this.owner.guild.roles
-			.find(role => role.name === accessRole )
+	get accessRole() {
+		return this.owner.guild.roles.
+			find(role => role.name === this.owner.config.accessRights.get(this.accessLevel))
 		;
-		const accessColor = targetRole ? targetRole.color : 0xffffff;
+	}
 
+	get accessColor() {
+		return this.accessRole ? this.accessRole.color : 0xffffff;
+	}
+
+	toEmbed() {
 		return {
-			color: accessColor,
+			color: this.accessColor,
 			title: `${this.icon} ${this.constructor.name}`,
 			description: `${this.info.description}\nTrigger: ${this.trigger.join(', ')}\n`,
 		};
 	}
 
-	execute(args, message) {
-		throw 'command exception';
+	isNotPermittedFor(user) {
+		const member = user.client.guilds.find(guild => guild === this.owner.guild)
+			.members.find(member => member.user.username === user.username)
+		;
+
+		if ( this.accessLevel === null || member.roles.some(role => role.hasPermission('ADMINISTRATOR')) ) {
+			return false;
+		}
+
+		let isNotPermitted = true;
+		member.roles.forEach(role => {
+			this.owner.config.accessRights.forEach((roleName, accessLevel) => {
+				if ( roleName === role.name && accessLevel <= this.accessLevel ) {
+					isNotPermitted = false;
+				}
+			});
+		});
+
+		return isNotPermitted;
 	}
 }
 
