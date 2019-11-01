@@ -1,8 +1,8 @@
 const Command = require('../command');
 
 class Ping extends Command {
-	constructor(owner) {
-		super(owner);
+	constructor(client) {
+		super(client);
 		this.trigger = ['ping'];
 		this.info.description = 'Replies with \'pong\'.';
 		this.icon = '<:ping_pong:597524649924100126>';

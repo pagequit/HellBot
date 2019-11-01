@@ -47,6 +47,11 @@ class HellBot {
 		}
 	}
 
+	handleRejection(message, reason) {
+		console.log(message.content ,reason);
+		message.reply(reason);
+	}
+
 	handleMessage(message) {
 		if ( message.author.bot ) {
 			return;
@@ -58,19 +63,21 @@ class HellBot {
 		}
 
 		if ( message.isMentioned(this.client.user) ) {
-			const { command, args } = this.parseCommand(message);
-
-			if ( this.awake || command.constructor.name === 'WakeUp' ) {
-				if ( command.isNotPermittedFor(message.author) ) {
-					message.reply('You can\'t command that to me!');
-					return;
-				}
-				try {
-					command.execute(args, message);
-				}
-				catch (error) {
-					console.log(error);
-				}
+			try {
+				this.parseCommand(message)
+					.then((commandSet) => this.checkPermissions(commandSet))
+					.then(({command, args}) => {
+						if ( this.awake || command.constructor.name === 'WakeUp' ) {
+							command.execute(args, message);
+						}
+					})
+					.catch(reason => {
+						this.handleRejection(message, reason);
+					})
+				;
+			}
+			catch (error) {
+				console.log(error);
 			}
 		}
 	}
@@ -80,22 +87,49 @@ class HellBot {
 	}
 
 	parseCommand(message) {
-		const messageChunks = message.content.split(/ +/);
-		const commandStartIndex = messageChunks.findIndex(chunk => chunk === `<@${this.client.user.id}>`);
-		const rawCommand = messageChunks.slice(commandStartIndex + 1);
-		const trigger = rawCommand[0] ? rawCommand[0].toLowerCase() : '';
+		return new Promise((resolve, reject) => {
+			const messageChunks = message.content.split(/ +/);
+			const commandStartIndex = messageChunks.findIndex(chunk => chunk === `<@${this.client.user.id}>`);
+			const rawCommand = messageChunks.slice(commandStartIndex + 1);
+			const trigger = rawCommand[0] ? rawCommand[0].toLowerCase() : '';
 
-		if ( this.commands.some(command => command.trigger.includes(trigger)) ) {
-			return {
-				command: this.commands.find(command => command.trigger.includes(trigger)),
-				args: rawCommand.slice(1),
-			};
-		}
-
-		return {
-			command: { execute: (args, message) => { message.reply('I don\'t understand.'); } },
-		};
+			if ( this.commands.some(command => command.trigger.includes(trigger)) ) {
+				resolve({
+					command: this.commands.find(command => command.trigger.includes(trigger)),
+					commander: message.author,
+					args: rawCommand.slice(1),
+				});
+			}
+			else {
+				reject('I don\'t understand.');
+			}
+		});
 	}
+
+	checkPermissions(commandSet) {
+		return new Promise((resolve, reject) => {
+			const member = commandSet.commander.client.guilds.find(guild => guild === this.guild)
+				.members.find(member => member.user.username === commandSet.commander.username)
+			;
+
+			if ( commandSet.command.accessLevel === null || member.roles.some(role => role.hasPermission('ADMINISTRATOR')) ) {
+				resolve(commandSet);
+			}
+			else {
+				member.roles.forEach(role => {
+					this.config.accessRights.forEach((roleName, accessLevel) => {
+						if ( roleName === role.name && accessLevel <= this.accessLevel ) {
+							resolve(commandSet);
+						}
+						else {
+							reject('You can\'t command me that!');
+						}
+					});
+				});
+			}
+		});
+	}
+
 }
 
 module.exports = HellBot;

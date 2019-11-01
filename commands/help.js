@@ -1,8 +1,8 @@
 const Command = require('../command');
 
 class Help extends Command {
-	constructor(owner) {
-		super(owner);
+	constructor(client) {
+		super(client);
 		this.trigger = ['help', 'hilfe'];
 		this.info.arguments = 'optional';
 		this.info.description = 'Shows a list with all commands.';
@@ -11,14 +11,14 @@ class Help extends Command {
 
 	execute(args, message) {
 		if ( args.length === 0 ) {
-			message.reply('Here is a list of all my commands:')
+			message.reply('here is a list of all my commands:')
 				.then(() => this.showCommandList(message.channel))
 			;
 
 			return;
 		}
 
-		const targetCommand = this.owner.commands
+		const targetCommand = this.client.commands
 			.find(c => c.constructor.name.toLowerCase() === args[0].toLowerCase())
 		;
 
@@ -31,7 +31,7 @@ class Help extends Command {
 	}
 
 	showCommandList(channel) {
-		this.owner.commands.forEach(command => {
+		this.client.commands.forEach(command => {
 			channel.send({ embed: command.toEmbed() });
 		});
 	}

@@ -2,8 +2,8 @@ const Command = require('../command');
 const https = require('https');
 
 class Weather extends Command {
-	constructor(owner) {
-		super(owner);
+	constructor(client) {
+		super(client);
 		this.trigger = ['weather', 'wetter'];
 		this.info.description = 'Showes the current weather.';
 		this.icon = '<:white_sun_rain_cloud:598218200542347276>';
@@ -31,7 +31,7 @@ class Weather extends Command {
 	execute(args, message) {
 		let response = '';
 		let location = '50.7359,7.1007';
-		const url = `https://api.darksky.net/forecast/${this.owner.tokens.darksky}/${location}?lang=de&units=auto`;
+		const url = `https://api.darksky.net/forecast/${this.client.tokens.darksky}/${location}?lang=de&units=auto`;
 
 		https.get(url, (res) => {
 			console.log('statusCode:', res.statusCode);

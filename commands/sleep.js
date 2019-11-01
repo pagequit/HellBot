@@ -1,8 +1,8 @@
 const Command = require('../command');
 
 class Sleep extends Command {
-	constructor(owner) {
-		super(owner);
+	constructor(client) {
+		super(client);
 		this.trigger = ['sleep', 'schlaf'];
 		this.info.description = 'Makes me unresponsive.';
 		this.icon = '<:zzz:597864891579105290>';
@@ -10,7 +10,7 @@ class Sleep extends Command {
 	}
 
 	execute(args, message) {
-		this.owner.awake = false;
+		this.client.awake = false;
 		message.reply('good night...');
 	}
 }
