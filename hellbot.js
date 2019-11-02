@@ -116,16 +116,20 @@ class HellBot {
 				resolve(commandSet);
 			}
 			else {
+				let memberHasPermissions = false;
 				member.roles.forEach(role => {
 					this.config.accessRights.forEach((roleName, accessLevel) => {
-						if ( roleName === role.name && accessLevel <= this.accessLevel ) {
-							resolve(commandSet);
-						}
-						else {
-							reject('You can\'t command me that!');
+						if ( roleName === role.name && accessLevel <= commandSet.command.accessLevel ) {
+							memberHasPermissions = true;
 						}
 					});
 				});
+				if ( memberHasPermissions ) {
+					resolve(commandSet);
+				}
+				else {
+					reject('You can\'t command me that!');
+				}
 			}
 		});
 	}
