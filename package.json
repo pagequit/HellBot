@@ -9,7 +9,5 @@
     "discord.js": "^11.5.1",
     "jsdom": "^15.2.0"
   },
-  "devDependencies": {
-    "eslint": "^6.0.1"
-  }
+  "devDependencies": {}
 }
