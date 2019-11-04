@@ -1,5 +1,5 @@
 const Command = require('../command');
-const https = require('https');
+const axios = require('axios');
 const jsdom = require('jsdom');
 
 class AddAnime extends Command {
@@ -13,7 +13,7 @@ class AddAnime extends Command {
 
 	fetchArticleLink(response) {
 		return new Promise((resolve, reject) => {
-			const link = new jsdom.JSDOM(response)
+			const link = new jsdom.JSDOM(response.data)
 				.window.document.querySelector('article').querySelector('a.hoverinfo_trigger').href
 			;
 
@@ -32,38 +32,22 @@ class AddAnime extends Command {
 			return;
 		}
 
-		let response = '';
-		const url = `https://myanimelist.net/search/all?q=${args}`;
-
-		https.get(url, (res) => {
-			console.log('statusCode:', res.statusCode);
-			console.log('headers:', res.headers);
-
-			res.on('data', data => {
-				response += data;
-			});
-
-			res.on('end', () => {
-				this.fetchArticleLink(response)
-					.then(link => {
-						const animeChannel = this.client.guild.channels.find(channel => channel.id === '583359953012654085');
-						if ( animeChannel ) {
-							animeChannel.send(link);
-						}
-						else {
-							message.reply('Sry, I can\'t find the anime channel.');
-						}
-					})
-					.catch(reason => {
-						this.client.handleRejection(message, reason);
-					})
-				;
-			});
-
-		}).on('error', (error) => {
-			console.log(error);
-			message.reply('My Wetterfrosch is not responding.');
-		});
+		axios.get(`https://myanimelist.net/search/all?q=${args}`)
+			.then(this.fetchArticleLink)
+			.then(link => {
+				const animeChannel = this.client.guild.channels.find(channel => channel.id === '583359953012654085');
+				if ( animeChannel ) {
+					animeChannel.send(link);
+				}
+				else {
+					message.reply('Sry, I can\'t find the anime channel.');
+				}
+			})
+			.catch(reason => {
+				console.log(reason);
+				this.client.handleRejection(message, reason);
+			})
+		;
 	}
 }
 
