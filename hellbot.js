@@ -64,30 +64,23 @@ class HellBot {
 		}
 
 		if ( message.isMentioned(this.client.user) ) {
-<<<<<<< HEAD
 			try {
 				this.parseCommand(message)
 					.then(commandSet => this.checkPermissions(commandSet))
 					.then(commandSet => this.checkCooldowns(commandSet))
 					.then(({command, args}) => {
 						if ( this.awake || command.constructor.name === 'WakeUp' ) {
-=======
-			this.parseCommand(message)
-				.then((commandSet) => this.checkPermissions(commandSet))
-				.then(({command, args}) => {
-					if ( this.awake || command.constructor.name === 'WakeUp' ) {
-						try {
->>>>>>> origin/dependabot/npm_and_yarn/acorn-6.4.1
 							command.execute(args, message);
 						}
-						catch (error) {
-							console.log(error);
-						}
-					}
-				})
-				.catch(reason => {
-					this.handleRejection(message, reason);
-				})
+					})
+					.catch(reason => {
+						this.handleRejection(message, reason);
+					})
+				;
+			}
+			catch (error) {
+				console.log(error);
+			}
 			;
 		}
 	}
@@ -99,7 +92,7 @@ class HellBot {
 	parseCommand(message) {
 		return new Promise((resolve, reject) => {
 			const messageChunks = message.content.split(/ +/);
-			const commandStartIndex = messageChunks.findIndex(chunk => chunk === `<@${this.client.user.id}>`);
+			const commandStartIndex = messageChunks.findIndex(chunk => chunk === `<@!${this.client.user.id}>`);
 			const rawCommand = messageChunks.slice(commandStartIndex + 1);
 			const trigger = rawCommand[0] ? rawCommand[0].toLowerCase() : '';
 

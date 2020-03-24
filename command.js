@@ -18,7 +18,7 @@ class Command {
 	}
 
 	get accessColor() {
-		return this.accessRole ? this.accessRole.color : 0xffffff;
+		return this.accessRole ? parseInt(`0x${this.accessRole.hexColor.slice(1)}`) : 0xf5f5f5;
 	}
 
 	toEmbed() {
