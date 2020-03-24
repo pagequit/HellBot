@@ -5,6 +5,7 @@ class HellBot {
 	constructor(config, tokens) {
 		this.client = new Discord.Client();
 		this.commands = new Discord.Collection();
+		this.cooldowns = new Discord.Collection();
 		this.config = config;
 		this.tokens = tokens;
 		this.guild = null;
@@ -48,7 +49,7 @@ class HellBot {
 	}
 
 	handleRejection(message, reason) {
-		console.log(message.content ,reason);
+		//console.log(message.content ,reason);
 		message.reply(reason);
 	}
 
@@ -65,7 +66,8 @@ class HellBot {
 		if ( message.isMentioned(this.client.user) ) {
 			try {
 				this.parseCommand(message)
-					.then((commandSet) => this.checkPermissions(commandSet))
+					.then(commandSet => this.checkPermissions(commandSet))
+					.then(commandSet => this.checkCooldowns(commandSet))
 					.then(({command, args}) => {
 						if ( this.awake || command.constructor.name === 'WakeUp' ) {
 							command.execute(args, message);
@@ -130,6 +132,31 @@ class HellBot {
 				else {
 					reject('You can\'t command me that!');
 				}
+			}
+		});
+	}
+
+	checkCooldowns(commandSet) {
+		const {command, commander} = commandSet;
+
+		return new Promise((resolve, reject) => {
+			if ( !this.cooldowns.has(command.constructor.name) ) {
+				this.cooldowns.set(command.constructor.name, new Discord.Collection());
+			}
+
+			const timestamps = this.cooldowns.get(command.constructor.name);
+			let timestamp = timestamps.has(commander.id)
+				? timestamps.get(commander.id)
+				: 0
+			;
+
+			const now = Date.now();
+			if ( (timestamp + command.cooldown) <= now ) {
+				timestamps.set(commander.id, now)
+				resolve(commandSet);
+			}
+			else {
+				reject(`pls wait ${((timestamp + command.cooldown - now) / 1000).toFixed(1)} more seconds...`);
 			}
 		});
 	}

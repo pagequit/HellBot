@@ -6,7 +6,7 @@ class Command {
 			arguments: 'none',
 			description: 'none'
 		};
-		this.cooldown = 0;
+		this.cooldown = 2971; // does each commmand realy needs a cooldown?
 		this.accessLevel = null;
 		this.icon = '<:hellnet:597529630114578463>';
 	}
