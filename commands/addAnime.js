@@ -8,7 +8,6 @@ class AddAnime extends Command {
 		this.trigger = ['addanime', 'anime'];
 		this.info.description = 'Adds a anime to the anime-und-serien channel.';
 		this.icon = '<:rice_ball:640111239996899328>';
-		this.accessLevel = 2;
 	}
 
 	fetchArticleLink(response) {

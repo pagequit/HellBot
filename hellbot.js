@@ -1,10 +1,12 @@
 const fs = require('fs');
 const Discord = require('discord.js');
+const CronJob = require('cron').CronJob;
 
 class HellBot {
 	constructor(config, tokens) {
 		this.client = new Discord.Client();
 		this.commands = new Discord.Collection();
+		this.dailies = [];
 		this.cooldowns = new Discord.Collection();
 		this.config = config;
 		this.tokens = tokens;
@@ -13,6 +15,7 @@ class HellBot {
 
 		this.assignAccessRights(config);
 		this.assignCommands(config);
+		this.assignDailies(config);
 	}
 
 	run() {
@@ -23,6 +26,11 @@ class HellBot {
 
 	getReady() {
 		this.guild = this.client.guilds.find(guild => guild.name === this.config.guild);
+		new CronJob('00 00 00 * * *', function() {
+			this.dailies.forEach(daily => {
+				daily.call(this);
+			});
+		}.bind(this)).start();
 		console.log(`Logged in as: ${this.client.user.tag}`);
 	}
 
@@ -45,6 +53,17 @@ class HellBot {
 			const command = new commandClass(this);
 
 			this.commands.set(command.constructor.name.toLowerCase(), command);
+		}
+	}
+
+	assignDailies(config) {
+		const dailyFiles = fs.readdirSync(config.dailiesDirectory)
+			.filter(file => file.endsWith('.js'))
+		;
+
+		for ( const dailyFile of dailyFiles ) {
+			const daily = require(`${config.dailiesDirectory}/${dailyFile}`);
+			this.dailies.push(daily);
 		}
 	}
 

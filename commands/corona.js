@@ -8,7 +8,6 @@ class Corona extends Command {
 		this.trigger = ['corona', 'covid19'];
 		this.info.description = 'Displayes the total cases of COVID-19 in Germany.';
 		this.icon = '<:microbe:697052944394354789>';
-		this.accessLevel = 2;
 	}
 
 	fetchData(response) {
