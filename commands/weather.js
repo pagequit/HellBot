@@ -11,7 +11,7 @@ class Weather extends Command {
 
 	responseToEmbed(data) {
 		return {
-			color: 0xffffff,
+			color: 0xf5f5f5,
 			title: 'Powered by Dark Sky',
 			url: 'https://darksky.net/poweredby/',
 			description: 'Bonn',

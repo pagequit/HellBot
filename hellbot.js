@@ -49,8 +49,17 @@ class HellBot {
 	}
 
 	handleRejection(message, reason) {
-		//console.log(message.content ,reason);
 		message.reply(reason);
+	}
+
+	logMessage(message) {
+		const log = this.guild.channels.find(channel => channel.id === '648781700662296577');
+		if (log) {
+			log.send(`${message.author.username}: ${message.content}`);
+		}
+		else {
+			console.log(message.author.username, message.content);
+		}
 	}
 
 	handleMessage(message) {
@@ -64,6 +73,7 @@ class HellBot {
 		}
 
 		if ( message.isMentioned(this.client.user) ) {
+			this.logMessage(message);
 			try {
 				this.parseCommand(message)
 					.then(commandSet => this.checkPermissions(commandSet))
