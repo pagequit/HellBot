@@ -74,7 +74,7 @@ class HellBot {
 	logMessage(message) {
 		const log = this.guild.channels.find(channel => channel.id === '648781700662296577');
 		if (log) {
-			log.send(`${message.author.username}: ${message.content}`);
+			log.send(`${message.content}`);
 		}
 		else {
 			console.log(message.author.username, message.content);
