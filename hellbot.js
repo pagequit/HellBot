@@ -26,7 +26,7 @@ class HellBot {
 
 	getReady() {
 		this.guild = this.client.guilds.find(guild => guild.name === this.config.guild);
-		new CronJob('00 00 00 * * *', function() {
+		new CronJob('00 00 06 * * *', function() {
 			this.dailies.forEach(daily => {
 				daily.call(this);
 			});
