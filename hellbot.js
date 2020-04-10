@@ -121,7 +121,9 @@ class HellBot {
 	parseCommand(message) {
 		return new Promise((resolve, reject) => {
 			const messageChunks = message.content.split(/ +/);
-			const commandStartIndex = messageChunks.findIndex(chunk => chunk === `<@!${this.client.user.id}>`);
+			const regexString = `<@!?${this.client.user.id}>`;
+			const regex = new RegExp(regexString);
+			const commandStartIndex = messageChunks.findIndex(chunk => regex.test(chunk));
 			const rawCommand = messageChunks.slice(commandStartIndex + 1);
 			const trigger = rawCommand[0] ? rawCommand[0].toLowerCase() : '';
 
