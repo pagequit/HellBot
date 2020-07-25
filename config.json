@@ -1,6 +1,7 @@
 {
 	"commandsDirectory": "./commands",
-	"dailiesDirectory": "./dailies",
+	"servicesDirectory": "./services",
+	"tasksDirectory": "./tasks",
 	"accessRights": {
 		"0": "admin",
 		"1": "moderator",

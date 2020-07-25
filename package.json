@@ -1,6 +1,6 @@
 {
   "name": "hellbot",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Made for the HellNet server.",
   "main": "app.js",
   "author": "Schluffe",

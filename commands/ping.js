@@ -1,16 +1,12 @@
-const Command = require('../command');
+const Command = require('../abstract/command');
 
-class Ping extends Command {
-	constructor(client) {
-		super(client);
-		this.trigger = ['ping'];
-		this.info.description = 'Replies with \'pong\'.';
-		this.icon = '<:ping_pong:597524649924100126>';
-	}
+function Ping(client) {
+    Command.call(this, client);
+    this.trigger.push('ping');
+}
 
-	execute(args, message) {
-		message.reply('pong');
-	}
+Ping.prototype.execute = function({message}) {
+    message.reply('pong');
 }
 
 module.exports = Ping;
