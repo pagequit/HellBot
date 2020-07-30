@@ -1,23 +1,22 @@
+const config = require('../config.json');
+const tokens = require('../tokens.json');
 const fs = require('fs');
 const Discord = require('discord.js');
+const { assignLocale } = require('./lib');
 
-function HellBot({config, tokens}) {
+function HellBot(dirname) {
+    this.root = dirname;
     this.config = config;
     this.tokens = tokens;
     this.client = new Discord.Client();
     this.commands = new Discord.Collection();
-    this.locale = {
-        userSettings: new Discord.Collection(),
-    };
+    this.locale = new Discord.Collection([
+        ['user', new Map()],
+        ['fallback', 'en'],
+    ]);
 
-    assignLocale.call(this);
+    assignLocale(this.locale, this.root + config.localeDirectory);
     assignCommands.call(this);
-}
-
-function assignLocale() {
-    const localeFiles = fs.readdirSync(this.config.localeDirectory)
-        .filter(file => file.endsWith('.json'))
-    ;
 }
 
 function handleMessage(message) {
@@ -39,7 +38,7 @@ function handleMessage(message) {
 }
 
 function checkPermissions({command, args, message}) {
-    const commander = this.guild.members.cache.find(m => m.user.id === message.author.id); // TODO: check if user.id exists
+    const commander = this.guild.members.cache.find(m => m.user.id === message.author.id);
 
     if (commander.hasPermission('ADMINISTRATOR')) {
         return Promise.resolve({command, args, message});
@@ -57,7 +56,7 @@ function checkPermissions({command, args, message}) {
             command.timestamps.set(commander.id, now);
             return Promise.resolve({command, args, message});
         }
-        return Promise.reject(new permissionDeniedRejection(message));``
+        return Promise.reject(new permissionDeniedRejection(message));
     }
     else {
         return Promise.reject(new cooldownRejection(message));
@@ -84,18 +83,12 @@ function parseCommand(message) {
 }
 
 function assignCommands() {
-    const commandFiles = fs.readdirSync(this.config.commandsDirectory)
-        .filter(file => file.endsWith('.js'))
-    ;
+    const dir = this.config.commandsDirectory;
+    const commandNames = fs.readdirSync(this.root + dir);
 
-    for (const file of commandFiles) {
-        const commandClass = require(`${this.config.commandsDirectory}/${file}`);
-        const command = new commandClass(this.client);
-
-        this.commands.set(
-            command.constructor.name.toLowerCase(),
-            command
-        );
+    for (const name of commandNames) {
+        const Command = require(`${this.root}${dir}/${name}/${name}.js`);
+        this.commands.set(name, new Command());
     }
 }
 

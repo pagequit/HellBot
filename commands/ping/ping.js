@@ -1,7 +1,7 @@
-const Command = require('../abstract/command');
+const Command = require('../../src/command');
 
-function Ping(client) {
-    Command.call(this, client);
+function Ping() {
+    Command.call(this, __dirname);
     this.trigger.push('ping');
     this.accessLevel = 1;
     this.cooldown = 3;

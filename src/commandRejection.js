@@ -3,6 +3,6 @@ function commandRejection(message) {
 }
 
 commandRejection.prototype.handle = function({locale}) {
-    const userLocale = locale.userSettings[this.message.auhtor.id];
+    const userLocale = locale.user[this.message.auhtor.id];
     this.message.reply()
 }

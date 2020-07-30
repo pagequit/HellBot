@@ -1,11 +1,14 @@
-const { Collection } = require("discord.js");
+const { Collection } = require('discord.js');
+const { assignLocale } = require('./lib');
 
-function Command(client) {
-	this.client = client;
+
+function Command(dirname) {
 	this.trigger = [];
 	this.accessLevel = null;
 	this.cooldown = 0;
 	this.timestamps = new Collection();
+	this.locale = new Map();
+	assignLocale(this.locale, dirname);
 }
 
 Command.prototype.execute = function(args, message) {
