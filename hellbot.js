@@ -6,8 +6,18 @@ function HellBot({config, tokens}) {
     this.tokens = tokens;
     this.client = new Discord.Client();
     this.commands = new Discord.Collection();
+    this.locale = {
+        userSettings: new Discord.Collection(),
+    };
 
+    assignLocale.call(this);
     assignCommands.call(this);
+}
+
+function assignLocale() {
+    const localeFiles = fs.readdirSync(this.config.localeDirectory)
+        .filter(file => file.endsWith('.json'))
+    ;
 }
 
 function handleMessage(message) {
@@ -17,21 +27,21 @@ function handleMessage(message) {
 
     if (message.mentions.has(this.client.user)) {
         parseCommand.call(this, message)
-            .then(checkAccess.bind(this))
+            .then(checkPermissions.bind(this))
             .then(({command, args}) => {
-                command.execute({args, message});
+                command.execute(args, message, this);
             })
             .catch(rejection => {
-                rejection.handle();
+                rejection.handle(this);
             })
         ;
     }
 }
 
-function checkAccess({command, args, message}) {
-    const commander = this.guild.members.cache.find(m => m.user.username === message.author.username);
+function checkPermissions({command, args, message}) {
+    const commander = this.guild.members.cache.find(m => m.user.id === message.author.id); // TODO: check if user.id exists
 
-    if (commander.roles.cache.some(r => r.hasPermission('ADMINISTRATOR'))) { // <-- hasPermission works no longer how I thought
+    if (commander.hasPermission('ADMINISTRATOR')) {
         return Promise.resolve({command, args, message});
     }
 
@@ -47,10 +57,10 @@ function checkAccess({command, args, message}) {
             command.timestamps.set(commander.id, now);
             return Promise.resolve({command, args, message});
         }
-        return Promise.reject(new permissionDeniedRejection({message}));``
+        return Promise.reject(new permissionDeniedRejection(message));``
     }
     else {
-        return Promise.reject(new cooldownRejection({message}));
+        return Promise.reject(new cooldownRejection(message));
     }
 }
 
@@ -68,7 +78,7 @@ function parseCommand(message) {
             resolve({command, args, message})
         }
         else {
-            reject(new commandNotFoundRejection({message, rawCommand}));
+            reject(new commandNotFoundRejection(message, rawCommand));
         }
     });
 }
