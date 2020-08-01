@@ -3,6 +3,7 @@ const tokens = require('../tokens.json');
 const fs = require('fs');
 const Discord = require('discord.js');
 const { assignLocale } = require('./lib');
+const { CommandNotFoundRejection } = require('./commandRejection');
 
 function HellBot(dirname) {
     this.root = dirname;
@@ -10,12 +11,13 @@ function HellBot(dirname) {
     this.tokens = tokens;
     this.client = new Discord.Client();
     this.commands = new Discord.Collection();
-    this.locale = new Discord.Collection([
-        ['user', new Map()],
-        ['fallback', 'en'],
+    this.i18n = new Discord.Collection([
+        ['user', {
+            locale: id => this[id] ? this[id] : config.localeFallback
+        }],
     ]);
 
-    assignLocale(this.locale, this.root + config.localeDirectory);
+    assignLocale(this.i18n, this.root + config.localeDirectory);
     assignCommands.call(this);
 }
 
@@ -77,7 +79,7 @@ function parseCommand(message) {
             resolve({command, args, message})
         }
         else {
-            reject(new commandNotFoundRejection(message, rawCommand));
+            reject(new CommandNotFoundRejection(message, rawCommand));
         }
     });
 }

@@ -7,8 +7,9 @@ function Ping() {
     this.cooldown = 3;
 }
 
-Ping.prototype.execute = function(args, message) {
-    message.reply('pong');
+Ping.prototype.execute = function(args, message, { i18n }) {
+    const reply = this.locale[i18n.user.locale(message.author.id)].pong;
+    message.reply(reply);
 }
 
 module.exports = Ping;
