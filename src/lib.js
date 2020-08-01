@@ -11,5 +11,5 @@ module.exports = {
             const localeISO = fileName.substr(0, 2);
             locale.set(localeISO, lacaleJSON);
         }
-    }
+    },
 }

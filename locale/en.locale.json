@@ -1,3 +1,5 @@
 {
-    "defaultCommandRejectionReply": "I don't understand."
+    "commandRejection.undefined": "I don't know of any command that can be triggered with '{0}'.",
+    "commandRejection.permission":"You can't command me that, you have to be at least {0} to do so.",
+    "commandRejection.cooldown": "You can't do that again now, wait {0} seconds."
 }

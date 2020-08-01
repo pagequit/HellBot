@@ -2,10 +2,9 @@
 	"commandsDirectory": "/commands",
 	"localeDirectory": "/locale",
 	"localeFallback": "en",
-	"accessRights": {
-		"0": "admin",
-		"1": "moderator",
-		"2": "member"
-	},
-	"guild": "HellNet"
+	"accessRights": [
+		"admin",
+		"moderator",
+		"member"
+	]
 }

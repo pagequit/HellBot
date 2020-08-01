@@ -1,3 +1,5 @@
 {
-    "defaultCommandRejectionReply": "Das verstehe ich nicht."
+    "commandRejection.undefined": "Ich kenne keinen Befehl, der mit '{0}' erteilt werden kann.",
+    "commandRejection.permission":"Das kannst mir nicht befehlen, du musst mindestens {0} sein um das zu können.",
+    "commandRejection.cooldown": "Das geht jetzt nicht nochmal, warte noch {0} Sekunden."
 }

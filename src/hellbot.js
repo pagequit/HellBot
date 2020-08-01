@@ -1,24 +1,20 @@
-const config = require('../config.json');
-const tokens = require('../tokens.json');
 const fs = require('fs');
 const Discord = require('discord.js');
+const CommandRejection = require('./commandRejection');
 const { assignLocale } = require('./lib');
-const { CommandNotFoundRejection } = require('./commandRejection');
 
-function HellBot(dirname) {
-    this.root = dirname;
-    this.config = config;
-    this.tokens = tokens;
+function HellBot(root) {
     this.client = new Discord.Client();
     this.commands = new Discord.Collection();
-    this.i18n = new Discord.Collection([
-        ['user', {
-            locale: id => this[id] ? this[id] : config.localeFallback
-        }],
+    this.i18n = new Discord.Collection();
+    this.store = new Discord.Collection([
+        ['root', root],
+        ['config', require(root + '/config.json')],
+        ['tokens', require(root + '/tokens.json')],
     ]);
 
-    assignLocale(this.i18n, this.root + config.localeDirectory);
-    assignCommands.call(this);
+    assignLocale(this.i18n, root + this.store.get('config').localeDirectory);
+    assignCommands(this.commands, root + this.store.get('config').commandsDirectory);
 }
 
 function handleMessage(message) {
@@ -33,14 +29,19 @@ function handleMessage(message) {
                 command.execute(args, message, this);
             })
             .catch(rejection => {
-                rejection.handle(this);
+                if (rejection.handle) {
+                    rejection.handle(this);
+                }
+                else {
+                    console.error(rejection);
+                }
             })
         ;
     }
 }
 
 function checkPermissions({command, args, message}) {
-    const commander = this.guild.members.cache.find(m => m.user.id === message.author.id);
+    const commander = this.store.get('guild').members.cache.find(m => m.user.id === message.author.id);
 
     if (commander.hasPermission('ADMINISTRATOR')) {
         return Promise.resolve({command, args, message});
@@ -51,17 +52,25 @@ function checkPermissions({command, args, message}) {
         !command.timestamps.has(commander.id) ||
         now > command.timestamps.get(commander.id) + command.cooldown
     ) {
-        let hasPermissions = !command.accessLevel || commander.roles.cache.some(role => {
-            return this.config.accessRights.some((roleName, accessLevel) => roleName === role.name && accessLevel <= command.accessLevel);
+        const hasPermissions = !command.accessLevel || commander.roles.cache.some(role => {
+            return this.store.get('config').accessRights.some((roleName, accessLevel) => {
+                return roleName === role.name && accessLevel <= command.accessLevel;
+            });
         });
         if (hasPermissions) {
             command.timestamps.set(commander.id, now);
             return Promise.resolve({command, args, message});
         }
-        return Promise.reject(new permissionDeniedRejection(message));
+        return Promise.reject(new CommandRejection(message, {
+            reason: 'permission',
+            args: [this.store.get('config').accessRights[command.accessLevel]],
+        }));
     }
     else {
-        return Promise.reject(new cooldownRejection(message));
+        return Promise.reject(new CommandRejection(message, {
+            reason: 'cooldown',
+            args: [command.timestamps.get(commander.id) + command.cooldown - now],
+        }));
     }
 }
 
@@ -79,30 +88,32 @@ function parseCommand(message) {
             resolve({command, args, message})
         }
         else {
-            reject(new CommandNotFoundRejection(message, rawCommand));
+            reject(new CommandRejection(message, {
+                reason: 'undefined',
+                args: [trigger],
+            }));
         }
     });
 }
 
-function assignCommands() {
-    const dir = this.config.commandsDirectory;
-    const commandNames = fs.readdirSync(this.root + dir);
+function assignCommands(commands, commandsDirectory) {
+    const commandNames = fs.readdirSync(commandsDirectory);
 
     for (const name of commandNames) {
-        const Command = require(`${this.root}${dir}/${name}/${name}.js`);
-        this.commands.set(name, new Command());
+        const Command = require(`${commandsDirectory}/${name}/${name}.js`);
+        commands.set(name, new Command());
     }
 }
 
 function ready() {
-    this.guild = this.client.guilds.cache.find(g => g.name === this.config.guild);
+    this.store.set('guild', this.client.guilds.cache.first());
     console.log(`Logged in as: ${this.client.user.tag}`);
 }
 
 HellBot.prototype.run = function() {
     this.client.once('ready', ready.bind(this));
     this.client.on('message', handleMessage.bind(this));
-    this.client.login(this.tokens.discord);
+    this.client.login(this.store.get('tokens').discord);
 }
 
 module.exports = HellBot;

@@ -7,8 +7,13 @@ function Ping() {
     this.cooldown = 3;
 }
 
-Ping.prototype.execute = function(args, message, { i18n }) {
-    const reply = this.locale[i18n.user.locale(message.author.id)].pong;
+Ping.prototype.execute = function(args, message, { i18n, store }) {
+    let locale = store.has(message.author.id)
+        ? store.get(message.author.id)
+        : store.get('config').localeFallback
+    ;
+
+    const reply = this.locale.get(locale).pong;
     message.reply(reply);
 }
 
