@@ -1,18 +1,19 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const CommandRejection = require('./commandRejection');
+const HellUserCollection = require('./hellUserCollection');
 const { assignLocale } = require('./lib');
 
 function HellBot(root) {
     this.client = new Discord.Client();
     this.commands = new Discord.Collection();
-    this.i18n = new Discord.Collection();
+    this.i18n = new Discord.Collection(); // TODO: implement the translate (i18n.t) function!
     this.store = new Discord.Collection([
         ['root', root],
         ['config', require(root + '/config.json')],
         ['tokens', require(root + '/tokens.json')],
+        ['users', new HellUserCollection(this)],
     ]);
-
     assignLocale(this.i18n, root + this.store.get('config').localeDirectory);
     assignCommands(this.commands, root + this.store.get('config').commandsDirectory);
 }
@@ -69,7 +70,7 @@ function checkPermissions({command, args, message}) {
     else {
         return Promise.reject(new CommandRejection(message, {
             reason: 'cooldown',
-            args: [command.timestamps.get(commander.id) + command.cooldown - now],
+            args: [Math.ceil((command.timestamps.get(commander.id) + command.cooldown - now) / 1000)],
         }));
     }
 }

@@ -4,18 +4,12 @@ function CommandRejection(message, {reason, args}) {
     this.args = args;
 }
 
-CommandRejection.prototype.handle = function({i18n, store}) {
+CommandRejection.prototype.handle = function({ i18n, store }) {
     const fallback = store.get('config').localeFallback;
 
-    let locale = store.has(this.message.author.id)
-        ? store.get(this.message.author.id).locale
-        : fallback
-    ;
+    let locale = store.get('users').get(this.message.author.id).locale;
 
-    locale = i18n.has(locale)
-        ? i18n.get(locale)
-        : fallback
-    ;
+    //let response = i18n.t(`commandRejection.${this.reason}`, this.args); <-- this is what I want!
 
     let response = locale[`commandRejection.${this.reason}`]
         ? locale[`commandRejection.${this.reason}`]
