@@ -1,21 +1,21 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const CommandRejection = require('./commandRejection');
+const I18nCollection = require('./i18nCollection');
 const HellUserCollection = require('./hellUserCollection');
-const { assignLocale } = require('./lib');
 
-function HellBot(root) {
+function HellBot(config, tokens, root) {
+    this.config = config;
     this.client = new Discord.Client();
     this.commands = new Discord.Collection();
-    this.i18n = new Discord.Collection(); // TODO: implement the translate (i18n.t) function!
+    this.i18n = new I18nCollection(config.localeFallback);
     this.store = new Discord.Collection([
         ['root', root],
-        ['config', require(root + '/config.json')],
-        ['tokens', require(root + '/tokens.json')],
+        ['tokens', tokens],
         ['users', new HellUserCollection(this)],
     ]);
-    assignLocale(this.i18n, root + this.store.get('config').localeDirectory);
-    assignCommands(this.commands, root + this.store.get('config').commandsDirectory);
+    this.i18n.assignLocale(root + config.localeDirectory);
+    assignCommands(this.commands, root + config.commandsDirectory, this.i18n);
 }
 
 function handleMessage(message) {
@@ -97,12 +97,14 @@ function parseCommand(message) {
     });
 }
 
-function assignCommands(commands, commandsDirectory) {
+function assignCommands(commands, commandsDirectory, i18n) {
     const commandNames = fs.readdirSync(commandsDirectory);
 
     for (const name of commandNames) {
         const Command = require(`${commandsDirectory}/${name}/${name}.js`);
         commands.set(name, new Command());
+
+        i18n.assignLocale(`${commandsDirectory}/${name}`);
     }
 }
 
