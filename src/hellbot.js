@@ -6,15 +6,15 @@ const HellUserCollection = require('./hellUserCollection');
 
 function HellBot(config, tokens, root) {
     this.config = config;
+    this.config.tokens = tokens;
+    this.config.root = root;
     this.client = new Discord.Client();
     this.commands = new Discord.Collection();
     this.i18n = new I18nCollection(config.localeFallback);
     this.store = new Discord.Collection([
-        ['root', root],
-        ['tokens', tokens],
         ['users', new HellUserCollection(this)],
     ]);
-    this.i18n.assignLocale(root + config.localeDirectory);
+    this.i18n.assignLocaleFiles(root + config.localeDirectory);
     assignCommands(this.commands, root + config.commandsDirectory, this.i18n);
 }
 
@@ -104,7 +104,7 @@ function assignCommands(commands, commandsDirectory, i18n) {
         const Command = require(`${commandsDirectory}/${name}/${name}.js`);
         commands.set(name, new Command());
 
-        i18n.assignLocale(`${commandsDirectory}/${name}`);
+        i18n.assignLocaleFiles(`${commandsDirectory}/${name}`);
     }
 }
 
@@ -116,7 +116,7 @@ function ready() {
 HellBot.prototype.run = function() {
     this.client.once('ready', ready.bind(this));
     this.client.on('message', handleMessage.bind(this));
-    this.client.login(this.store.get('tokens').discord);
+    this.client.login(this.config.tokens.discord);
 }
 
 module.exports = HellBot;

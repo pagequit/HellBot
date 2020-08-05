@@ -8,10 +8,8 @@ function Ping() {
 }
 
 Ping.prototype.execute = function(args, message, { i18n, store }) {
-    let locale = store.get('users').get(message.author.id).locale;
-
-    //const reply = i18n.t('pong');
-    const reply = this.locale.get(locale).pong;
+    const locale = store.get('users').get(message.author.id).locale;
+    const reply = i18n.t(locale, 'ping.pong');
     message.reply(reply);
 }
 

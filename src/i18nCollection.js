@@ -35,7 +35,7 @@ class I18nCollection extends Collection {
             const lacaleJSON = require(`${folder}/${fileName}`);
             const localeISO = fileName.substr(0, 2);
             if (this.has(localeISO)) {
-                Object.assign(this.get(localeISO), localeJSON);
+                Object.assign(this.get(localeISO), lacaleJSON);
             }
             else {
                 this.set(localeISO, lacaleJSON);
