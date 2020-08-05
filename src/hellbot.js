@@ -54,7 +54,7 @@ function checkPermissions({command, args, message}) {
         now > command.timestamps.get(commander.id) + command.cooldown
     ) {
         const hasPermissions = !command.accessLevel || commander.roles.cache.some(role => {
-            return this.store.get('config').accessRights.some((roleName, accessLevel) => {
+            return this.config.accessRights.some((roleName, accessLevel) => {
                 return roleName === role.name && accessLevel <= command.accessLevel;
             });
         });
@@ -64,7 +64,7 @@ function checkPermissions({command, args, message}) {
         }
         return Promise.reject(new CommandRejection(message, {
             reason: 'permission',
-            args: [this.store.get('config').accessRights[command.accessLevel]],
+            args: [this.config.accessRights[command.accessLevel]],
         }));
     }
     else {

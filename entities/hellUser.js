@@ -1,9 +1,9 @@
-function HellUser({ store, i18n }, id) {
+function HellUser({ i18n }, id) {
     this.id = id;
     this.i18n = i18n;
     this._locale = {
-        fallback: store.get('config').localeFallback,
-        current: store.get('config').localeFallback,
+        fallback: i18n.localeFallback,
+        current: i18n.localeFallback,
     }
 }
 
