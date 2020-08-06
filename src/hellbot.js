@@ -14,7 +14,7 @@ function HellBot(config, tokens, root) {
     this.store = new Discord.Collection([
         ['users', new HellUserCollection(this)],
     ]);
-    this.i18n.assignLocaleFiles(root + config.localeDirectory);
+    this.i18n.assignMessagesFiles(root + config.localeDirectory);
     assignCommands(this.commands, root + config.commandsDirectory, this.i18n);
 }
 
@@ -102,9 +102,9 @@ function assignCommands(commands, commandsDirectory, i18n) {
 
     for (const name of commandNames) {
         const Command = require(`${commandsDirectory}/${name}/${name}.js`);
-        commands.set(name, new Command());
-
-        i18n.assignLocaleFiles(`${commandsDirectory}/${name}`);
+        const command = new Command();
+        commands.set(command.domain, command);
+        i18n.assignMessagesFiles(`${commandsDirectory}/${name}`);
     }
 }
 

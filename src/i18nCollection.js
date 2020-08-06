@@ -8,37 +8,37 @@ class I18nCollection extends Collection {
     }
 
     t(locale, key, args = []) {
-        locale = this.has(locale)
+        const messages = this.has(locale)
             ? this.get(locale)
-            : this.fallback;
+            : this.get(this.fallback);
         ;
 
-        let response = locale[key]
+        let message = messages[key]
             || this.get(this.fallback)[key]
             || this.find(l => !!l[key])
             || `${key}`
         ;
     
         args.forEach((arg, idx) => {
-            response = response.replace(`{${idx}}`, arg);
+            message = message.replace(`{${idx}}`, arg);
         });
 
-        return response;
+        return message;
     }
 
-    assignLocaleFiles(folder) {
-        const localeFiles = fs.readdirSync(folder)
-            .filter(f => f.endsWith('.locale.json'))
+    assignMessagesFiles(folder) {
+        const messagesFiles = fs.readdirSync(folder)
+            .filter(f => f.endsWith('.messages.json'))
         ;
         
-        for (const fileName of localeFiles) {
-            const lacaleJSON = require(`${folder}/${fileName}`);
-            const localeISO = fileName.substr(0, 2);
-            if (this.has(localeISO)) {
-                Object.assign(this.get(localeISO), lacaleJSON);
+        for (const fileName of messagesFiles) {
+            const messages = require(`${folder}/${fileName}`);
+            const locale = fileName.substr(0, 2);
+            if (this.has(locale)) {
+                Object.assign(this.get(locale), messages);
             }
             else {
-                this.set(localeISO, lacaleJSON);
+                this.set(locale, messages);
             }
         }
     }

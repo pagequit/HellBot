@@ -2,10 +2,7 @@ const Command = require('../../src/command');
 
 function Ping() {
     Command.call(this);
-    this.trigger.push('ping');
-    this.accessLevel = null;
-    this.cooldown = 5000;
-}
+    this.trigger.push('ping');}
 
 Ping.prototype.execute = function(args, message, { i18n, store }) {
     const locale = store.get('users').get(message.author.id).locale;
