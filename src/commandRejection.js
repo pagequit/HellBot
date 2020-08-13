@@ -1,4 +1,4 @@
-function CommandRejection(message, {reason, args}) {
+function CommandRejection(message, { reason, args }) {
     this.message = message;
     this.reason = reason;
     this.args = args;
