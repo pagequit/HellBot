@@ -9,22 +9,32 @@ class Command {
 		this.accessLevel = null;
 		this.cooldown = 0;
 		this.timestamps = new Collection();
-		this.icon = ':robot;';
+		this.icon = ':robot:';
 		this.info = {
 			arguments: new Map(),
 			description: `${this.domain}.description`,
 		}
 	}
 
+	get accessRole() {
+		return this.hellbot.store.get('guild').roles.cache.
+			find(r => r.name === this.hellbot.config.accessRights[this.accessLevel])
+		;
+	}
+
+	get accessColor() {
+		return this.accessRole ? parseInt(`0x${this.accessRole.hexColor.slice(1)}`) : 0xf5f5f5;
+	}
+
 	execute(args, message) {
 		throw new Error('Try to call execute from abstract Command!');
 	}
 
-	toEmbed() {
+	toEmbed(locale) {
 		return {
-			color: '',
-			title: '',
-			description: '',
+			color: this.accessColor,
+			title: `${this.icon} ${this.name}`,
+			description: this.hellbot.i18n.t(locale, this.info.description),
 		}
 	}
 }
