@@ -3,6 +3,7 @@ const Discord = require('discord.js');
 const CommandRejection = require('./commandRejection');
 const I18nCollection = require('./i18nCollection');
 const HellUserCollection = require('./hellUserCollection');
+const Command = require('./command');
 
 function HellBot(config, tokens, root) {
     this.config = config;
@@ -15,7 +16,10 @@ function HellBot(config, tokens, root) {
         ['users', new HellUserCollection(this)],
     ]);
     this.i18n.assignMessagesFiles(root + config.localeDirectory);
-    assignCommands(this, root + config.commandsDirectory);
+    assignCommands.call(this, root + config.commandsDirectory);
+    Command.prototype.$i18n = this.i18n;
+    Command.prototype.$store = this.store;
+    Command.prototype.$config = this.config;
 }
 
 function handleMessage(message) {
@@ -27,7 +31,7 @@ function handleMessage(message) {
         parseCommand.call(this, message)
             .then(checkPermissions.bind(this))
             .then(({command, args}) => {
-                command.execute(args, message);
+                command.execute(args, message, this);
             })
             .catch(rejection => {
                 if (rejection.handle) {
@@ -97,14 +101,14 @@ function parseCommand(message) {
     });
 }
 
-function assignCommands(hellbot, commandsDirectory) {
+function assignCommands(commandsDirectory) {
     const commandNames = fs.readdirSync(commandsDirectory);
 
     for (const name of commandNames) {
         const Command = require(`${commandsDirectory}/${name}/${name}.js`);
-        const command = new Command(hellbot);
-        hellbot.commands.set(command.domain, command);
-        hellbot.i18n.assignMessagesFiles(`${commandsDirectory}/${name}`);
+        const command = new Command(this.config);
+        this.commands.set(command.domain, command);
+        this.i18n.assignMessagesFiles(`${commandsDirectory}/${name}`, command.domain);
     }
 }
 

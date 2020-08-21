@@ -1,0 +1,6 @@
+{
+    "description": "Zeigt eine Liste aller Befehle.",
+    "arguments.command": "Name oder Auslöser eines Befehls.",
+    "default": "hier eine Liste aller Behfehle:",
+    "undefined": "ich kenne keinen Befehl der '{0}' lautet oder so erteilt werden kann."
+}

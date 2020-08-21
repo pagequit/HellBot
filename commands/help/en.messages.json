@@ -1,0 +1,6 @@
+{
+    "description": "Showes a list of commands.",
+    "arguments.command": "The name or a trigger of a command you need help with.",
+    "default": "here is a list of all my commands:",
+    "undefined": "I don't know a command named or triggerd with '{0}'"
+}

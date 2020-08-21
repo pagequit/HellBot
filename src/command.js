@@ -11,14 +11,14 @@ class Command {
 		this.timestamps = new Collection();
 		this.icon = ':robot:';
 		this.info = {
-			arguments: new Map(),
+			arguments: [],
 			description: `${this.domain}.description`,
 		}
 	}
 
 	get accessRole() {
-		return this.hellbot.store.get('guild').roles.cache.
-			find(r => r.name === this.hellbot.config.accessRights[this.accessLevel])
+		return this.$store.get('guild').roles.cache.
+			find(r => r.name === this.$config.accessRights[this.accessLevel])
 		;
 	}
 
@@ -34,7 +34,7 @@ class Command {
 		return {
 			color: this.accessColor,
 			title: `${this.icon} ${this.name}`,
-			description: this.hellbot.i18n.t(locale, this.info.description),
+			description: this.$i18n.t(locale, this.info.description),
 		}
 	}
 }

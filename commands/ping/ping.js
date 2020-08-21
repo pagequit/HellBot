@@ -8,9 +8,8 @@ class Ping extends Command {
     }
 
     execute(args, message) {
-        const users = this.hellbot.store.get('users');
-        const locale = users.get(message.author.id).locale;
-        const reply = this.hellbot.i18n.t(locale, 'ping.pong');
+        const locale = this.$store.get('users').get(message.author.id).locale;
+        const reply = this.$i18n.t(locale, `${this.domain}.pong`);
         message.reply(reply);
     }
 }

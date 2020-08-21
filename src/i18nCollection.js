@@ -26,7 +26,7 @@ class I18nCollection extends Collection {
         return message;
     }
 
-    assignMessagesFiles(folder) {
+    assignMessagesFiles(folder, domain) {
         const messagesFiles = fs.readdirSync(folder)
             .filter(f => f.endsWith('.messages.json'))
         ;
@@ -34,6 +34,14 @@ class I18nCollection extends Collection {
         for (const fileName of messagesFiles) {
             const messages = require(`${folder}/${fileName}`);
             const locale = fileName.substr(0, 2);
+
+            if (domain) {
+                for(let key in messages) {
+                    messages[`${domain}.${key}`] = messages[key];
+                    delete messages[key];
+                }
+            }
+            
             if (this.has(locale)) {
                 Object.assign(this.get(locale), messages);
             }
