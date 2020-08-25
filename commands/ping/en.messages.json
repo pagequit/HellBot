@@ -1,5 +1,4 @@
 {
     "description": "Replies with pong.",
-    "arguments.none": "None",
     "pong": "pong"
 }

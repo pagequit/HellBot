@@ -1,4 +1,4 @@
-const { Collection } = require('discord.js');
+const { Collection, MessageEmbed } = require('discord.js');
 
 class Command {
 	constructor(hellbot) {
@@ -31,11 +31,21 @@ class Command {
 	}
 
 	toEmbed(locale) {
-		return {
-			color: this.accessColor,
-			title: `${this.icon} ${this.name}`,
-			description: this.$i18n.t(locale, this.info.description),
-		}
+		let description = this.$i18n.t(locale, this.info.description);
+		description += `\n${this.$i18n.t(locale, 'embed.trigger')}: ${this.trigger.join(', ')}`;
+		description += `\n${this.$i18n.t(locale, 'embed.arguments')}:`;
+		
+		const embed = new MessageEmbed();
+		embed.setColor(this.accessColor);
+		embed.setTitle(`${this.icon} ${this.name}`);
+		embed.setDescription(description);
+		this.info.arguments.forEach(arg => {
+			const signature = this.$i18n.t(locale, `${this.domain}.arguments.${arg}.signature`);
+			const description = this.$i18n.t(locale, `${this.domain}.arguments.${arg}.description`);
+			embed.addField(signature, description);
+		});
+
+		return embed;
 	}
 }
 
