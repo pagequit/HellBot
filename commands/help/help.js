@@ -13,23 +13,19 @@ class Help extends Command {
             .get(message.author.id).locale
         ;
 
-        message.reply({ embed: this.toEmbed() });
-
-        return;
         if (args.length === 0) {
 			message.reply(this.$i18n.t(locale, `${this.domain}.default`));
 			return;
 		}
 
 		const targetCommand = commands
-			.find(c => c.name.toLowerCase() === args[0].toLowerCase())
+			.find(c => c.name.toLowerCase() === args[0].toLowerCase() || c.trigger.includes(args[0].toLowerCase()))
 		;
-
 		if (targetCommand) {
 			message.channel.send({ embed: targetCommand.toEmbed() });
 		}
 		else {
-			message.reply(this.$i18n.t(locale, `${this.domain}.undefined`, args[0]));
+			message.reply(this.$i18n.t(locale, `${this.domain}.undefined`, [args[0]]));
 		}
     }
 }

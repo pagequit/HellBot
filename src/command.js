@@ -1,8 +1,7 @@
 const { Collection, MessageEmbed } = require('discord.js');
 
 class Command {
-	constructor(hellbot) {
-		this.hellbot = hellbot;
+	constructor() {
 		this.name = this.constructor.name;
 		this.domain = this.name.toLocaleLowerCase();
 		this.trigger = [];

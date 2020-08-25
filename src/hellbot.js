@@ -1,8 +1,6 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const CommandRejection = require('./commandRejection');
-const I18nCollection = require('./i18nCollection');
-const HellUserCollection = require('./hellUserCollection');
 const Command = require('./command');
 
 function HellBot(config, tokens, root) {
@@ -10,16 +8,30 @@ function HellBot(config, tokens, root) {
     this.config.tokens = tokens;
     this.config.root = root;
     this.client = new Discord.Client();
+    this.ext = {};
     this.commands = new Discord.Collection();
-    this.i18n = new I18nCollection(config.localeFallback);
-    this.store = new Discord.Collection([
-        ['users', new HellUserCollection(this)],
-    ]);
-    this.i18n.assignMessagesFiles(root + config.localeDirectory);
+    
+    assigneExtensions.call(this, root + config.extensionsDirectory);
     assignCommands.call(this, root + config.commandsDirectory);
-    Command.prototype.$i18n = this.i18n;
-    Command.prototype.$store = this.store;
     Command.prototype.$config = this.config;
+
+}
+
+function assigneExtensions(extensionsDirectory) {
+    const extensionNames = fs.readdirSync(extensionsDirectory);
+
+    for (const name of extensionNames) {
+        const Extension = require(`${extensionsDirectory}/${name}/${name}.js`);
+        const extension = new Extension();
+        Command.prototype[`$${name}`] = extension;
+        this.ext[name] = extension;
+    }
+}
+
+function mountExtensions(hellBot) {
+    for (const name in hellBot.ext) {
+        hellBot.ext[name].mount(hellBot);
+    }
 }
 
 function handleMessage(message) {
@@ -46,7 +58,9 @@ function handleMessage(message) {
 }
 
 function checkPermissions({command, args, message}) {
-    const commander = this.store.get('guild').members.cache.find(m => m.user.id === message.author.id);
+    const commander = this.ext.store.get('guild').members.cache
+        .find(m => m.user.id === message.author.id)
+    ;
 
     if (commander.hasPermission('ADMINISTRATOR')) {
         return Promise.resolve({command, args, message});
@@ -108,12 +122,11 @@ function assignCommands(commandsDirectory) {
         const Command = require(`${commandsDirectory}/${name}/${name}.js`);
         const command = new Command(this.config);
         this.commands.set(command.domain, command);
-        this.i18n.assignMessagesFiles(`${commandsDirectory}/${name}`, command.domain);
     }
 }
 
 function ready() {
-    this.store.set('guild', this.client.guilds.cache.first());
+    mountExtensions(this);
     console.log(`Logged in as: ${this.client.user.tag}`);
 }
 

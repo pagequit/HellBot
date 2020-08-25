@@ -1,5 +1,5 @@
 const { Collection } = require('discord.js');
-const HellUser = require('../entities/hellUser');
+const HellUser = require('./entities/hellUser');
 
 class HellUserCollection extends Collection {
     constructor(hellBot, args) {
@@ -9,7 +9,7 @@ class HellUserCollection extends Collection {
 
     get(key) {
         if (!this.has(key)) {
-            this.set(key, new HellUser(this.hellBot, key));
+            this.set(key, new HellUser(this.hellBot.ext.i18n, key));
         }
 
         return super.get(key);

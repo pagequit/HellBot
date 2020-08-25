@@ -1,4 +1,4 @@
-function HellUser({ i18n }, id) {
+function HellUser(i18n, id) {
     this.id = id;
     this.i18n = i18n;
     this._locale = {

@@ -1,4 +1,5 @@
 {
+	"extensionsDirectory": "/extensions",
 	"commandsDirectory": "/commands",
 	"localeDirectory": "/locale",
 	"localeFallback": "en",
