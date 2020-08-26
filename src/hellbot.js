@@ -8,13 +8,12 @@ function HellBot(config, tokens, root) {
     this.config.tokens = tokens;
     this.config.root = root;
     this.client = new Discord.Client();
-    this.ext = {};
+    this.ext = new Object();
     this.commands = new Discord.Collection();
     
     assigneExtensions.call(this, root + config.extensionsDirectory);
     assignCommands.call(this, root + config.commandsDirectory);
     Command.prototype.$config = this.config;
-
 }
 
 function assigneExtensions(extensionsDirectory) {
