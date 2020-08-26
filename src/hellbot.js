@@ -58,7 +58,7 @@ function handleMessage(message) {
 }
 
 function checkPermissions({command, args, message}) {
-    const commander = this.ext.store.get('guild').members.cache
+    const commander = this.client.guilds.cache.first().members.cache
         .find(m => m.user.id === message.author.id)
     ;
 
