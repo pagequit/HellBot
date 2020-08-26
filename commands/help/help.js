@@ -1,8 +1,9 @@
 const Command = require('../../src/command');
+const { MessageEmbed } = require('discord.js');
 
 class Help extends Command {
-    constructor(hellbot) {
-        super(hellbot);
+    constructor() {
+        super();
         this.trigger.push('help', 'hilfe');
         this.icon = ':angel:';
         this.info.arguments.push('command');
@@ -14,7 +15,16 @@ class Help extends Command {
         ;
 
         if (args.length === 0) {
-			message.reply(this.$i18n.t(locale, `${this.domain}.default`));
+            const embed = new MessageEmbed();
+            embed.setColor(this.accessColor);
+            commands.forEach(c => {
+                const title = `${c.icon} ${c.name}`;
+                let description = `${this.$i18n.t(locale, c.info.description)}\n`;
+                description += `${this.$i18n.t(locale, 'embed.trigger')}: ${c.trigger.join(', ')}`;
+                embed.addField(title, description);
+            });
+    
+			message.reply(this.$i18n.t(locale, `${this.domain}.default`), { embed: embed });
 			return;
 		}
 

@@ -1,8 +1,8 @@
 const Command = require('../../src/command');
 
 class Ping extends Command {
-    constructor(hellbot) {
-        super(hellbot);
+    constructor() {
+        super();
         this.trigger.push('ping');
         this.icon = ':ping_pong:';
     }

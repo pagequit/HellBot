@@ -32,7 +32,9 @@ class Command {
 	toEmbed(locale) {
 		let description = this.$i18n.t(locale, this.info.description);
 		description += `\n${this.$i18n.t(locale, 'embed.trigger')}: ${this.trigger.join(', ')}`;
-		description += `\n${this.$i18n.t(locale, 'embed.arguments')}:`;
+		if (this.info.arguments.length > 0) {
+			description += `\n${this.$i18n.t(locale, 'embed.arguments')}:`;
+		}
 		
 		const embed = new MessageEmbed();
 		embed.setColor(this.accessColor);
