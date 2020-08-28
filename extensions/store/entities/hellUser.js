@@ -12,7 +12,7 @@ Object.defineProperty(HellUser.prototype, 'locale', {
         return this._locale.current;
     },
     set: function(value) {
-        if (this.i18n.has(value)) {
+        if (this.i18n.has(value)) { // why does the hellUser should care about i18n locale definitions :thinking:
             this._locale.current = value;
         }
     },

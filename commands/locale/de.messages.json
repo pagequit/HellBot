@@ -1,0 +1,7 @@
+{
+    "description": "Legt die bevorzugte Sprache fest.",
+    "arguments.locale.signature": "?Locale",
+    "arguments.locale.description": "Locale nach ISO 639-1, also bspw: 'de' oder 'en'.",
+    "default": "deine derzeitige locale ist '{0}'.",
+    "undefined": "'{0}', ist mir leider nicht bekannt."
+}
