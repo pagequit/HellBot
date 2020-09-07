@@ -1,5 +1,4 @@
 const Command = require('../../src/command');
-const { MessageEmbed } = require('discord.js');
 
 class Locale extends Command {
     constructor() {

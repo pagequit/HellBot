@@ -32,7 +32,7 @@ class Help extends Command {
 			.find(c => c.name.toLowerCase() === args[0].toLowerCase() || c.trigger.includes(args[0].toLowerCase()))
 		;
 		if (targetCommand) {
-			message.channel.send({ embed: targetCommand.toEmbed() });
+			message.channel.send({ embed: targetCommand.toEmbed(locale) });
 		}
 		else {
 			message.reply(this.$i18n.t(locale, `${this.domain}.undefined`, [args[0]]));
