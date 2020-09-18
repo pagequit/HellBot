@@ -23,7 +23,7 @@ class Weather extends Command {
 		axios.get(url)
 			.then(res => {
 				message.channel.send({
-					embed: this.responseToEmbed(res.data)
+					embed: this.responseToEmbed(res.data),
 				});
 			})
 			.catch(error => {
