@@ -2,6 +2,7 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const CommandRejection = require('./commandRejection');
 const Command = require('./command');
+const Task = require('./task');
 
 function HellBot(config, tokens, root) {
     this.config = config;
@@ -10,10 +11,13 @@ function HellBot(config, tokens, root) {
     this.client = new Discord.Client();
     this.ext = new Object();
     this.commands = new Discord.Collection();
+    this.tasks = new Discord.Collection();
     
     assigneExtensions.call(this, root + config.extensionsDirectory);
     assignCommands.call(this, root + config.commandsDirectory);
+    assignTasks.call(this, root + config.tasksDirectory);
     Command.prototype.$config = this.config;
+    Task.prototype.$config = this.config;
 }
 
 function assigneExtensions(extensionsDirectory) {
@@ -23,7 +27,18 @@ function assigneExtensions(extensionsDirectory) {
         const Extension = require(`${extensionsDirectory}/${name}/${name}.js`);
         const extension = new Extension();
         Command.prototype[`$${name}`] = extension;
+        Task.prototype[`$${name}`] = extension;
         this.ext[name] = extension;
+    }
+}
+
+function assignTasks(tasksDirectory) {
+    const taskNames = fs.readdirSync(tasksDirectory);
+
+    for (const name of taskNames) {
+        const Task = require(`${tasksDirectory}/${name}/${name}.js`);
+        const task = new Task();
+        this.tasks.set(name, task);
     }
 }
 
@@ -124,8 +139,15 @@ function assignCommands(commandsDirectory) {
     }
 }
 
+function runTasks(hellBot) {
+    hellBot.tasks.forEach(t => {
+        t.run(hellBot);
+    });
+}
+
 function ready() {
     mountExtensions(this);
+    runTasks(this);
     console.log(`Logged in as: ${this.client.user.tag}`);
 }
 
