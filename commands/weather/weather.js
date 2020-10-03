@@ -28,7 +28,7 @@ class Weather extends Command {
 			})
 			.catch(error => {
 				console.log(error);
-				message.reply(this.$i18n.t(locale, `${this.domain}.error`));
+				message.channel.send(this.$i18n.t(locale, `${this.domain}.error`));
 			})
 		;
 		
