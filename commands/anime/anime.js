@@ -40,7 +40,7 @@ class Anime extends Command {
         axios.get(`https://myanimelist.net/search/all?q=${args}`)
             .then(this.fetchArticleLink)
             .then(link => {
-                const animeChannel = this.$store.get('guild').channels.cache.find(channel => channel.name === 'anime-und-serien');
+                const animeChannel = this.$store.get('guild').channels.cache.find(c => c.name === 'anime-und-serien');
                 if (animeChannel) {
                     animeChannel.send(link);
                 }
