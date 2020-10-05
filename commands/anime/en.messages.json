@@ -1,0 +1,9 @@
+{
+    "description": "Adds a anime to the anime-und-serien channel.",
+    "arguments.anime.signature": "name",
+    "arguments.anime.description": "Name of the anime.",
+    "error": "Something went wrong.",
+    "noArgs": "I need an anime name in order to post one!",
+    "channelNotFound": "sry, I can't find the {0} channel.",
+    "linkNotFound": "Sry, I don't find any useful link."
+}

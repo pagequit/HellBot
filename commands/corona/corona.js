@@ -35,7 +35,7 @@ class Corona extends Command {
 			const { window } = new jsdom.JSDOM(response.data);
 
 			if (!window) {
-				reject('Sry, that doesn\'t work.');
+				reject(this.$i18n.t(locale, `${this.domain}.error`));
 			}
 
 			const targetRow = window.document.querySelector('tbody').lastChild;
