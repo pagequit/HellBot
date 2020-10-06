@@ -1,6 +1,6 @@
 {
   "description": "Fügt einen Anime dem anime-und-serien Kanal hinzu",
-  "arguments.anime.signature": "name",
+  "arguments.anime.signature": "Name",
   "arguments.anime.description": "Name des Anime.",
   "error": "Etwas ging schief.",
   "noArgs": "ich brauche schon einen Namen um den Link zu posten.",
