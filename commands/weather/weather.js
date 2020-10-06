@@ -2,17 +2,17 @@ const Command = require('../../src/command');
 const axios = require('axios');
 
 class Weather extends Command {
-    constructor() {
-        super();
-        this.trigger.push('weather', 'wetter');
-        this.icon = ':white_sun_rain_cloud:';
-    }
+	constructor() {
+		super();
+		this.trigger.push('weather', 'wetter');
+		this.icon = ':white_sun_rain_cloud:';
+	}
 
-    execute(args, message) {
-        const hellUser = this.$store.get('users')
-            .get(message.author.id);
-        ;
-		let locale = hellUser.locale;
+	execute(args, message) {
+		const hellUser = this.$store.get('users')
+			.get(message.author.id)
+		;
+		const locale = hellUser.locale;
 
 		//http://dev.virtualearth.net/REST/v1/Locations/DE/53129/bonn/null?key=AiPYbe7TS_OnbhgRdvbwolu9CodMVLZ2WE1iJVykzQXZHYbXN_jiY6Xal7IbHaJj
 
@@ -31,9 +31,8 @@ class Weather extends Command {
 				message.channel.send(this.$i18n.t(locale, `${this.domain}.error`));
 			})
 		;
-		
 	}
-	
+
 	responseToEmbed(data) {
 		return {
 			color: 0xf5f5f5,

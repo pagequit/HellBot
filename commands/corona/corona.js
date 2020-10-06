@@ -11,9 +11,9 @@ class Corona extends Command {
 
 	execute(args, message) {
 		const hellUser = this.$store.get('users')
-			.get(message.author.id);
+			.get(message.author.id)
 		;
-		let locale = hellUser.locale;
+		const locale = hellUser.locale;
 
 		axios.get(`https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Fallzahlen.html`)
 			.then(this.fetchData)
@@ -27,7 +27,6 @@ class Corona extends Command {
 				message.channel.send(this.$i18n.t(locale, `${this.domain}.error`));
 			})
 		;
-
 	}
 
 	fetchData(response) {

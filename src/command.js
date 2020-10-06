@@ -35,7 +35,7 @@ class Command {
 		if (this.info.arguments.length > 0) {
 			description += `\n${this.$i18n.t(locale, 'embed.arguments')}:`;
 		}
-		
+
 		const embed = new MessageEmbed();
 		embed.setColor(this.accessColor);
 		embed.setTitle(`${this.icon} ${this.name}`);

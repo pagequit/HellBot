@@ -1,12 +1,12 @@
 {
-	"extensionsDirectory": "/extensions",
-	"commandsDirectory": "/commands",
-	"tasksDirectory": "/tasks",
-	"localeDirectory": "/locale",
-	"localeFallback": "en",
-	"accessRights": [
-		"admin",
-		"moderator",
-		"member"
-	]
+  "extensionsDirectory": "/extensions",
+  "commandsDirectory": "/commands",
+  "tasksDirectory": "/tasks",
+  "localeDirectory": "/locale",
+  "localeFallback": "en",
+  "accessRights": [
+    "admin",
+    "moderator",
+    "member"
+  ]
 }

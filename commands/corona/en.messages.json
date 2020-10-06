@@ -1,7 +1,7 @@
 {
-    "description": "Displayes the relative cases of COVID-19 in Germany.",
-    "error": "Error, I'm unable to fetch data.",
-    "alteration": "Alteration",
-    "sevenDays": "past 7 days",
-    "SDI": "7-Days-Inzi­denz"
+  "description": "Displayes the relative cases of COVID-19 in Germany.",
+  "error": "Error, I'm unable to fetch data.",
+  "alteration": "Alteration",
+  "sevenDays": "past 7 days",
+  "SDI": "7-Days-Inzi­denz"
 }

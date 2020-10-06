@@ -1,7 +1,7 @@
 {
-    "description": "Zeigt die aktuellen Fälle in Deutschland von COVID-19 in relativen Zahlen.",
-    "error": "Error, ich kann keine Daten holen.",
-    "alteration": "Differenz",
-    "sevenDays": "seit 7 Tagen",
-    "SDI": "7-Tage-Inzi­denz"
+  "description": "Zeigt die aktuellen Fälle in Deutschland von COVID-19 in relativen Zahlen.",
+  "error": "Error, ich kann keine Daten holen.",
+  "alteration": "Differenz",
+  "sevenDays": "seit 7 Tagen",
+  "SDI": "7-Tage-Inzi­denz"
 }
