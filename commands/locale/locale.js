@@ -12,7 +12,7 @@ class Locale extends Command {
 		const hellUser = this.$store.get('users')
 			.get(message.author.id)
 		;
-		const locale = hellUser.locale;
+		let locale = hellUser.locale;
 		const targetLocale = args[0];
 
 		if (args.length === 0) {
