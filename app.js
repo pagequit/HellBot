@@ -1,8 +1,7 @@
 #!/usr/bin/node
 
-const HellBot = require('./hellbot');
+const HellBot = require('./src/hellbot');
 const config = require('./config.json');
 const tokens = require('./tokens.json');
 
-const hellBot = new HellBot(config, tokens);
-hellBot.run();
+new HellBot(config, tokens, __dirname).run();

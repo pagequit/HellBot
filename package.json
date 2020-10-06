@@ -1,6 +1,6 @@
 {
   "name": "hellbot",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Made for the HellNet server.",
   "main": "app.js",
   "author": "Schluffe",
@@ -8,8 +8,9 @@
   "dependencies": {
     "axios": "^0.19.0",
     "cron": "^1.8.2",
-    "discord.js": "^11.5.1",
-    "jsdom": "^15.2.0"
+    "discord.js": "^12.2.0",
+    "jsdom": "^16.3.0",
+    "mcping-js": "^1.5.0"
   },
   "devDependencies": {}
 }

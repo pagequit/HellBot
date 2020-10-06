@@ -1,10 +1,12 @@
 {
-	"commandsDirectory": "./commands",
-	"dailiesDirectory": "./dailies",
-	"accessRights": {
-		"0": "admin",
-		"1": "moderator",
-		"2": "member"
-	},
-	"guild": "HellNet"
+  "extensionsDirectory": "/extensions",
+  "commandsDirectory": "/commands",
+  "tasksDirectory": "/tasks",
+  "localeDirectory": "/locale",
+  "localeFallback": "en",
+  "accessRights": [
+    "admin",
+    "moderator",
+    "member"
+  ]
 }
