@@ -85,7 +85,7 @@ function checkPermissions({ command, args, message }) {
 		!command.timestamps.has(commander.id) ||
 		now > command.timestamps.get(commander.id) + command.cooldown
 	) {
-		const hasPermissions = !command.accessLevel || commander.roles.cache.some(role => {
+		const hasPermissions = command.accessLevel ==! null || commander.roles.cache.some(role => {
 			return this.config.accessRights.some((roleName, accessLevel) => {
 				return roleName === role.name && accessLevel <= command.accessLevel;
 			});
@@ -134,7 +134,7 @@ function assignCommands(commandsDirectory) {
 
 	for (const name of commandNames) {
 		const Command = require(`${commandsDirectory}/${name}/${name}.js`);
-		const command = new Command(this.config);
+		const command = new Command();
 		this.commands.set(command.domain, command);
 	}
 }
