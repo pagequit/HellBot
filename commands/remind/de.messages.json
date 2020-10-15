@@ -1,3 +1,4 @@
 {
-  "description": "Erinnert dich an etwas."
+  "description": "Erinnert dich an etwas.",
+  "default": "Hey {0}, denk an {1}!"
 }
