@@ -1,7 +1,7 @@
-const { DiscordAPIError } = require('discord.js');
 const Command = require('../../src/command');
 const { Collection } = require('discord.js');
 const Reminder = require('./entity/reminder');
+const HellBot = require('../../src/hellbot');
 
 class Remind extends Command {
 	constructor() {
@@ -33,8 +33,10 @@ class Remind extends Command {
 			this.reminder.set(hellUser.id, new Reminder({
 				subject: subject,
 				minutes: minutes,
-				hellUser: hellUser,
+				hellUser: hellUser,	
 			}));
+
+			const interval = this.reminder.get(hellUser.id).start(hellBot);
 		}
 
 	}
