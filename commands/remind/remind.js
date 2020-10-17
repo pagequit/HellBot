@@ -8,6 +8,8 @@ class Remind extends Command {
 		super();
 		this.trigger.push('remind', 'alarm', 'timer', 'erinnermich');
 		this.icon = ':alarm_clock:';
+		this.info.arguments.push('time');
+		this.info.arguments.push('subject');
 		this.reminder = new Collection();
 	}
 
