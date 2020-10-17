@@ -1,4 +1,6 @@
 {
   "description": "Erinnert dich an etwas.",
-  "default": "Hey {0}, denk an {1}!"
+  "default": "Hey {0}, denk an {1}!",
+  "noTimeArg": "Du musst mir schon sagen wann ich dich erinnern soll.",
+  "alreadyInUse": "Ich soll dich bereits an {0} erinnern."
 }

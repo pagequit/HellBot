@@ -57,7 +57,7 @@ function handleMessage(message) {
 		parseCommand.call(this, message)
 			.then(checkPermissions.bind(this))
 			.then(({ command, args }) => {
-				command.execute(args, message, this);
+				return command.execute(args, message, this);
 			})
 			.catch(rejection => {
 				if (rejection.handle) {
@@ -95,13 +95,13 @@ function checkPermissions({ command, args, message }) {
 			return Promise.resolve({ command, args, message });
 		}
 		return Promise.reject(new CommandRejection(message, {
-			reason: 'permission',
+			reason: 'commandRejection.permission',
 			args: [this.config.accessRights[command.accessLevel]],
 		}));
 	}
 	else {
 		return Promise.reject(new CommandRejection(message, {
-			reason: 'cooldown',
+			reason: 'commandRejection.cooldown',
 			args: [Math.ceil((command.timestamps.get(commander.id) + command.cooldown - now) / 1000)],
 		}));
 	}
@@ -122,7 +122,7 @@ function parseCommand(message) {
 		}
 		else {
 			reject(new CommandRejection(message, {
-				reason: 'undefined',
+				reason: 'commandRejection.undefined',
 				args: [trigger],
 			}));
 		}

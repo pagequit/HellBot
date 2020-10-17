@@ -1,14 +1,13 @@
 const Command = require('../../src/command');
-const { Collection } = require('discord.js');
+const CommandRejection = require('../../src/commandRejection');
 const Reminder = require('./entity/reminder');
-const HellBot = require('../../src/hellbot');
+const { Collection } = require('discord.js');
 
 class Remind extends Command {
 	constructor() {
 		super();
-		this.trigger.push('remind', 'alarm', 'erinnermich');
-		this.icon = ':alarm:';
-		this.accessLevel = 0;
+		this.trigger.push('remind', 'alarm', 'timer', 'erinnermich');
+		this.icon = ':alarm_clock:';
 		this.reminder = new Collection();
 	}
 
@@ -16,29 +15,48 @@ class Remind extends Command {
 		const hellUser = this.$store.get('users')
 			.get(message.author.id);
 
-		const locale = hellUser.locale;
-
-		if (args.length < 2) {
-			message.reply(`I need a subject and a termin in order to remind you.`);
-			return;
-		}
-
-		const subject = args[0];
-		const minutes = args[1];
-
-		if (this.reminder.some(hellUser.id)) {
-			message.reply(`I should remind you already to ${this.reminder.get(hellUser.id).title}`);
-		}
-		else {
-			this.reminder.set(hellUser.id, new Reminder({
-				subject: subject,
-				minutes: minutes,
-				hellUser: hellUser,	
+		const mIdx = args.slice(0, 2).findIndex(a => !!parseInt(a));
+		if (mIdx === -1) {
+			return Promise.reject(new CommandRejection(message, {
+				reason: `${this.domain}.noTimeArg`,
 			}));
-
-			const interval = this.reminder.get(hellUser.id).start(hellBot);
 		}
 
+		const time = args[mIdx] * 60000;
+		const subject = !mIdx
+			? args[1]
+			: args[0];
+
+		if (this.reminder.has(hellUser.id)) {
+			return Promise.reject(new CommandRejection(message, {
+				reason: `${this.domain}.alreadyInUse`,
+				args: [this.reminder.get(hellUser.id).subject],
+			}));
+		}
+
+		this.reminder.set(hellUser.id, new Reminder({
+			subject: subject,
+			time: time,
+			hellUser: hellUser,
+		}));
+
+		const timeout = this.reminder.get(hellUser.id).start(hellBot, this.reminder);
+
+		message.react('❌');
+
+		const filter = (reaction, user) => {
+			return reaction.emoji.name === '❌' && user.id === message.author.id;
+		};
+
+		message.awaitReactions(filter, { max: 1, time: time })
+			.then(collected => {
+				clearTimeout(timeout);
+				this.reminder.delete(hellUser.id);
+			})
+			.catch(e => console.log(e))
+			.finally(() => {
+				message.reactions.cache.forEach(r => r.remove());
+			});
 	}
 }
 
