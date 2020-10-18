@@ -3,6 +3,7 @@
   "default": "Hey {0}, denk an {1}!",
   "noTimeArg": "Du musst mir schon sagen wann ich dich erinnern soll.",
   "alreadyInUse": "Ich soll dich bereits an {0} erinnern.",
+  "farTooMuchTime": "{0} Minuten?! Benutz deine Kalander-App dafür.",
   "arguments.time.signature": "Minuten",
   "arguments.time.description": "Zeit in Minuten.",
   "arguments.subject.signature": "?Subjekt",
