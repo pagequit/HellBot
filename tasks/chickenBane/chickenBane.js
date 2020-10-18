@@ -12,7 +12,6 @@ class ChickenBane extends Task {
 	}
 
 	task(hellBot) {
-		return; // DELETE ME!!!
 		const KFC = this.$store.get('KFC');
 		const channel = this.$store.get('guild').channels.cache.find(c => c.name === 'minecraft');
 
