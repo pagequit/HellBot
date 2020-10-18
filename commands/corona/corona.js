@@ -23,7 +23,7 @@ class Corona extends Command {
 				});
 			})
 			.catch(error => {
-				console.log(error);
+				console.error(error);
 				message.channel.send(this.$i18n.t(locale, `${this.domain}.error`));
 			})
 		;

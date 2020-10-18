@@ -1,6 +1,6 @@
 const Command = require('../../src/command');
 const CommandRejection = require('../../src/commandRejection');
-const Reminder = require('./entity/reminder');
+const Reminder = require('./entities/reminder');
 const { Collection } = require('discord.js');
 
 class Remind extends Command {
@@ -24,10 +24,18 @@ class Remind extends Command {
 			}));
 		}
 
-		const time = args[mIdx] * 60000;
+		const minutes = parseInt(args[mIdx]);
+		const time = minutes * 60000;
 		const subject = !mIdx
-			? args[1]
+			? args[1] ? args[1] : args[0]
 			: args[0];
+
+		if (minutes > 1440) {
+			return Promise.reject(new CommandRejection(message, {
+				reason: `${this.domain}.farTooMuchTime`,
+				args: [minutes],
+			}));
+		}
 
 		if (this.reminder.has(hellUser.id)) {
 			return Promise.reject(new CommandRejection(message, {
@@ -55,9 +63,13 @@ class Remind extends Command {
 				clearTimeout(timeout);
 				this.reminder.delete(hellUser.id);
 			})
-			.catch(e => console.log(e))
+			.catch(e => console.error(e))
 			.finally(() => {
-				message.reactions.cache.forEach(r => r.remove());
+				// 'message.reactions.removeAll()' won't work on dm channel
+				if (message.channel.type !== 'dm') {
+					message.reactions.removeAll()
+						.catch(e => console.error(e));
+				}
 			});
 	}
 }

@@ -53,7 +53,7 @@ function handleMessage(message) {
 		return;
 	}
 
-	if (message.mentions.has(this.client.user)) {
+	if (message.mentions.has(this.client.user) || message.channel.type === 'dm') {
 		parseCommand.call(this, message)
 			.then(checkPermissions.bind(this))
 			.then(({ command, args }) => {
