@@ -14,11 +14,8 @@ class Weather extends Command {
 		;
 		const locale = hellUser.locale;
 
-		//http://dev.virtualearth.net/REST/v1/Locations/DE/53129/bonn/null?key=AiPYbe7TS_OnbhgRdvbwolu9CodMVLZ2WE1iJVykzQXZHYbXN_jiY6Xal7IbHaJj
-
-		//let location = '50.7359,7.1007';
 		let location = '50.732704162597656,7.096311092376709';
-		const url = `https://api.darksky.net/forecast/${this.$config.tokens.darksky}/${location}?lang=${locale}&units=auto`;
+		const url = `https://api.darksky.net/forecast/${process.env.DARKSKY_KEY}/${location}?lang=${locale}&units=auto`;
 
 		axios.get(url)
 			.then(res => {

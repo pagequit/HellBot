@@ -4,18 +4,16 @@ const CommandRejection = require('./commandRejection');
 const Command = require('./command');
 const Task = require('./task');
 
-function HellBot(config, tokens, root) {
+function HellBot(config) {
 	this.config = config;
-	this.config.tokens = tokens;
-	this.config.root = root;
 	this.client = new Discord.Client();
 	this.ext = new Object();
 	this.commands = new Discord.Collection();
 	this.tasks = new Discord.Collection();
 
-	assigneExtensions.call(this, root + config.extensionsDirectory);
-	assignCommands.call(this, root + config.commandsDirectory);
-	assignTasks.call(this, root + config.tasksDirectory);
+	assigneExtensions.call(this, process.env.APP_ROOT + config.extensionsDirectory);
+	assignCommands.call(this, process.env.APP_ROOT + config.commandsDirectory);
+	assignTasks.call(this, process.env.APP_ROOT + config.tasksDirectory);
 	Command.prototype.$config = this.config;
 	Task.prototype.$config = this.config;
 }
@@ -154,7 +152,7 @@ function ready() {
 HellBot.prototype.run = function () {
 	this.client.once('ready', ready.bind(this));
 	this.client.on('message', handleMessage.bind(this));
-	this.client.login(this.config.tokens.discord);
+	this.client.login(process.env.DISCORD_KEY);
 }
 
 module.exports = HellBot;

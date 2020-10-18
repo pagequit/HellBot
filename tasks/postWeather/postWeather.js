@@ -9,7 +9,7 @@ class PostWeather extends Task {
 
 	task(hellBot) {
 		let location = '50.7359,7.1007'; // Bonn
-		const url = `https://api.darksky.net/forecast/${this.$config.tokens.darksky}/${location}?lang=de&units=auto&exclude=minutely,hourly`;
+		const url = `https://api.darksky.net/forecast/${process.env.DARKSKY_KEY}/${location}?lang=de&units=auto&exclude=minutely,hourly`;
 
 		axios.get(url)
 			.then(({ data }) => {
