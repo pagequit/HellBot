@@ -1,0 +1,5 @@
+{
+  "description": "Wirft eine Münze.",
+  "heads": "Kopf",
+  "tails": "Zahl"
+}
