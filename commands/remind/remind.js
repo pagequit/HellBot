@@ -65,7 +65,6 @@ class Remind extends Command {
 			})
 			.catch(e => console.error(e))
 			.finally(() => {
-				// 'message.reactions.removeAll()' won't work on dm channel
 				if (message.channel.type !== 'dm') {
 					message.reactions.removeAll()
 						.catch(e => console.error(e));

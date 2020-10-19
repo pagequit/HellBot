@@ -8,14 +8,15 @@ class FlipACoin extends Command {
 	}
 
 	execute(args, message) {
-		const locale = this.$store.get('users').get(message.author.id).locale;
+		const locale = this.$store.get('users')
+			.get(message.author.id).locale;
+
 		const result = {
 			0: 'heads',
 			1: 'tails',
 		}[Math.floor(Math.random() * 2)];
 
-		const reply = this.$i18n.t(locale, `${this.domain}.${result}`);
-		message.reply(reply);
+		message.reply(this.$i18n.t(locale, `${this.domain}.${result}`));
 	}
 }
 

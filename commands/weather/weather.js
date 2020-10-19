@@ -10,8 +10,8 @@ class Weather extends Command {
 
 	execute(args, message) {
 		const hellUser = this.$store.get('users')
-			.get(message.author.id)
-		;
+			.get(message.author.id);
+
 		const locale = hellUser.locale;
 
 		let location = '50.732704162597656,7.096311092376709';

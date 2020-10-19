@@ -14,8 +14,8 @@ class Anime extends Command {
 	fetchArticleLink(response) {
 		return new Promise((resolve, reject) => {
 			const link = new jsdom.JSDOM(response.data)
-				.window.document.querySelector('article').querySelector('a.hoverinfo_trigger').href
-				;
+				.window.document.querySelector('article')
+				.querySelector('a.hoverinfo_trigger').href;
 
 			if (link) {
 				resolve(link);
@@ -28,8 +28,8 @@ class Anime extends Command {
 
 	execute(args, message) {
 		const hellUser = this.$store.get('users')
-			.get(message.author.id)
-		;
+			.get(message.author.id);
+
 		const locale = hellUser.locale;
 
 		if (args.length < 1) {
@@ -40,7 +40,9 @@ class Anime extends Command {
 		axios.get(`https://myanimelist.net/search/all?q=${args}`)
 			.then(this.fetchArticleLink)
 			.then(link => {
-				const animeChannel = this.$store.get('guild').channels.cache.find(c => c.name === 'anime-und-serien');
+				const animeChannel = this.$store.get('guild')
+					.channels.cache.find(c => c.name === 'anime-und-serien');
+
 				if (animeChannel) {
 					animeChannel.send(link);
 				}
@@ -51,8 +53,7 @@ class Anime extends Command {
 			.catch(error => {
 				console.error(error);
 				message.channel.send(this.$i18n.t(locale, `${this.domain}.error`));
-			})
-		;
+			});
 	}
 }
 

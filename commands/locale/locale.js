@@ -10,8 +10,8 @@ class Locale extends Command {
 
 	execute(args, message) {
 		const hellUser = this.$store.get('users')
-			.get(message.author.id)
-		;
+			.get(message.author.id);
+
 		let locale = hellUser.locale;
 		const targetLocale = args[0];
 

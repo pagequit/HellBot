@@ -11,8 +11,7 @@ class Help extends Command {
 
 	execute(args, message, { commands }) {
 		const locale = this.$store.get('users')
-			.get(message.author.id).locale
-		;
+			.get(message.author.id).locale;
 
 		if (args.length === 0) {
 			const embed = new MessageEmbed();
@@ -29,10 +28,11 @@ class Help extends Command {
 		}
 
 		const targetCommand = commands
-			.find(c => c.name.toLowerCase() === args[0].toLowerCase() || c.trigger.includes(args[0].toLowerCase()))
-		;
+			.find(c => c.name.toLowerCase() === args[0].toLowerCase() ||
+			c.trigger.includes(args[0].toLowerCase()));
+
 		if (targetCommand) {
-			message.channel.send({ embed: targetCommand.toEmbed(locale) });
+			message.reply({ embed: targetCommand.toEmbed(locale) });
 		}
 		else {
 			message.reply(this.$i18n.t(locale, `${this.domain}.undefined`, [args[0]]));
