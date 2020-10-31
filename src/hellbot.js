@@ -83,7 +83,7 @@ function checkPermissions({ command, args, message }) {
 		!command.timestamps.has(commander.id) ||
 		now > command.timestamps.get(commander.id) + command.cooldown
 	) {
-		const hasPermissions = command.accessLevel ==! null || commander.roles.cache.some(role => {
+		const hasPermissions = command.accessLevel === null || commander.roles.cache.some(role => {
 			return this.config.accessRights.some((roleName, accessLevel) => {
 				return roleName === role.name && accessLevel <= command.accessLevel;
 			});
@@ -138,9 +138,11 @@ function assignCommands(commandsDirectory) {
 }
 
 function runTasks(hellBot) {
-	hellBot.tasks.forEach(t => {
-		t.run(hellBot);
-	});
+	if (process.env.APP_CONTEXT === 'prod') {
+		hellBot.tasks.forEach(t => {
+			t.run(hellBot);
+		});
+	}
 }
 
 function ready() {

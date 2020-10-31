@@ -3,7 +3,7 @@ const Task = require('../../src/task');
 class PostCorona extends Task {
 	constructor() {
 		super();
-		this.cronTime = '00 00 06 * * *';
+		this.cronTime = '00 00 09 * * *';
 	}
 
 	task(hellBot) {
