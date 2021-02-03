@@ -1,0 +1,20 @@
+datasource db {
+  url      = env("DATABASE_URL")
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Member {
+  id        String  @id
+  name      String
+  locale    String
+}
+
+model Spoiler {
+  id        String  @id
+  mId       String
+  content   String
+}
