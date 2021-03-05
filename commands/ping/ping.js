@@ -8,10 +8,10 @@ class Ping extends Command {
 	}
 
 	execute(args, message) {
-		const locale = this.$store.get('users')
-			.get(message.author.id).locale;
-
-		message.reply(this.$i18n.t(locale, `${this.domain}.pong`));
+		super.execute(args, message).then(() => {
+			const locale = this.commander.locale;
+			message.reply(this.$i18n.t(locale, `${this.domain}.pong`));
+		});
 	}
 }
 

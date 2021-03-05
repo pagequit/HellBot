@@ -1,20 +1,14 @@
-datasource db {
-  url      = env("DATABASE_URL")
-  provider = "sqlite"
-}
-
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native"]
 }
 
-model Member {
-  id        String  @id
-  name      String
-  locale    String
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
-model Spoiler {
-  id        String  @id
-  mId       String
-  content   String
+model User {
+  id     Int @id
+  locale String
 }

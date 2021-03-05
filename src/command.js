@@ -12,7 +12,8 @@ class Command {
 		this.info = {
 			arguments: [],
 			description: `${this.domain}.description`,
-		}
+		};
+		this.commander = null;
 	}
 
 	get accessRole() {
@@ -25,8 +26,40 @@ class Command {
 		return this.accessRole ? parseInt(`0x${this.accessRole.hexColor.slice(1)}`) : 0xf5f5f5;
 	}
 
-	execute(args, message) {
-		throw new Error('Try to call execute from abstract Command!');
+	async execute(args, message) {
+		this.commander = await this.$prisma.user.findUnique({
+			where: {
+				id: parseInt(message.author.id),
+			},
+		});
+
+		if (!this.commander) {
+			this.commander = await this.$prisma.user.create({
+				data: {
+					id: parseInt(message.author.id),
+					locale: this.$i18n.fallback,
+				},
+			});
+		}
+
+		// this.$prisma.user.findUnique({
+		// 	where: {
+		// 		id: message.author.id,
+		// 	},
+		// }).then(user => {
+		// 	this.commander = user;
+		// });
+
+		// if (!this.commander) {
+		// 	this.$prisma.user.create({
+		// 		data: {
+		// 			id: message.author.id,
+		// 			locale: this.$i18n.fallback,
+		// 		},
+		// 	}).then(user => {
+		// 		this.commander = user;
+		// 	});
+		// }
 	}
 
 	toEmbed(locale) {
