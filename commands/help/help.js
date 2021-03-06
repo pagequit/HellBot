@@ -10,8 +10,8 @@ class Help extends Command {
 	}
 
 	async execute(args, message, { commands }) {
-		const locale = this.$store.get('users')
-			.get(message.author.id).locale;
+		const prismaUser = await this.$prisma.getPrismaUserById(message.author.id);
+		const locale = prismaUser.locale;
 
 		if (args.length === 0) {
 			const embed = new MessageEmbed();

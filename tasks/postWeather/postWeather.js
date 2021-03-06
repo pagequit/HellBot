@@ -13,7 +13,7 @@ class PostWeather extends Task {
 
 		axios.get(url)
 			.then(({ data }) => {
-				this.$store.get('guild').systemChannel.send({
+				this.$guild.systemChannel.send({
 					embed: {
 						color: 0xf5f5f5,
 						title: 'Powered by Dark Sky',

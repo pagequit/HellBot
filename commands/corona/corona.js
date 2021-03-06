@@ -10,7 +10,7 @@ class Corona extends Command {
 	}
 
 	async execute(args, message) {
-		const prismaUser = await this.getPrismaUserByMessage(message);
+		const prismaUser = await this.$prisma.getPrismaUserById(message.author.id);
 		const locale = prismaUser.locale;
 
 		axios.get(`https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Fallzahlen.html`)

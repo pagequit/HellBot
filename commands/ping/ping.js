@@ -8,7 +8,9 @@ class Ping extends Command {
 	}
 
 	async execute(args, message) {
-		const locale = await this.getPrismaUserByMessage(message).locale;
+		const prismaUser = await this.$prisma.getPrismaUserById(message.author.id);
+		const locale = prismaUser.locale;
+		
 		message.reply(this.$i18n.t(locale, `${this.domain}.pong`));
 	}
 }

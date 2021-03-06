@@ -9,7 +9,7 @@ class PostCorona extends Task {
 	task(hellBot) {
 		const command = hellBot.commands.find(c => c.trigger.includes('corona'));
 		command.execute(null, {
-			channel: this.$store.get('guild').systemChannel,
+			channel: this.$guild.systemChannel,
 			author: {
 				id: hellBot.client.user.id,
 			}

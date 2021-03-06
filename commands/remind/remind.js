@@ -14,8 +14,8 @@ class Remind extends Command {
 	}
 
 	async execute(args, message, hellBot) {
-		const hellUser = this.$store.get('users')
-			.get(message.author.id);
+		const prismaUser = await this.$prisma.getPrismaUserById(message.author.id);
+		const locale = prismaUser.locale;
 
 		const mIdx = args.slice(0, 2).findIndex(a => !!parseInt(a));
 		if (mIdx === -1) {
@@ -37,20 +37,24 @@ class Remind extends Command {
 			}));
 		}
 
-		if (this.reminder.has(hellUser.id)) {
+		if (this.reminder.has(prismaUser.id)) {
 			return Promise.reject(new CommandRejection(message, {
 				reason: `${this.domain}.alreadyInUse`,
-				args: [this.reminder.get(hellUser.id).subject],
+				args: [this.reminder.get(prismaUser.id).subject],
 			}));
 		}
 
-		this.reminder.set(hellUser.id, new Reminder({
+		const guildMember = this.$guild.members.cache
+			.find(m => m.user.id === message.author.id);
+
+		this.reminder.set(prismaUser.id, new Reminder({
 			subject: subject,
 			time: time,
-			hellUser: hellUser,
+			guildMember: guildMember,
+			locale: locale,
 		}));
 
-		const timeout = this.reminder.get(hellUser.id).start(hellBot, this.reminder);
+		const timeout = this.reminder.get(prismaUser.id).start(hellBot, this.reminder);
 
 		message.react('❌');
 
@@ -61,7 +65,7 @@ class Remind extends Command {
 		message.awaitReactions(filter, { max: 1, time: time })
 			.then(collected => {
 				clearTimeout(timeout);
-				this.reminder.delete(hellUser.id);
+				this.reminder.delete(prismaUser.id);
 			})
 			.catch(e => console.error(e))
 			.finally(() => {

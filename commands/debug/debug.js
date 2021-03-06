@@ -10,11 +10,11 @@ class Debug extends Command {
 
 	async execute(args, message, hellBot) {
 		return; // don't know when to continue here :/
-		const prismaUser = await this.getPrismaUserByMessage(message);
+		const prismaUser = await this.$prisma.getPrismaUserById(message.author.id);
 		const locale = prismaUser.locale;
 
-		const channel = this.$store.get('guild')
-			.channels.cache.find(c => c.name === 'debug');
+		const channel = hellBot.guild.channels.cache
+			.find(c => c.name === 'debug');
 
 		const commandChunks = args.shift().split(/:/);
 		const command = commandChunks[0];

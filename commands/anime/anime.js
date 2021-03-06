@@ -11,7 +11,7 @@ class Anime extends Command {
 		this.channelName = 'anime-und-serien';
 	}
 
-	fetchArticleLink(response) {
+	fetchArticleLink(response, locale) {
 		return new Promise((resolve, reject) => {
 			const link = new jsdom.JSDOM(response.data)
 				.window.document.querySelector('article')
@@ -26,8 +26,8 @@ class Anime extends Command {
 		});
 	}
 
-	async execute(args, message) {
-		const prismaUser = await this.getPrismaUserByMessage(message);
+	async execute(args, message, { guild }) {
+		const prismaUser = await this.$prisma.getPrismaUserById(message.author.id);
 		const locale = prismaUser.locale;
 
 		if (args.length < 1) {
@@ -36,10 +36,12 @@ class Anime extends Command {
 		}
 
 		axios.get(`https://myanimelist.net/search/all?q=${args}`)
-			.then(this.fetchArticleLink)
+			.then(response => {
+				this.fetchArticleLink(response, locale);
+			})
 			.then(link => {
-				const animeChannel = this.$store.get('guild')
-					.channels.cache.find(c => c.name === 'anime-und-serien');
+				const animeChannel = guild.channels.cache
+					.find(c => c.name === 'anime-und-serien');
 
 				if (animeChannel) {
 					animeChannel.send(link);

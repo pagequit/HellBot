@@ -17,36 +17,15 @@ class Command {
 	}
 
 	get accessRole() {
-		return this.$store.get('guild').roles.cache.
-			find(r => r.name === this.$config.accessRights[this.accessLevel])
-		;
+		return this.$guild.roles.cache
+			.find(r => r.name === this.$config.accessRights[this.accessLevel]);
 	}
 
 	get accessColor() {
 		return this.accessRole ? parseInt(`0x${this.accessRole.hexColor.slice(1)}`) : 0xf5f5f5;
 	}
 
-	async getPrismaUserByMessage(message) {
-		const commander = await this.$prisma.user.findUnique({
-			where: {
-				id: parseInt(message.author.id),
-			},
-		});
-
-		if (commander) {
-			return commander;
-		}
-		else {
-			return await this.$prisma.user.create({
-				data: {
-					id: parseInt(message.author.id),
-					locale: this.$i18n.fallback,
-				},
-			});
-		}
-	}
-
-	async execute(args, message) {
+	async execute(args, message, hellBot) {
 		throw new Error('Try to call execute from parent command!');
 	}
 

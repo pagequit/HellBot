@@ -1,19 +1,17 @@
-function Reminder(data) {
-	this.time = data.time;
-	this.subject = data.subject;
-	this.hellUser = data.hellUser;
+function Reminder({ time, subject, guildMember, locale }) {
+	this.time = time;
+	this.subject = subject;
+	this.guildMember = guildMember;
+	this.locale = locale;
 }
 
 Reminder.prototype = {
 	start({ ext }, reminder) {
 		return setTimeout(ext => {
-			const user = ext.store.get('guild').members.cache
-				.find(m => m.id === this.hellUser.id).user;
-
-			user.send(
-				ext.i18n.t(this.hellUser.locale, 'remind.default', [user.username, this.subject])
+			this.guildMember.send(
+				ext.i18n.t(this.locale, 'remind.default', [this.guildMember.displayName, this.subject])
 			);
-			reminder.delete(this.hellUser.id);
+			reminder.delete(this.guildMember.id);
 		}, this.time, ext, reminder);
 	},
 }

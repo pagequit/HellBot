@@ -9,7 +9,7 @@ class Weather extends Command {
 	}
 
 	async execute(args, message) {
-		const prismaUser = await this.getPrismaUserByMessage(message);
+		const prismaUser = await this.$prisma.getPrismaUserById(message.author.id);
 		const locale = prismaUser.locale;
 
 		let location = '50.732704162597656,7.096311092376709';

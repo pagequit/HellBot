@@ -14,6 +14,7 @@ function HellBot(config) {
 	assigneExtensions.call(this, process.env.APP_ROOT + config.extensionsDirectory);
 	assignCommands.call(this, process.env.APP_ROOT + config.commandsDirectory);
 	assignTasks.call(this, process.env.APP_ROOT + config.tasksDirectory);
+
 	Command.prototype.$config = this.config;
 	Task.prototype.$config = this.config;
 }
@@ -53,6 +54,7 @@ function handleMessage(message) {
 
 	if (message.mentions.has(this.client.user) || message.channel.type === 'dm') {
 		parseCommand.call(this, message)
+			.then(fetchGuildMember.bind(this))
 			.then(checkPermissions.bind(this))
 			.then(({ command, args }) => {
 				return command.execute(args, message, this);
@@ -69,27 +71,30 @@ function handleMessage(message) {
 	}
 }
 
-function checkPermissions({ command, args, message }) {
-	const commander = this.client.guilds.cache.first().members.cache
-		.find(m => m.user.id === message.author.id)
-	;
+async function fetchGuildMember({ command, args, message }) {
+	const guildMember = await this.ext.guild.members
+		.fetch({ user: message.author });
 
-	if (commander.hasPermission('ADMINISTRATOR')) {
+	return ({ command, args, message, guildMember });
+}
+
+function checkPermissions({ command, args, message, guildMember }) {
+	if (guildMember.hasPermission('ADMINISTRATOR')) {
 		return Promise.resolve({ command, args, message });
 	}
 
 	const now = Date.now();
 	if (
-		!command.timestamps.has(commander.id) ||
-		now > command.timestamps.get(commander.id) + command.cooldown
+		!command.timestamps.has(guildMember.id) ||
+		now > command.timestamps.get(guildMember.id) + command.cooldown
 	) {
-		const hasPermissions = command.accessLevel === null || commander.roles.cache.some(role => {
+		const hasPermissions = command.accessLevel === null || guildMember.roles.cache.some(role => {
 			return this.config.accessRights.some((roleName, accessLevel) => {
 				return roleName === role.name && accessLevel <= command.accessLevel;
 			});
 		});
 		if (hasPermissions) {
-			command.timestamps.set(commander.id, now);
+			command.timestamps.set(guildMember.id, now);
 			return Promise.resolve({ command, args, message });
 		}
 		return Promise.reject(new CommandRejection(message, {
@@ -100,7 +105,7 @@ function checkPermissions({ command, args, message }) {
 	else {
 		return Promise.reject(new CommandRejection(message, {
 			reason: 'commandRejection.cooldown',
-			args: [Math.ceil((command.timestamps.get(commander.id) + command.cooldown - now) / 1000)],
+			args: [Math.ceil((command.timestamps.get(guildMember.id) + command.cooldown - now) / 1000)],
 		}));
 	}
 }
@@ -116,7 +121,7 @@ function parseCommand(message) {
 
 	return new Promise((resolve, reject) => {
 		if (command) {
-			resolve({ command, args, message })
+			resolve({ command, args, message });
 		}
 		else {
 			reject(new CommandRejection(message, {
@@ -148,6 +153,7 @@ function runTasks(hellBot) {
 function ready() {
 	mountExtensions(this);
 	runTasks(this);
+
 	console.log(`Logged in as: ${this.client.user.tag}`);
 }
 

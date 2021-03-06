@@ -5,8 +5,8 @@ function CommandRejection(message, { reason, args }) {
 }
 
 CommandRejection.prototype.handle = function (hellBot) {
-	const locale = hellBot.ext.store.get('users')
-		.get(this.message.author.id).locale;
+	const locale = hellBot.ext.prisma
+		.getPrismaUserById(this.message.author.id).locale;
 
 	this.message.reply(hellBot.ext.i18n.t(locale, this.reason, this.args));
 }

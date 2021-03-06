@@ -8,8 +8,8 @@ class FlipACoin extends Command {
 	}
 
 	async execute(args, message) {
-		const locale = this.$store.get('users')
-			.get(message.author.id).locale;
+		const prismaUser = await this.$prisma.getPrismaUserById(message.author.id);
+		const locale = prismaUser.locale;
 
 		const result = {
 			0: 'heads',

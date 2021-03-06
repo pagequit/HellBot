@@ -9,7 +9,7 @@ class Locale extends Command {
 	}
 
 	async execute(args, message) {
-		let prismaUser = await this.getPrismaUserByMessage(message);
+		let prismaUser = await this.$prisma.getPrismaUserById(message.author.id);
 		let locale = prismaUser.locale;
 
 		if (args.length === 0) {
