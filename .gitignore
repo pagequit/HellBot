@@ -2,5 +2,5 @@
 .vscode
 yarn.lock
 tokens.json
-node_modules/
-database/
+node_modules
+database
