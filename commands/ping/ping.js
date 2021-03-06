@@ -7,11 +7,9 @@ class Ping extends Command {
 		this.icon = ':ping_pong:';
 	}
 
-	execute(args, message) {
-		super.execute(args, message).then(() => {
-			const locale = this.commander.locale;
-			message.reply(this.$i18n.t(locale, `${this.domain}.pong`));
-		});
+	async execute(args, message) {
+		const locale = await this.getCommander(message).locale;
+		message.reply(this.$i18n.t(locale, `${this.domain}.pong`));
 	}
 }
 
