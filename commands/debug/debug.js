@@ -8,11 +8,10 @@ class Debug extends Command {
 		this.accessLevel = 0;
 	}
 
-	execute(args, message, hellBot) {
-		const hellUser = this.$store.get('users')
-			.get(message.author.id);
-
-		const locale = hellUser.locale;
+	async execute(args, message, hellBot) {
+		return; // don't know when to continue here :/
+		const prismaUser = await this.getPrismaUserByMessage(message);
+		const locale = prismaUser.locale;
 
 		const channel = this.$store.get('guild')
 			.channels.cache.find(c => c.name === 'debug');

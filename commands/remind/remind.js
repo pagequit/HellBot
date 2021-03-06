@@ -13,7 +13,7 @@ class Remind extends Command {
 		this.reminder = new Collection();
 	}
 
-	execute(args, message, hellBot) {
+	async execute(args, message, hellBot) {
 		const hellUser = this.$store.get('users')
 			.get(message.author.id);
 

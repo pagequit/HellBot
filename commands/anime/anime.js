@@ -26,11 +26,9 @@ class Anime extends Command {
 		});
 	}
 
-	execute(args, message) {
-		const hellUser = this.$store.get('users')
-			.get(message.author.id);
-
-		const locale = hellUser.locale;
+	async execute(args, message) {
+		const prismaUser = await this.getPrismaUserByMessage(message);
+		const locale = prismaUser.locale;
 
 		if (args.length < 1) {
 			message.reply(this.$i18n.t(locale, `${this.domain}.noArgs`));

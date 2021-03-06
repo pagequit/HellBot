@@ -7,7 +7,7 @@ class FlipACoin extends Command {
 		this.icon = ':coin:';
 	}
 
-	execute(args, message) {
+	async execute(args, message) {
 		const locale = this.$store.get('users')
 			.get(message.author.id).locale;
 

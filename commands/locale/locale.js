@@ -8,21 +8,23 @@ class Locale extends Command {
 		this.info.arguments.push('locale');
 	}
 
-	execute(args, message) {
-		const hellUser = this.$store.get('users')
-			.get(message.author.id);
-
-		let locale = hellUser.locale;
-		const targetLocale = args[0];
+	async execute(args, message) {
+		let prismaUser = await this.getPrismaUserByMessage(message);
+		let locale = prismaUser.locale;
 
 		if (args.length === 0) {
 			message.reply(this.$i18n.t(locale, `${this.domain}.default`, [locale]));
 			return;
 		}
 
+		const targetLocale = args[0];
 		if (this.$i18n.has(targetLocale)) {
-			hellUser.locale = targetLocale
-			locale = hellUser.locale;
+			prismaUser = await this.$prisma.user.update({
+				where: { id: prismaUser.id },
+				data: { locale: targetLocale },
+			});
+			locale = prismaUser.locale;
+
 			message.reply(this.$i18n.t(locale, `${this.domain}.default`, [locale]));
 		}
 		else {
