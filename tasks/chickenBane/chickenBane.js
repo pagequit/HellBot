@@ -13,7 +13,7 @@ class ChickenBane extends Task {
 
 	task(hellBot) {
 		const KFC = this.$store.get('KFC');
-		const channel = this.$store.get('guild').channels.cache.find(c => c.name === 'minecraft');
+		const channel = this.$guild.channels.cache.find(c => c.name === 'minecraft');
 
 		this.server.ping(1024, 751, (err, res) => {
 			if (err && KFC.state === 'online') {
