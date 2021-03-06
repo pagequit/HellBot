@@ -8,11 +8,9 @@ class Weather extends Command {
 		this.icon = ':white_sun_rain_cloud:';
 	}
 
-	execute(args, message) {
-		const hellUser = this.$store.get('users')
-			.get(message.author.id);
-
-		const locale = hellUser.locale;
+	async execute(args, message) {
+		const prismaUser = await this.getPrismaUserByMessage(message);
+		const locale = prismaUser.locale;
 
 		let location = '50.732704162597656,7.096311092376709';
 		const url = `https://api.darksky.net/forecast/${process.env.DARKSKY_KEY}/${location}?lang=${locale}&units=auto`;

@@ -6,6 +6,7 @@
   "author": "Schluffe",
   "license": "MIT",
   "dependencies": {
+    "@prisma/client": "^2.13.1",
     "axios": "^0.21.1",
     "cron": "^1.8.2",
     "discord.js": "^12.2.0",
@@ -13,5 +14,7 @@
     "jsdom": "^16.3.0",
     "mcping-js": "^1.5.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@prisma/cli": "^2.13.1"
+  }
 }

@@ -9,11 +9,9 @@ class Corona extends Command {
 		this.icon = ':microbe:';
 	}
 
-	execute(args, message) {
-		const hellUser = this.$store.get('users')
-			.get(message.author.id);
-
-		const locale = hellUser.locale;
+	async execute(args, message) {
+		const prismaUser = await this.getPrismaUserByMessage(message);
+		const locale = prismaUser.locale;
 
 		axios.get(`https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Fallzahlen.html`)
 			.then(this.fetchData)

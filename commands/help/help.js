@@ -9,7 +9,7 @@ class Help extends Command {
 		this.info.arguments.push('command');
 	}
 
-	execute(args, message, { commands }) {
+	async execute(args, message, { commands }) {
 		const locale = this.$store.get('users')
 			.get(message.author.id).locale;
 
