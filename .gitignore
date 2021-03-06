@@ -1,5 +1,6 @@
 .env
 .vscode
+yarn.lock
 tokens.json
 node_modules
 database
