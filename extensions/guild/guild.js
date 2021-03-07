@@ -2,7 +2,7 @@ class Guild {
 	mount({ client }) {
 		Object.assign(
 			this,
-			client.guilds.cache.first() 
+			client.guilds.cache.first()
 		);
 	}
 }

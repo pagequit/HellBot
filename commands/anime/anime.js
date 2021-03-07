@@ -26,7 +26,7 @@ class Anime extends Command {
 		});
 	}
 
-	async execute(args, message, { guild }) {
+	async execute(args, message) {
 		const prismaUser = await this.$prisma.getPrismaUserById(message.author.id);
 		const locale = prismaUser.locale;
 
@@ -37,10 +37,10 @@ class Anime extends Command {
 
 		axios.get(`https://myanimelist.net/search/all?q=${args}`)
 			.then(response => {
-				this.fetchArticleLink(response, locale);
+				return this.fetchArticleLink(response, locale);
 			})
 			.then(link => {
-				const animeChannel = guild.channels.cache
+				const animeChannel = this.$guild.channels.cache
 					.find(c => c.name === 'anime-und-serien');
 
 				if (animeChannel) {

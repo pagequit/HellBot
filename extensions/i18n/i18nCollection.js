@@ -10,14 +10,12 @@ class I18nCollection extends Collection {
 	t(locale, key, args = []) {
 		const messages = this.has(locale)
 			? this.get(locale)
-			: this.get(this.fallback)
-		;
+			: this.get(this.fallback);
 
 		let message = messages[key]
 			|| this.get(this.fallback)[key]
 			|| this.find(l => !!l[key])
-			|| `${key}`
-		;
+			|| `${key}`;
 
 		args.forEach((arg, idx) => {
 			message = message.replace(`{${idx}}`, arg);
@@ -28,8 +26,7 @@ class I18nCollection extends Collection {
 
 	assignMessagesFiles(folder, domain) {
 		const messagesFiles = fs.readdirSync(folder)
-			.filter(f => f.endsWith('.messages.json'))
-		;
+			.filter(f => f.endsWith('.messages.json'));
 
 		for (const fileName of messagesFiles) {
 			const messages = require(`${folder}/${fileName}`);
