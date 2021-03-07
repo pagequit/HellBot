@@ -1,0 +1,7 @@
+{
+  "description": "Creates a temporary voice chat channel.",
+  "default": "{0} created.",
+  "alreadyInUse": "You own already: {0}.",
+  "arguments.kill.signature": "kill",
+  "arguments.kill.description": "Kills the current session."
+}

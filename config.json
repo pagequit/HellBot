@@ -1,5 +1,6 @@
 {
   "extensionsDirectory": "/extensions",
+  "servicesDirectory": "/services",
   "commandsDirectory": "/commands",
   "tasksDirectory": "/tasks",
   "localeDirectory": "/locale",

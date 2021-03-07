@@ -2,20 +2,24 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const CommandRejection = require('./commandRejection');
 const Command = require('./command');
+const Service = require('./service');
 const Task = require('./task');
 
 function HellBot(config) {
 	this.config = config;
 	this.client = new Discord.Client();
 	this.ext = new Object();
+	this.services = new Discord.Collection();
 	this.commands = new Discord.Collection();
 	this.tasks = new Discord.Collection();
 
 	assigneExtensions.call(this, process.env.APP_ROOT + config.extensionsDirectory);
+	assigneServices.call(this, process.env.APP_ROOT + config.servicesDirectory);
 	assignCommands.call(this, process.env.APP_ROOT + config.commandsDirectory);
 	assignTasks.call(this, process.env.APP_ROOT + config.tasksDirectory);
 
 	Command.prototype.$config = this.config;
+	Service.prototype.$config = this.config;
 	Task.prototype.$config = this.config;
 }
 
@@ -26,8 +30,19 @@ function assigneExtensions(extensionsDirectory) {
 		const Extension = require(`${extensionsDirectory}/${name}/${name}.js`);
 		const extension = new Extension();
 		Command.prototype[`$${name}`] = extension;
+		Service.prototype[`$${name}`] = extension;
 		Task.prototype[`$${name}`] = extension;
 		this.ext[name] = extension;
+	}
+}
+
+function assigneServices(servicesDirectory) {
+	const serviceNames = fs.readdirSync(servicesDirectory);
+
+	for (const name of serviceNames) {
+		const Service = require(`${servicesDirectory}/${name}/${name}.js`);
+		const service = new Service(this.client);
+		this.services.set(name, service);
 	}
 }
 
