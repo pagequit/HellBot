@@ -44,7 +44,7 @@ class Remind extends Command {
 			}));
 		}
 
-		const guildMember = this.$guild.members.cache
+		const guildMember = this.$config.guild.members.cache
 			.find(m => m.user.id === message.author.id);
 
 		this.reminder.set(prismaUser.id, new Reminder({

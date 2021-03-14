@@ -17,7 +17,7 @@ class Command {
 	}
 
 	get accessRole() {
-		return this.$guild.roles.cache
+		return this.$config.guild.roles.cache
 			.find(r => r.name === this.$config.accessRights[this.accessLevel]);
 	}
 

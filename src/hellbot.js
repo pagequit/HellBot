@@ -151,6 +151,8 @@ function runTasks(hellBot) {
 }
 
 function ready() {
+	this.config.guild = this.client.guilds.cache.first();
+
 	mountExtensions(this);
 	runTasks(this);
 

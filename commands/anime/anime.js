@@ -40,7 +40,7 @@ class Anime extends Command {
 				return this.fetchArticleLink(response, locale);
 			})
 			.then(link => {
-				const animeChannel = this.$guild.channels.cache
+				const animeChannel = this.$config.guild.channels.cache
 					.find(c => c.name === 'anime-und-serien');
 
 				if (animeChannel) {
