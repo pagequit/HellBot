@@ -72,7 +72,7 @@ function handleMessage(message) {
 }
 
 async function fetchGuildMember({ command, args, message }) {
-	const guildMember = await this.ext.guild.members
+	const guildMember = await this.config.guild.members
 		.fetch({ user: message.author });
 
 	return ({ command, args, message, guildMember });
