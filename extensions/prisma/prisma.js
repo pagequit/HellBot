@@ -16,10 +16,7 @@ class Prisma extends PrismaClient {
 			return prismaUser;
 		}
 
-		const guildMember = this.hellBot.client.guilds.cache.first()
-			.members.cache.find(m => m.user.id === id);
-
-		const locale = guildMember.user.locale || this.hellBot.config.localeFallback;
+		const locale = this.hellBot.config.localeFallback;
 		
 		return await this.user.create({
 			data: {
