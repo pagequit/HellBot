@@ -1,0 +1,7 @@
+{
+  "description": "Rolls a die.",
+  "arguments.die.signature": "?Die|Formula",
+  "arguments.die.description": "The amount of sideds of the die or a cumulative formula.",
+  "invalidArg": "{0}",
+  "invalidFormular": "invalid formular: {0}"
+}
