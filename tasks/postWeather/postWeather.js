@@ -10,10 +10,12 @@ class PostWeather extends Task {
 	task(hellBot) {
 		let location = '50.7359,7.1007'; // Bonn
 		const url = `https://api.darksky.net/forecast/${process.env.DARKSKY_KEY}/${location}?lang=de&units=auto&exclude=minutely,hourly`;
+		const channel = this.$config.guild.channels.cache
+			.find(c => c.name === 'hell-news');
 
 		axios.get(url)
 			.then(({ data }) => {
-				this.$config.guild.systemChannel.send({
+				channel.send({
 					embed: {
 						color: 0xf5f5f5,
 						title: 'Powered by Dark Sky',
@@ -43,8 +45,7 @@ class PostWeather extends Task {
 			})
 			.catch(error => {
 				console.error(error);
-			})
-		;
+			});
 	}
 }
 
