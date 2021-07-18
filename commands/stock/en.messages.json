@@ -1,0 +1,4 @@
+{
+  "description": "Shows an overview German stock indices.",
+  "error": "Error, I'm unable to fetch data."
+}
