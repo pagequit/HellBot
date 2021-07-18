@@ -3,8 +3,7 @@ const Task = require('../../src/task');
 class PostStock extends Task {
 	constructor() {
 		super();
-		this.cronTime = '*/1 * * * *';
-		// this.cronTime = '00 00 09 * * *';
+		this.cronTime = '00 00 09 * * *';
 	}
 
 	task(hellBot) {
