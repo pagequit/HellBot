@@ -5,4 +5,7 @@ process.env.APP_ROOT = __dirname;
 const HellBot = require('./src/hellbot');
 const config = require('./config.json');
 
-new HellBot(config).run();
+const hellBot = new HellBot(config);
+hellBot.run();
+
+require('./api/http');

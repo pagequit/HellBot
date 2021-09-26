@@ -1,5 +1,4 @@
 .env
 .vscode
-yarn.lock
 node_modules
 database
