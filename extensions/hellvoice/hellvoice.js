@@ -5,8 +5,6 @@ class HellVoice extends Extension {
 	mount(hellBot) {
 		this.hellBot = hellBot;
 		this.ctrl = new Ctrl(hellBot);
-
-		this.ctrl.print();
 	}
 }
 

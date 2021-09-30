@@ -1,4 +1,3 @@
-const { DataResolver } = require('discord.js');
 const Command = require('../../src/command');
 const CommandRejection = require('../../src/commandRejection');
 
@@ -53,9 +52,6 @@ class RollADie extends Command {
 	}
 
 	async execute(args, message) {
-		const prismaUser = await this.$prisma.getPrismaUserById(message.author.id);
-		const locale = prismaUser.locale;
-
 		if (args.length < 1) {
 			return message.reply(this.rollDie(6));
 		}

@@ -3,6 +3,7 @@ const Discord = require('discord.js');
 const CommandRejection = require('./commandRejection');
 const Command = require('./command');
 const Task = require('./task');
+const Server = require('./server');
 
 function HellBot(config) {
 	this.config = config;
@@ -10,6 +11,7 @@ function HellBot(config) {
 	this.ext = new Object();
 	this.commands = new Discord.Collection();
 	this.tasks = new Discord.Collection();
+	this.server = new Server();
 
 	assigneExtensions.call(this, process.env.APP_ROOT + config.extensionsDirectory);
 	assignCommands.call(this, process.env.APP_ROOT + config.commandsDirectory);
@@ -157,6 +159,7 @@ function ready() {
 	runTasks(this);
 
 	console.log(`Logged in as: ${this.client.user.tag}`);
+	this.server.start();
 }
 
 HellBot.prototype.run = function () {

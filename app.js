@@ -8,4 +8,4 @@ const config = require('./config.json');
 const hellBot = new HellBot(config);
 hellBot.run();
 
-require('./api/http');
+require('./src/server');
