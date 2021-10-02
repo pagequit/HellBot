@@ -1,11 +1,3 @@
 {
-  "description": "Remind you of something.",
-  "default": "Hey {0}, remember {1}!",
-  "noTimeArg": "I need some time value in order to remind you.",
-  "alreadyInUse": "I should remind you already to {0}.",
-  "farTooMuchTime": "{0} minutes?! Use your calander app.",
-  "arguments.time.signature": "Minutes",
-  "arguments.time.description": "Time in minutes.",
-  "arguments.subject.signature": "?Subject",
-  "arguments.subject.description": "What to be reminded of."
+  "description": "Auth"
 }

@@ -17,7 +17,7 @@ class Prisma extends PrismaClient {
 		}
 
 		const locale = this.hellBot.config.localeFallback;
-		
+
 		return await this.user.create({
 			data: {
 				id: parseInt(id),

@@ -4,36 +4,12 @@ const session = require('express-session');
 // const redisStore = require('connect-redis')(session);
 // const client = redis.createClient();
 const router = express.Router();
-//const app = express();
-
-// app.use(express.json());
-
-// app.use(session({
-// //	store: new redisStore({ client }),
-// 	secret: '1234',
-// 	saveUninitialized: false,
-// 	resave: false,
-// }));
 
 // router.get('/', (req, res) => {
-// 	const prismaUser = await this.$prisma.getPrismaUserById(message.author.id);
-
-// 	console.log(req.url);
-// 	res.json(req.session);
+//  const queryObject = url.parse(req.url, true).query;
 // });
 
-// router.post('/auth', (req, res) => {
-// 	console.log(req.body.token);
-// 	res.json(req.session);
-// });
-
-// app.use('/', router);
-
-// app.listen(process.env.API_PORT, () => {
-// 	console.log('API listen on Port ' + process.env.API_PORT);
-// });
-
-//curl -X POST localhost:3033/auth -H "Content-Type: application/json" -d '{"token":"1234"}'
+// curl -X POST http://localhost:3033/ -H "Authorization: Bearer cf2939b501725bd83934cc85b1015b48"
 const { Collection } = require('discord.js');
 
 function Server() {
@@ -44,7 +20,7 @@ function Server() {
 	this.express.use(express.json());
 	this.express.use(session({
 		//store: new redisStore({ client }),
-		secret: '1234',
+		secret: process.env.API_SECRET,
 		saveUninitialized: false,
 		resave: false,
 	}));

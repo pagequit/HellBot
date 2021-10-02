@@ -9,14 +9,7 @@ datasource db {
 }
 
 model User {
-  id     Int    @id
-  locale String
-  Auth   Auth[]
-}
-
-model Auth {
-  user      User   @relation(fields: [userId], references: [id])
-  userId    Int    @id
-  token     String
-  timestamp Int
+  id           Int     @id
+  locale       String
+  access_token String? @unique
 }

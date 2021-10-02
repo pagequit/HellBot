@@ -4,6 +4,7 @@ const CommandRejection = require('./commandRejection');
 const Command = require('./command');
 const Task = require('./task');
 const Server = require('./server');
+const API = require('./api');
 
 function HellBot(config) {
 	this.config = config;
@@ -12,6 +13,7 @@ function HellBot(config) {
 	this.commands = new Discord.Collection();
 	this.tasks = new Discord.Collection();
 	this.server = new Server();
+	this.api = new API(this);
 
 	assigneExtensions.call(this, process.env.APP_ROOT + config.extensionsDirectory);
 	assignCommands.call(this, process.env.APP_ROOT + config.commandsDirectory);
