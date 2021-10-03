@@ -12,7 +12,7 @@ const router = express.Router();
 // curl -X POST http://localhost:3033/ -H "Authorization: Bearer cf2939b501725bd83934cc85b1015b48"
 const { Collection } = require('discord.js');
 
-function Server() {
+function Server(hellBotAPI) {
 	this.port = process.env.API_PORT;
 	this.express = express();
 	this.router = express.Router();
@@ -25,7 +25,8 @@ function Server() {
 		resave: false,
 	}));
 	this.express.use(express.json());
-	this.express.use('/', this.router);
+	this.express.use(hellBotAPI.checkAuhterization.bind(hellBotAPI));
+	this.express.use(this.router);
 }
 
 Server.prototype = {

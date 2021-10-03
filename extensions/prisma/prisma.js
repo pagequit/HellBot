@@ -8,7 +8,7 @@ class Prisma extends PrismaClient {
 	async getPrismaUserById(id) {
 		const prismaUser = await this.user.findUnique({
 			where: {
-				id: parseInt(id),
+				id: id,
 			},
 		});
 
@@ -20,7 +20,7 @@ class Prisma extends PrismaClient {
 
 		return await this.user.create({
 			data: {
-				id: parseInt(id),
+				id: id,
 				locale: locale,
 			},
 		});

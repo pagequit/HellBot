@@ -7,8 +7,9 @@ class HellVoiceController extends Controller {
 		this.hellBot.server.router.post('/hellvoice', this.defaultAction.bind(this));
 	}
 
-	async defaultAction(req, res) {
-		res.json({ hellvoice: 'true' });
+	async defaultAction(req, res, next) {
+		res.json(req.guildMember);
+		next();
 	}
 }
 

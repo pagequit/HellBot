@@ -9,7 +9,7 @@ datasource db {
 }
 
 model User {
-  id           Int     @id
+  id           String  @id
   locale       String
   access_token String? @unique
 }

@@ -12,8 +12,8 @@ function HellBot(config) {
 	this.ext = new Object();
 	this.commands = new Discord.Collection();
 	this.tasks = new Discord.Collection();
-	this.server = new Server();
 	this.api = new API(this);
+	this.server = new Server(this.api);
 
 	assigneExtensions.call(this, process.env.APP_ROOT + config.extensionsDirectory);
 	assignCommands.call(this, process.env.APP_ROOT + config.commandsDirectory);
