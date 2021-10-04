@@ -6,13 +6,19 @@ function Server(hellBotAPI) {
 	this.port = process.env.API_PORT;
 	this.express = express();
 	this.router = express.Router();
-
-	this.express.use(session({
+	this.sess = {
 		store: new FileStore(),
 		secret: process.env.API_SECRET,
 		saveUninitialized: false,
 		resave: false,
-	}));
+	}
+
+	if (process.env.APP_CONTEXT === 'prod') {
+		this.express.set('trust proxy', 1);
+		this.sess.cookie.secure = true;
+	}
+
+	this.express.use(session(this.sess));
 	this.express.use(express.json());
 	this.express.use(hellBotAPI.checkAuhterization.bind(hellBotAPI));
 	this.express.use(this.router);
