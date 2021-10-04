@@ -9,14 +9,13 @@
   "dependencies": {
     "@prisma/client": "^2.13.1",
     "axios": "^0.21.1",
-    "connect-redis": "^6.0.0",
+    "connect-sqlite3": "^0.9.12",
     "cron": "^1.8.2",
     "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
-    "jsdom": "^16.3.0",
-    "redis": "^3.1.2"
+    "jsdom": "^16.3.0"
   },
   "devDependencies": {
     "prisma": "^2.24.1"
