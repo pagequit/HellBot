@@ -1,15 +1,14 @@
 const express = require('express');
 const session = require('express-session');
-const SQLiteStore = require('connect-sqlite3')(session);
+const FileStore = require('session-file-store')(session);
 
 function Server(hellBotAPI) {
 	this.port = process.env.API_PORT;
 	this.express = express();
 	this.router = express.Router();
 
-	this.express.use(express.json());
 	this.express.use(session({
-		store: new SQLiteStore({}),
+		store: new FileStore(),
 		secret: process.env.API_SECRET,
 		saveUninitialized: false,
 		resave: false,
