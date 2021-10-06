@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 class API {
 	constructor(hellBot) {
 		this.hellBot = hellBot;
@@ -16,9 +18,13 @@ class API {
 			});
 		}
 
+		const tokenHash = crypto.createHmac('sha256', process.env.API_SECRET)
+			.update(authToken)
+			.digest('hex');
+
 		const prismaUser = await this.hellBot.ext.prisma.user.findUnique({
 			where: {
-				access_token: authToken,
+				access_token: tokenHash,
 			},
 		});
 
