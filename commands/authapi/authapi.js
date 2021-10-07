@@ -7,7 +7,7 @@ class AuthAPI extends Command {
 		super();
 		this.trigger.push('auth', 'api');
 		this.icon = ':receipt:';
-		this.accessLevel = 2;
+		this.accessLevel = 1;
 		this.tokenGen = new TokenGen();
 	}
 
@@ -15,7 +15,7 @@ class AuthAPI extends Command {
 		let prismaUser = await this.$prisma.getPrismaUserById(message.author.id);
 		const access_token = this.tokenGen.getToken();
 
-		const tokenHash = crypto.createHmac('sha256', process.env.API_SECRET)
+		const tokenHash = crypto.createHash('sha256')
 			.update(access_token)
 			.digest('hex');
 

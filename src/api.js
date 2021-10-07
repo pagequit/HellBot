@@ -6,6 +6,16 @@ class API {
 	}
 
 	async checkAuhterization(req, res, next) {
+		res.header('Access-Control-Allow-Origin', 'http://localhost:8081');
+		res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+		res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Authorization');
+		res.header('Access-Control-Allow-Credentials', 'true');
+
+		// check for preflight requests
+		if (req.method === 'OPTIONS' && req.header('Origin') && req.header('Access-Control-Request-Method')) {
+			return res.status(204).end();
+		}
+
 		const authorization = req.header('Authorization')?.match(/^(Bearer)\s([0-9a-f]+)$/);
 		const authScheme = !!authorization ? authorization[1] : null;
 		const authToken = !!authorization ? authorization[2] : null;
@@ -18,7 +28,7 @@ class API {
 			});
 		}
 
-		const tokenHash = crypto.createHmac('sha256', process.env.API_SECRET)
+		const tokenHash = crypto.createHash('sha256')
 			.update(authToken)
 			.digest('hex');
 

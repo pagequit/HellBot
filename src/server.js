@@ -19,7 +19,7 @@ function Server(hellBotAPI) {
 	}
 
 	this.express.use(session(this.sess));
-	this.express.use(express.json());
+	//this.express.use(express.json());
 	this.express.use(hellBotAPI.checkAuhterization.bind(hellBotAPI));
 	this.express.use(this.router);
 }
