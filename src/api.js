@@ -6,7 +6,7 @@ class API {
 	}
 
 	async checkAuhterization(req, res, next) {
-		res.header('Access-Control-Allow-Origin', 'http://localhost:8081');
+		res.header('Access-Control-Allow-Origin', `${process.env.API_ALLOW_ORIGIN}`);
 		res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 		res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Authorization');
 		res.header('Access-Control-Allow-Credentials', 'true');
@@ -20,7 +20,7 @@ class API {
 		const authScheme = !!authorization ? authorization[1] : null;
 		const authToken = !!authorization ? authorization[2] : null;
 
-		if (!authorization || authScheme !== 'Bearer') {
+		if (!req.session.gmid || !authorization || authScheme !== 'Bearer') {
 			res.status(400);
 
 			return res.json({
@@ -32,11 +32,17 @@ class API {
 			.update(authToken)
 			.digest('hex');
 
-		const prismaUser = await this.hellBot.ext.prisma.user.findUnique({
-			where: {
-				access_token: tokenHash,
-			},
-		});
+		const prismaUser = !!req.session.gmid
+			? await this.hellBot.ext.prisma.user.findUnique({
+				where: {
+					access_token: req.session.gmid,
+				},
+			})
+			: await this.hellBot.ext.prisma.user.findUnique({
+				where: {
+					access_token: tokenHash,
+				},
+			});
 
 		if (prismaUser === null) {
 			res.status(401);
@@ -50,7 +56,7 @@ class API {
 			const guildMember = await this.hellBot.config.guild.members
 				.fetch(`${prismaUser.id}`);
 
-			req.guildMember = guildMember;
+			req.session.gmid = guildMember.id;
 			next();
 		}
 		catch(error) {
