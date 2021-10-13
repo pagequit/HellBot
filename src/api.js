@@ -17,39 +17,28 @@ class API {
 		}
 
 		const authorization = req.header('Authorization')?.match(/^(Bearer)\s([0-9a-f]+)$/);
-		const authScheme = !!authorization ? authorization[1] : null;
-		const authToken = !!authorization ? authorization[2] : null;
+		const accessToken = !!authorization ? authorization[2] : null;
 
-		if (!req.session.gmid || !authorization || authScheme !== 'Bearer') {
-			res.status(400);
-
-			return res.json({
-				error: 'Bad Request'
-			});
+		if ((!accessToken && !req.session.gmid)) {
+			return res.status(400).json({ error: 'Bad Request' });
 		}
-
-		const tokenHash = crypto.createHash('sha256')
-			.update(authToken)
-			.digest('hex');
 
 		const prismaUser = !!req.session.gmid
 			? await this.hellBot.ext.prisma.user.findUnique({
 				where: {
-					access_token: req.session.gmid,
+					id: req.session.gmid,
 				},
 			})
 			: await this.hellBot.ext.prisma.user.findUnique({
 				where: {
-					access_token: tokenHash,
+					access_token: crypto.createHash('sha256')
+						.update(accessToken)
+						.digest('hex'),
 				},
 			});
 
 		if (prismaUser === null) {
-			res.status(401);
-
-			return res.json({
-				error: 'Unauthorized'
-			});
+			return res.status(401).json({ error: 'Unauthorized' });
 		}
 
 		try {
