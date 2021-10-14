@@ -17,23 +17,23 @@ class API {
 		}
 
 		const authorization = req.header('Authorization')?.match(/^(Bearer)\s([0-9a-f]+)$/);
-		const accessToken = !!authorization ? authorization[2] : null;
+		const accessToken = !authorization ? null : authorization[2];
 
 		if ((!accessToken && !req.session.gmid)) {
 			return res.status(400).json({ error: 'Bad Request' });
 		}
 
-		const prismaUser = !!req.session.gmid
+		const prismaUser = !req.session.gmid
 			? await this.hellBot.ext.prisma.user.findUnique({
-				where: {
-					id: req.session.gmid,
-				},
-			})
-			: await this.hellBot.ext.prisma.user.findUnique({
 				where: {
 					access_token: crypto.createHash('sha256')
 						.update(accessToken)
 						.digest('hex'),
+				},
+			})
+			: await this.hellBot.ext.prisma.user.findUnique({
+				where: {
+					id: req.session.gmid,
 				},
 			});
 
@@ -50,9 +50,7 @@ class API {
 		}
 		catch(error) {
 			console.error(error);
-			res.status(500);
-
-			return res.end();
+			return res.status(500).end();
 		}
 	}
 }
