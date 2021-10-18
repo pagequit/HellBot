@@ -33,4 +33,3 @@ Server.prototype = {
 }
 
 module.exports = Server;
-// curl -X POST http://localhost:3033/ -H "Authorization: Bearer cf2939b501725bd83934cc85b1015b48"

@@ -12,7 +12,10 @@ class API {
 		res.header('Access-Control-Allow-Credentials', 'true');
 
 		// check for preflight requests
-		if (req.method === 'OPTIONS' && req.header('Origin') && req.header('Access-Control-Request-Method')) {
+		if (req.method === 'OPTIONS'
+			&& req.header('Origin')
+			&& req.header('Access-Control-Request-Method')
+		) {
 			return res.status(204).end();
 		}
 
@@ -20,7 +23,10 @@ class API {
 		const accessToken = !authorization ? null : authorization[2];
 
 		if ((!accessToken && !req.session.gmid)) {
-			return res.status(400).json({ error: 'Bad Request' });
+			return res.status(400).json({
+				access: 'denied',
+				error: '1634591779621',
+			});
 		}
 
 		const prismaUser = !req.session.gmid
@@ -38,7 +44,10 @@ class API {
 			});
 
 		if (prismaUser === null) {
-			return res.status(401).json({ error: 'Unauthorized' });
+			return res.status(401).json({
+				access: 'denied',
+				error: '1634591836174',
+			});
 		}
 
 		try {
@@ -50,7 +59,10 @@ class API {
 		}
 		catch(error) {
 			console.error(error);
-			return res.status(500).end();
+			return res.status(500).json({
+				access: 'denied',
+				error: '1634591887807',
+			});
 		}
 	}
 }
