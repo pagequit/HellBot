@@ -22,7 +22,7 @@ class API {
 		const authorization = req.header('Authorization')?.match(/^(Bearer)\s([0-9a-f]+)$/);
 		const accessToken = !authorization ? null : authorization[2];
 
-		if ((!accessToken && !req.session.gmid)) {
+		if (!accessToken && !req.session.gmid) {
 			return res.status(400).json({
 				access: 'denied',
 				error: '1634591779621',
