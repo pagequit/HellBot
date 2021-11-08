@@ -24,8 +24,12 @@ class API {
 
 		if (!accessToken && !req.session.gmid) {
 			return res.status(400).json({
-				access: 'denied',
-				error: '1634591779621',
+				errors: [{
+					status: 400,
+					code: 1634591779621,
+					title: 'Bad Request',
+					detail: 'Access denied: Insufficient request.'
+				}],
 			});
 		}
 
@@ -45,8 +49,12 @@ class API {
 
 		if (prismaUser === null) {
 			return res.status(401).json({
-				access: 'denied',
-				error: '1634591836174',
+				errors: [{
+					status: 401,
+					code: 1634591836174,
+					title: 'Unauthorized',
+					detail: 'Access denied: Unknown access token.'
+				}],
 			});
 		}
 
@@ -60,8 +68,12 @@ class API {
 		catch(error) {
 			console.error(error);
 			return res.status(500).json({
-				access: 'denied',
-				error: '1634591887807',
+				errors: [{
+					status: 500,
+					code: 1634591887807,
+					title: 'Internal Server Error',
+					detail: 'An unexpected error occurred.'
+				}],
 			});
 		}
 	}
