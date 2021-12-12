@@ -1,8 +1,9 @@
-import { Client } from 'discord.js';
 import * as fs from 'node:fs';
+import { Client } from 'discord.js';
+import { Command } from './interfaces';
 
 export default class HellBot extends Client {
-	commands: Map<string, any>;
+	commands: Map<string, Command>;
 
 	mountCommands() {
 		this.commands = new Map();

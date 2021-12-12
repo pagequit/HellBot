@@ -1,14 +1,28 @@
 #!/usr/bin/node
-import * as dotenv from 'dotenv';
+import 'dotenv/config';
 import { Intents } from 'discord.js';
 import HellBot from './HellBot';
 
-dotenv.config();
 const hellBot = new HellBot({ intents: [Intents.FLAGS.GUILDS] });
 hellBot.mountCommands();
 
-hellBot.once('ready', () => {
-	console.log(`Logged in as: ${hellBot.user.tag}`);
+hellBot.once('ready', client => {
+	console.log(`Logged in as: ${client.user.tag}`);
 });
 
-hellBot.login(process.env.DISCORD_KEY);
+hellBot.on('interactionCreate', async interaction => {
+	if (!interaction.isCommand()) {
+		return;
+	}
+
+	const command = hellBot.commands.get(interaction.commandName);
+	try {
+		await command?.execute(interaction);
+	}
+	catch (error) {
+		console.error(error);
+		await interaction.reply({ content: 'An error occurred!', ephemeral: true });
+	}
+});
+
+hellBot.login(process.env.DISCORD_TOKEN);
