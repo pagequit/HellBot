@@ -1,11 +1,19 @@
 import * as fs from 'node:fs';
-import { Client } from 'discord.js';
-import { Command } from './interfaces';
+import { Client, ClientOptions } from 'discord.js';
+import { HellConfig } from '../hell.config';
+import BaseCommand from './abstracts/BaseCommand';
 
 export default class HellBot extends Client {
-	commands: Map<string, Command>;
+	config: HellConfig;
+	commands: Map<string, BaseCommand>;
 
-	mountCommands() {
+	constructor(config: HellConfig, options: ClientOptions) {
+		super(options);
+
+		this.config = config;
+	}
+
+	mountCommands(): void {
 		this.commands = new Map();
 		const commandsDir = __dirname + '/commands';
 		const commandsNames = fs.readdirSync(commandsDir);

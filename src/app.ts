@@ -1,9 +1,10 @@
 #!/usr/bin/node
 import 'dotenv/config';
 import { Intents } from 'discord.js';
+import { config } from '../hell.config';
 import HellBot from './HellBot';
 
-const hellBot = new HellBot({ intents: [Intents.FLAGS.GUILDS] });
+const hellBot = new HellBot(config, { intents: [Intents.FLAGS.GUILDS] });
 hellBot.mountCommands();
 
 hellBot.once('ready', client => {
