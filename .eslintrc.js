@@ -13,10 +13,12 @@ module.exports = {
 	],
 	rules: {
 		'quotes': 'off',
-		'@typescript-eslint/quotes': ['error', 'single', { 'avoidEscape': true }],
+		'@typescript-eslint/quotes': ['warn', 'single', { 'avoidEscape': true }],
 		'semi': 'off',
-		'@typescript-eslint/semi': ['error', 'always'],
+		'@typescript-eslint/semi': ['warn', 'always'],
 		'indent': 'off',
-		'@typescript-eslint/indent': ['error', 'tab'],
+		'@typescript-eslint/indent': ['warn', 'tab'],
+		'no-unused-vars': 'off',
+		'@typescript-eslint/no-unused-vars': ['warn', { 'args': 'none'}],
 	},
 };

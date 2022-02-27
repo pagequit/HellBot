@@ -12,7 +12,7 @@ const commands = [
 	new SlashCommandBuilder().setName('ping').setDescription('Should reply with pong.')
 ].map(command => command.toJSON());
 
-// eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const token = process.env.DISCORD_TOKEN!;
 const rest = new REST({ version: '9' }).setToken(token);
 
