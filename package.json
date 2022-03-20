@@ -2,7 +2,7 @@
   "name": "hellbot",
   "version": "3.0.0",
   "description": "Made for the HellNet server.",
-  "main": "out/app.js",
+  "main": "dist/app.js",
   "author": "pagequit.net",
   "license": "MIT",
   "dependencies": {
@@ -28,6 +28,10 @@
     "ts-node": "^10.1.0",
     "tslib": "^2.3.0",
     "typescript": "^4.5.5"
+  },
+  "imports": {
+    "#core/*": "./dist/core/*.js",
+    "#extensions/*": "./dist/extensions/*.js"
   },
   "scripts": {
     "build": "tsc",

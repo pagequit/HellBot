@@ -13,5 +13,3 @@ export const config = {
 		},
 	},
 };
-
-export type HellConfig = typeof config;

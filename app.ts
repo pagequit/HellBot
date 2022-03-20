@@ -1,7 +1,8 @@
 #!/usr/bin/node
+
 import 'dotenv/config';
-import { config } from '../hell.config';
-import HellBot from './HellBot';
+import HellBot from '#core/HellBot';
+import { config } from './hell.config';
 
 (async function() {
 	const hellBot = new HellBot(config);

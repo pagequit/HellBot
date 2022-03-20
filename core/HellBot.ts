@@ -4,8 +4,8 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import Hedis from 'hedis';
-import { HellConfig } from '../hell.config';
-import BaseCommand from './abstracts/BaseCommand';
+import BaseCommand from '#core/abstracts/BaseCommand';
+import HellConfig from '#core/interfaces/HellConfig';
 
 export default class HellBot {
 	config: HellConfig;
@@ -32,6 +32,7 @@ export default class HellBot {
 
 	async init(): Promise<void> {
 		await this.loadCommands();
+		await this.initializeCommands();
 
 		this.hedis.on('message', async message => {
 			console.log(message.content);
@@ -69,6 +70,12 @@ export default class HellBot {
 		for (const name of commandsNames) {
 			const Command = await import(`${commandsDir}/${name}`);
 			this.commands.set(name, new Command.default());
+		}
+	}
+
+	async initializeCommands(): Promise<void> {
+		for (const commandEntry of this.commands) {
+			await commandEntry[1].init();
 		}
 	}
 
