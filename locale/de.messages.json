@@ -1,7 +1,0 @@
-{
-  "commandRejection.undefined": "ich kenne keinen Befehl, der mit '{0}' erteilt werden kann.",
-  "commandRejection.permission": "das kannst mir nicht befehlen, du musst mindestens {0} sein um das zu können.",
-  "commandRejection.cooldown": "das geht jetzt nicht nochmal, warte noch {0} Sekunden.",
-  "embed.trigger": "Auslöser",
-  "embed.arguments": "Argumente"
-}

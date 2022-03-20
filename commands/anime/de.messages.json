@@ -1,9 +1,0 @@
-{
-  "description": "Fügt einen Anime dem anime-und-serien Kanal hinzu",
-  "arguments.anime.signature": "Name",
-  "arguments.anime.description": "Name des Anime.",
-  "error": "Etwas ging schief.",
-  "noArgs": "ich brauche schon einen Namen um den Link zu posten.",
-  "channelNotFound": "sry ich kann den {0} Kanal nicht finden.",
-  "linkNotFound": "sry ich kann keinen brauchbaren Link finden."
-}

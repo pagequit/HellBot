@@ -1,6 +1,0 @@
-{
-  "description": "Wirft einen Würfel.",
-  "arguments.die.signature": "?Würfel|Formel",
-  "arguments.die.description": "Ein Würfel oder eine kumulative Formel (2d20).",
-  "invalidFormular": "ungültige Formel: {0}"
-}
