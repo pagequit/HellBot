@@ -5,7 +5,7 @@ import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import Hedis from 'hedis';
 import BaseCommand from '#core/abstracts/BaseCommand';
-import HellConfig from '#core/interfaces/HellConfig';
+import { HellConfig } from '#core/generics/types';
 
 export default class HellBot {
 	config: HellConfig;
@@ -75,7 +75,7 @@ export default class HellBot {
 
 	async initializeCommands(): Promise<void> {
 		for (const commandEntry of this.commands) {
-			await commandEntry[1].init();
+			await commandEntry[1].init(this.hedis.client);
 		}
 	}
 

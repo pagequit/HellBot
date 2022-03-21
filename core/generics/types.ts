@@ -1,4 +1,4 @@
-export default interface HellConfig {
+export type HellConfig = {
 	discordConfig: {
 		clientId: string,
 		guildId: string,
@@ -12,4 +12,6 @@ export default interface HellConfig {
 			url: string,
 		},
 	},
-}
+};
+
+export type Messages = Map<string, Map<string, string>>;

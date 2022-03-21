@@ -7,20 +7,11 @@ export default class Ping extends BaseCommand {
 	}
 
 	async execute(interaction: CommandInteraction): Promise<void> {
-		const reply = await this.$t('de', 'DESCRIPTION', 'Pong');
+
+		const foo = await this.$redis.GET('hedis:foo');
+
+		const reply = await this.$t('de', 'DESCRIPTION', `${foo}`);
 
 		return interaction.reply(reply);
-	}
-
-	async $t(locale: string, key: string, ...args: string[]): Promise<string> {
-		let rawMessage = this.messages.get('source.js')?.get(key) ?? key;
-		rawMessage = this.messages.get(`${locale}.js`)?.get(key) ?? rawMessage;
-
-		let message = rawMessage;
-		for (const [idx, arg] of args.entries()) {
-			message = message.replace(`{${idx}}`, arg);
-		}
-
-		return message;
 	}
 }
