@@ -1,4 +1,3 @@
-export default new Map([
-	['DESCRIPTION', 'Ping und {0}.'],
-	['REPLY', 'Pong'],
-]);
+export default {
+	reply: 'Ping und {0}.',
+};

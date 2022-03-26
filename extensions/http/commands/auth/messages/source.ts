@@ -1,5 +1,5 @@
 const messages = {
-	DESCRIPTION: 'Auth.',
+	description: 'Auth.',
 };
 
 export default messages;

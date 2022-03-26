@@ -1,18 +1,22 @@
-import * as fs from 'node:fs';
-import { Client, Intents } from 'discord.js';
+import { Client, Intents, RoleManager } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import Hedis from 'hedis';
-import BaseCommand from '#core/abstracts/BaseCommand';
+import Command from '#core/abstracts/Command';
 import { HellConfig } from '#core/generics/types';
+import { loadEntitiesFromIndex } from './generics/methods';
 
-export default class HellBot {
+export default class HellCore {
 	config: HellConfig;
 	client: Client;
 	rest: REST;
 	hedis: Hedis;
-	commands: Map<string, BaseCommand>;
+	commands: Map<string, Command>;
+
+	get redis(): typeof this.hedis.client {
+		return this.hedis.client;
+	}
 
 	constructor(config: HellConfig) {
 		this.config = config;
@@ -28,19 +32,32 @@ export default class HellBot {
 
 		const { username, prefix, redisConfig } = config.hedisConfig;
 		this.hedis = new Hedis(username, prefix, redisConfig);
+
+		this.commands = new Map();
 	}
+
+	sortGuildRoles(roles: RoleManager|undefined) {
+		return roles?.cache.sort((cur, nxt) => {
+			return nxt.rawPosition - cur.rawPosition;
+		});
+	}
+
 
 	async init(): Promise<void> {
 		await this.loadCommands();
 		await this.initializeCommands();
 
+
 		this.hedis.on('message', async message => {
 			console.log(message.content);
 		});
 
-		this.hedis.connect();
+		await this.hedis.connect();
 
 		this.client.once('ready', client => {
+			const { guildId } = this.config.discordConfig;
+			const roles = client.guilds.cache.find(g => g.id === guildId)?.roles;
+			this.sortGuildRoles(roles);
 			console.log(`Logged in as: ${client.user.tag}`);
 		});
 
@@ -54,40 +71,48 @@ export default class HellBot {
 				await command?.execute(interaction);
 			}
 			catch (error) {
-				console.error(error);
+				console.error(1648293912239, error);
 				await interaction.reply({ content: 'An error occurred!', ephemeral: true });
 			}
 		});
 
-		this.client.login(this.config.discordConfig.token);
+		await this.client.login(this.config.discordConfig.token);
+
+		await this.deployCommands();
+	}
+
+	async registerCommand(name: string, commandInstance: Command): Promise<unknown> {
+		this.commands.set(name, commandInstance);
+
+		return this.deployCommands();
 	}
 
 	async loadCommands(): Promise<void> {
-		this.commands = new Map();
 		const commandsDir = __dirname + '/commands';
-		const commandsNames = fs.readdirSync(commandsDir);
-
-		for (const name of commandsNames) {
-			const Command = await import(`${commandsDir}/${name}`);
-			this.commands.set(name, new Command.default());
-		}
+		this.commands = await loadEntitiesFromIndex(commandsDir);
 	}
 
 	async initializeCommands(): Promise<void> {
 		for (const commandEntry of this.commands) {
-			await commandEntry[1].init(this.hedis.client);
+			await commandEntry[1].init(this);
 		}
 	}
 
-	async deployCommands(): Promise<void> {
-		// TODO
-		const commands = [
-			new SlashCommandBuilder().setName('ping').setDescription('Should reply with pong.')
-		].map(command => command.toJSON());
-
+	async deployCommands(): Promise<unknown> {
 		const { clientId, guildId } = this.config.discordConfig;
-		this.rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
-			.catch(console.error);
-		// TODO
+
+		const distCommands = [];
+		for (const [name, command] of this.commands) {
+			distCommands.push(
+				new SlashCommandBuilder()
+					.setName(name)
+					.setDescription(command.description)
+					.toJSON()
+			);
+		}
+
+		return this.rest.put(Routes.applicationGuildCommands(clientId, guildId), {
+			body: distCommands,
+		});
 	}
 }

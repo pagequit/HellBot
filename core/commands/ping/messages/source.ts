@@ -1,4 +1,7 @@
-export default new Map([
-	['DESCRIPTION', 'Ping and {0}.'],
-	['REPLY', 'Pong'],
-]);
+const source = {
+	description: 'Should reply with somehting like "pong".',
+	reply: 'Ping and {0}.',
+};
+
+export default source;
+export type Messages = typeof source;

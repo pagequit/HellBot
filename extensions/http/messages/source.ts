@@ -1,5 +1,5 @@
 const messages = {
-	INIT: 'Initialized: http.',
+	init: 'HTTP initialized.',
 };
 
 export default messages;

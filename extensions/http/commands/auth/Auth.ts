@@ -1,7 +1,7 @@
 import { CommandInteraction } from 'discord.js';
-import BaseCommand from '@/../core/abstracts/BaseCommand';
+import Command from '#core/abstracts/Command';
 
-export default class Ping extends BaseCommand {
+export default class Ping extends Command {
 	async execute(interaction: CommandInteraction): Promise<void> {
 		return interaction.reply('Auth');
 	}
