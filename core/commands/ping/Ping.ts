@@ -1,10 +1,11 @@
 import { CommandInteraction, InteractionResponse } from 'discord.js';
 import Command from '#core/abstracts/Command';
+import HellCore from '#core/HellCore';
 
 
 export default class Ping extends Command {
-	constructor() {
-		super(__dirname);
+	constructor(core: HellCore) {
+		super(core, __dirname);
 		this.icon = ':ping_pong:';
 	}
 

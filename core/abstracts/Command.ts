@@ -16,13 +16,12 @@ export default abstract class Command {
 		return this.messages.get('source')?.get('description') ?? '';
 	}
 
-	constructor(dirname: string) {
+	constructor(core: HellCore, dirname: string) {
+		this.core = core;
 		this.dirname = dirname;
 	}
 
-	async initialize(hellcore: HellCore): Promise<void> {
-		this.core = hellcore;
-
+	async initialize(): Promise<void> {
 		const messagesDir = this.dirname + '/messages';
 		this.messages = await loadMessages(messagesDir);
 	}

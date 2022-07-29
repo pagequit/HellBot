@@ -1,5 +1,6 @@
 import * as fs from 'node:fs';
-import { Messages } from './types';
+import { Messages } from '#core/generics/types';
+import OptionMap from '#core/generics/OptionMap';
 
 
 export function translate<T extends { messages: Messages }>(this: T, locale: string, key: string, ...args: string[]): string {
@@ -26,8 +27,8 @@ export async function loadMessages(dirname: string): Promise<Messages> {
 	return messages;
 }
 
-export async function loadEntities<E>(dirname: string, ...arg: unknown[]): Promise<Map<string, E>> {
-	const entities = new Map();
+export async function loadEntities<E>(dirname: string, ...arg: unknown[]): Promise<OptionMap<string, E>> {
+	const entities = new OptionMap<string, E>();
 
 	for (const name of fs.readdirSync(dirname)) {
 		const Entity = await import(`${dirname}/${name}`);

@@ -8,18 +8,20 @@ import {
 } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import Hedis from 'hedis';
+import Message from 'hedis/src/classes/Message';
 import Command from '#core/abstracts/Command';
 import { HellConfig } from '#core/generics/types';
-import { Extension } from './generics/interfaces';
-import { loadEntities } from './generics/methods';
-
+import { Extension } from '#core/generics/interfaces';
+import { loadEntities } from '#core/generics/methods';
+import OptionMap from '#core/generics/OptionMap';
+import Ping from './commands/ping/Ping';
 
 export default class HellCore {
 	config: HellConfig;
 	client: Client;
 	rest: REST;
 	hedis: Hedis;
-	commands: Map<string, Command>;
+	commands: OptionMap<string, Command>;
 
 	get redis(): typeof this.hedis.client {
 		return this.hedis.client;
@@ -55,7 +57,7 @@ export default class HellCore {
 		await this.initializeCommands();
 
 
-		this.hedis.on('message', async message => {
+		this.hedis.on('message', async (message: Message) => {
 			console.log(message.content);
 		});
 
@@ -79,13 +81,21 @@ export default class HellCore {
 			}
 
 			const command = this.commands.get(interaction.commandName);
-			try {
-				await command?.execute(interaction);
-			}
-			catch (error) {
+
+			command.unwrapOrElse(() => {
+				return new Ping(this); // TODO: Create a fallback command that executes a help command instead
+			}).execute(interaction).catch(error => {
 				console.error(1648293912239, error);
-				await interaction.reply({ content: 'An error occurred!', ephemeral: true });
-			}
+				interaction.reply({ content: 'An error occurred!', ephemeral: true });
+			});
+
+			// try {
+			// 	await command?.execute(interaction);
+			// }
+			// catch (error) {
+			// 	console.error(1648293912239, error);
+			// 	await interaction.reply({ content: 'An error occurred!', ephemeral: true });
+			// }
 		});
 
 		await this.client.login(this.config.discordConfig.token);
@@ -108,7 +118,7 @@ export default class HellCore {
 		}
 
 		this.commands.set(name, command);
-		return command.initialize(this);
+		return command.initialize();
 	}
 
 	async loadCommands(dirname: string): Promise<void> {
@@ -116,8 +126,8 @@ export default class HellCore {
 	}
 
 	async initializeCommands(): Promise<void> {
-		for (const commandEntry of this.commands) {
-			await commandEntry[1].initialize(this);
+		for (const command of this.commands.values()) {
+			await command.initialize();
 		}
 	}
 
@@ -139,14 +149,14 @@ export default class HellCore {
 		});
 	}
 
-	async loadExtensions(dirname: string): Promise<Map<string, Extension>> {
+	async loadExtensions(dirname: string): Promise<OptionMap<string, Extension>> {
 		return loadEntities<Extension>(dirname);
 	}
 
-	async initializeExtensions(extensions: Map<string, Extension>): Promise<void> {
-		for (const extension of extensions) {
+	async initializeExtensions(extensions: OptionMap<string, Extension>): Promise<void> {
+		for (const extension of extensions.values()) {
 			try {
-				await extension[1].initialize(this);
+				await extension.initialize(this);
 			}
 			catch (error) {
 				console.error('init 4 real!11', error);
