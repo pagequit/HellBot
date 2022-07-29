@@ -1,7 +1,8 @@
-import { Messages } from '#core/generics/types';
-import { loadMessages, translate } from '#core/generics/methods';
+import { CommandInteraction, InteractionResponse } from 'discord.js';
 import HellCore from '#core/HellCore';
-import { CommandInteraction } from 'discord.js';
+import { loadMessages, translate } from '#core/generics/methods';
+import { Messages } from '#core/generics/types';
+
 
 export default abstract class Command {
 	accessLevel: number|null = null;
@@ -19,14 +20,14 @@ export default abstract class Command {
 		this.dirname = dirname;
 	}
 
-	async init(hellcore: HellCore): Promise<void> {
+	async initialize(hellcore: HellCore): Promise<void> {
 		this.core = hellcore;
 
 		const messagesDir = this.dirname + '/messages';
 		this.messages = await loadMessages(messagesDir);
 	}
 
-	abstract execute(interaction: CommandInteraction): Promise<void>;
+	abstract execute(interaction: CommandInteraction): Promise<InteractionResponse<boolean>>;
 }
 
 Command.prototype.$t = translate;

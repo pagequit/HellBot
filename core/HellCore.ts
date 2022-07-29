@@ -1,11 +1,12 @@
-import { Client, Intents, RoleManager } from 'discord.js';
+import { Client, GatewayIntentBits, RoleManager, Routes, InteractionType } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { REST } from '@discordjs/rest';
-import { Routes } from 'discord-api-types/v9';
 import Hedis from 'hedis';
 import Command from '#core/abstracts/Command';
 import { HellConfig } from '#core/generics/types';
-import { loadEntitiesFromIndex } from './generics/methods';
+import { Extension } from './generics/interfaces';
+import { loadEntities } from './generics/methods';
+
 
 export default class HellCore {
 	config: HellConfig;
@@ -22,7 +23,7 @@ export default class HellCore {
 		this.config = config;
 
 		this.client = new Client({
-			intents: [Intents.FLAGS.GUILDS],
+			intents: [GatewayIntentBits.Guilds],
 		});
 
 		const { restVersion, token } = config.discordConfig;
@@ -36,15 +37,15 @@ export default class HellCore {
 		this.commands = new Map();
 	}
 
-	sortGuildRoles(roles: RoleManager|undefined) {
-		return roles?.cache.sort((cur, nxt) => {
+	sortGuildRoles(roles: RoleManager) {
+		return roles.cache.sort((cur, nxt) => {
 			return nxt.rawPosition - cur.rawPosition;
 		});
 	}
 
 
-	async init(): Promise<void> {
-		await this.loadCommands();
+	async initialize(): Promise<void> {
+		await this.loadCommands(__dirname + '/commands');
 		await this.initializeCommands();
 
 
@@ -56,13 +57,18 @@ export default class HellCore {
 
 		this.client.once('ready', client => {
 			const { guildId } = this.config.discordConfig;
-			const roles = client.guilds.cache.find(g => g.id === guildId)?.roles;
-			this.sortGuildRoles(roles);
+			const guild = client.guilds.cache.find(g => g.id === guildId);
+			if (guild === undefined) {
+				throw new Error(`Guild ${guildId} not found!`);
+			}
+
+			this.sortGuildRoles(guild.roles);
+
 			console.log(`Logged in as: ${client.user.tag}`);
 		});
 
 		this.client.on('interactionCreate', async interaction => {
-			if (!interaction.isCommand()) {
+			if (!(interaction.type === InteractionType.ApplicationCommand)) {
 				return;
 			}
 
@@ -79,22 +85,33 @@ export default class HellCore {
 		await this.client.login(this.config.discordConfig.token);
 
 		await this.deployCommands();
+
+		const { basedir, extensionsPaths } = this.config;
+
+		await this.loadExtensions(`${basedir}/${extensionsPaths}`).then(extensions => {
+			this.initializeExtensions(extensions);
+		}).catch(error => {
+			console.error('load', error);
+		});
+
 	}
 
-	async registerCommand(name: string, commandInstance: Command): Promise<unknown> {
-		this.commands.set(name, commandInstance);
+	async registerCommand(name: string, command: Command): Promise<void> {
+		if (this.commands.has(name)) {
+			return Promise.reject(new Error(`Command ${name} already exists!`));
+		}
 
-		return this.deployCommands();
+		this.commands.set(name, command);
+		return command.initialize(this);
 	}
 
-	async loadCommands(): Promise<void> {
-		const commandsDir = __dirname + '/commands';
-		this.commands = await loadEntitiesFromIndex(commandsDir);
+	async loadCommands(dirname: string): Promise<void> {
+		this.commands = await loadEntities<Command>(dirname);
 	}
 
 	async initializeCommands(): Promise<void> {
 		for (const commandEntry of this.commands) {
-			await commandEntry[1].init(this);
+			await commandEntry[1].initialize(this);
 		}
 	}
 
@@ -114,5 +131,20 @@ export default class HellCore {
 		return this.rest.put(Routes.applicationGuildCommands(clientId, guildId), {
 			body: distCommands,
 		});
+	}
+
+	async loadExtensions(dirname: string): Promise<Map<string, Extension>> {
+		return loadEntities<Extension>(dirname);
+	}
+
+	async initializeExtensions(extensions: Map<string, Extension>): Promise<void> {
+		for (const extension of extensions) {
+			try {
+				await extension[1].initialize(this);
+			}
+			catch (error) {
+				console.error('init 4 real!11', error);
+			}
+		}
 	}
 }

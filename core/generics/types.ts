@@ -1,4 +1,7 @@
 export type HellConfig = {
+	appContext: string;
+	basedir: string;
+	extensionsPaths: string[];
 	discordConfig: {
 		clientId: string,
 		guildId: string,

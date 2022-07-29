@@ -6,5 +6,5 @@ import { config } from './hell.config';
 
 (async function() {
 	const hellBot = new HellBot(config);
-	await hellBot.init();
+	await hellBot.initialize();
 })();
