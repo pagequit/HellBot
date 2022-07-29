@@ -1,5 +1,11 @@
-import { Client, GatewayIntentBits, RoleManager, Routes, InteractionType } from 'discord.js';
-import { SlashCommandBuilder } from '@discordjs/builders';
+import {
+	Client,
+	GatewayIntentBits,
+	InteractionType,
+	RoleManager,
+	Routes,
+	SlashCommandBuilder,
+} from 'discord.js';
 import { REST } from '@discordjs/rest';
 import Hedis from 'hedis';
 import Command from '#core/abstracts/Command';

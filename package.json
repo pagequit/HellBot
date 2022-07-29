@@ -6,9 +6,7 @@
   "author": "pagequit.net",
   "license": "MIT",
   "dependencies": {
-    "@discordjs/builders": "^1.0.0",
     "@discordjs/rest": "^1.0.1",
-    "discord-api-types": "^0.37.0",
     "discord.js": "^14.1.0",
     "dotenv": "^16.0.0",
     "hedis": "https://github.com/pagequit/hedis",
