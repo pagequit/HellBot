@@ -1,7 +1,6 @@
 import { CommandInteraction, InteractionResponse } from 'discord.js';
-import Command from '#core/abstracts/Command';
+import Command from '#core/composition/entity/Command';
 import HellCore from '#core/HellCore';
-
 
 export default class Ping extends Command {
 	constructor(core: HellCore) {

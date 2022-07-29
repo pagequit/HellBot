@@ -1,5 +1,5 @@
 const messages = {
-	HELLO: 'Hello {0}.',
+	error: 'An error occurred!',
 };
 
 export default messages;

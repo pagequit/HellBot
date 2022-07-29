@@ -1,4 +1,4 @@
-import { HellConfig } from '#core/generics/types';
+import { HellConfig } from '#core/types';
 
 export const config: HellConfig = {
 	appContext: `${process.env.APP_CONTEXT}`,

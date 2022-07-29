@@ -26,7 +26,7 @@ export default class Option<T> {
 
 	unwrap(): T {
 		if (isNone(this.value)) {
-			throw new Error('Cannot unwrap a None');
+			throw new Error('Cannot unwrap a None.');
 		}
 
 		return this.value;

@@ -1,8 +1,8 @@
 import { CommandInteraction, InteractionResponse } from 'discord.js';
 import HellCore from '#core/HellCore';
-import { loadMessages, translate } from '#core/generics/methods';
-import { Messages } from '#core/generics/types';
-
+import loadMessages from '#core/composition/i18n/loadMessages';
+import translate from '#core/composition/i18n/translate';
+import { Messages } from '#core/composition/i18n/Messages';
 
 export default abstract class Command {
 	accessLevel: number|null = null;

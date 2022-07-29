@@ -9,12 +9,13 @@ import {
 import { REST } from '@discordjs/rest';
 import Hedis from 'hedis';
 import Message from 'hedis/src/classes/Message';
-import Command from '#core/abstracts/Command';
-import { HellConfig } from '#core/generics/types';
-import { Extension } from '#core/generics/interfaces';
-import { loadEntities } from '#core/generics/methods';
+import Command from '#core/composition/entity/Command';
+import { HellConfig } from '#core/types';
+import Extension from '#core/composition/entity/Extension';
+import loadEntities from '#core/composition/entity/loadEntities';
 import OptionMap from '#core/generics/OptionMap';
-import Ping from './commands/ping/Ping';
+import Default from '#commands/default';
+import { Messages } from '#core/composition/i18n/Messages';
 
 export default class HellCore {
 	config: HellConfig;
@@ -22,6 +23,7 @@ export default class HellCore {
 	rest: REST;
 	hedis: Hedis;
 	commands: OptionMap<string, Command>;
+	messages: Messages;
 
 	get redis(): typeof this.hedis.client {
 		return this.hedis.client;
@@ -51,11 +53,9 @@ export default class HellCore {
 		});
 	}
 
-
 	async initialize(): Promise<void> {
 		await this.loadCommands(__dirname + '/commands');
 		await this.initializeCommands();
-
 
 		this.hedis.on('message', async (message: Message) => {
 			console.log(message.content);
@@ -76,26 +76,20 @@ export default class HellCore {
 		});
 
 		this.client.on('interactionCreate', async interaction => {
-			if (!(interaction.type === InteractionType.ApplicationCommand)) {
+			if (interaction.type !== InteractionType.ApplicationCommand) {
 				return;
 			}
 
 			const command = this.commands.get(interaction.commandName);
 
 			command.unwrapOrElse(() => {
-				return new Ping(this); // TODO: Create a fallback command that executes a help command instead
-			}).execute(interaction).catch(error => {
-				console.error(1648293912239, error);
-				interaction.reply({ content: 'An error occurred!', ephemeral: true });
-			});
-
-			// try {
-			// 	await command?.execute(interaction);
-			// }
-			// catch (error) {
-			// 	console.error(1648293912239, error);
-			// 	await interaction.reply({ content: 'An error occurred!', ephemeral: true });
-			// }
+				return new Default(this);
+			})
+				.execute(interaction)
+				.catch(error => {
+					console.error(1648293912239, error);
+					interaction.reply({ content: 'An error occurred!', ephemeral: true });
+				});
 		});
 
 		await this.client.login(this.config.discordConfig.token);

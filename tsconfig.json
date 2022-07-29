@@ -1,5 +1,5 @@
 {
-	"rootDirs": ["core", "extensions"],
+	"rootDirs": ["commands", "core"],
 	"compilerOptions": {
 		"noImplicitAny": true,
 		"strictNullChecks": true,
@@ -10,8 +10,8 @@
 		"sourceMap": true,
 		"baseUrl": ".",
 		"paths": {
-			"#core/*": ["core/*"],
-			"#extensions/*": ["extensions/*"],
+			"#commands/*": ["commands/*"],
+			"#core/*": ["core/*"]
 		}
 	}
 }

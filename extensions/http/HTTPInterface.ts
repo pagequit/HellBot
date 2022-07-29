@@ -1,7 +1,6 @@
-import { Extension } from '#core/generics/interfaces';
+import Extension from '#core/composition/entity/Extension';
 import HellCore from '#core/HellCore';
 import Auth from './commands/auth/Auth';
-
 
 export default class HTTPInterface implements Extension {
 	async initialize(hellCore: HellCore): Promise<void> {
