@@ -9,6 +9,7 @@ export default class Default extends Command {
 	}
 
 	async execute(interaction: CommandInteraction): Promise<InteractionResponse<boolean>> {
+		console.warn(`Unknown command '${interaction.commandName}' requested.`);
 		const reply = this.$t('source', 'reply', `${interaction.commandName}`);
 
 		return interaction.reply(reply);

@@ -13,7 +13,7 @@ export const config: HellConfig = {
 		token: `${process.env.DISCORD_TOKEN}`,
 	},
 	hedisConfig: {
-		username: 'hellBot',
+		username: 'HellBot',
 		prefix: 'hedis',
 		redisConfig: {
 			url: `${process.env.REDIS_URL}`,

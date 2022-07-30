@@ -11,7 +11,7 @@ export default class Ping extends Command {
 	async execute(interaction: CommandInteraction): Promise<InteractionResponse<boolean>> {
 		await this.core.redis.SET('hedis:ping', 'pong');
 		const ping = await this.core.redis.GET('hedis:ping');
-		const reply = this.$t('de', 'reply', `${ping}`);
+		const reply = this.$t('source', 'reply', `${ping}`);
 
 		return interaction.reply(reply);
 	}

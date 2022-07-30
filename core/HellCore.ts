@@ -1,21 +1,20 @@
 import {
 	Client,
 	GatewayIntentBits,
-	InteractionType,
 	RoleManager,
 	Routes,
 	SlashCommandBuilder,
 } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import Hedis from 'hedis';
-import Message from 'hedis/src/classes/Message';
 import Command from '#core/composition/entity/Command';
 import { HellConfig } from '#core/types';
 import Extension from '#core/composition/entity/Extension';
 import loadEntities from '#core/composition/entity/loadEntities';
 import OptionMap from '#core/generics/OptionMap';
-import Default from '#commands/default';
 import { Messages } from '#core/composition/i18n/Messages';
+import DiscordInteractionHandler from '#core/composition/interaction/DiscordInteractionHandler';
+import HedisInteractionHandler from '#core/composition/interaction/HedisInteractionHandler';
 
 export default class HellCore {
 	config: HellConfig;
@@ -24,6 +23,8 @@ export default class HellCore {
 	hedis: Hedis;
 	commands: OptionMap<string, Command>;
 	messages: Messages;
+	discordInteractionHandler: DiscordInteractionHandler;
+	hedisInteractionHandler: HedisInteractionHandler;
 
 	get redis(): typeof this.hedis.client {
 		return this.hedis.client;
@@ -45,6 +46,9 @@ export default class HellCore {
 		this.hedis = new Hedis(username, prefix, redisConfig);
 
 		this.commands = new Map();
+
+		this.discordInteractionHandler = new DiscordInteractionHandler(this);
+		this.hedisInteractionHandler = new HedisInteractionHandler(this);
 	}
 
 	sortGuildRoles(roles: RoleManager) {
@@ -54,61 +58,40 @@ export default class HellCore {
 	}
 
 	async initialize(): Promise<void> {
-		await this.loadCommands(__dirname + '/commands');
-		await this.initializeCommands();
-
-		this.hedis.on('message', async (message: Message) => {
-			console.log(message.content);
-		});
-
+		this.hedis.on('message', this.hedisInteractionHandler.handle.bind(this.hedisInteractionHandler));
 		await this.hedis.connect();
 
 		this.client.once('ready', client => {
 			const { guildId } = this.config.discordConfig;
 			const guild = client.guilds.cache.find(g => g.id === guildId);
 			if (guild === undefined) {
-				throw new Error(`Guild ${guildId} not found!`);
+				throw new Error(`Guild '${guildId}' not found!`);
 			}
 
 			this.sortGuildRoles(guild.roles);
 
-			console.log(`Logged in as: ${client.user.tag}`);
+			console.log(`Logged in as: '${client.user.tag}'.`);
 		});
+		this.client.on('interactionCreate', this.discordInteractionHandler.handle.bind(this.discordInteractionHandler));
 
-		this.client.on('interactionCreate', async interaction => {
-			if (interaction.type !== InteractionType.ApplicationCommand) {
-				return;
-			}
-
-			const command = this.commands.get(interaction.commandName);
-
-			command.unwrapOrElse(() => {
-				return new Default(this);
-			})
-				.execute(interaction)
-				.catch(error => {
-					console.error(1648293912239, error);
-					interaction.reply({ content: 'An error occurred!', ephemeral: true });
-				});
-		});
-
-		await this.client.login(this.config.discordConfig.token);
-
-		await this.deployCommands();
+		await this.loadCommands(__dirname + './../commands');
+		await this.initializeCommands();
 
 		const { basedir, extensionsPaths } = this.config;
-
-		await this.loadExtensions(`${basedir}/${extensionsPaths}`).then(extensions => {
-			this.initializeExtensions(extensions);
+		await this.loadExtensions(`${basedir}/${extensionsPaths}`).then(async extensions => {
+			await this.initializeExtensions(extensions);
 		}).catch(error => {
-			console.error('load', error);
+			console.error(`Unable to load extensions from: '${basedir}/${extensionsPaths}'.`, error);
 		});
 
+		this.deployCommands();
+
+		this.client.login(this.config.discordConfig.token);
 	}
 
 	async registerCommand(name: string, command: Command): Promise<void> {
 		if (this.commands.has(name)) {
-			return Promise.reject(new Error(`Command ${name} already exists!`));
+			return Promise.reject(new Error(`Command '${name}' already exists!`));
 		}
 
 		this.commands.set(name, command);
@@ -116,7 +99,7 @@ export default class HellCore {
 	}
 
 	async loadCommands(dirname: string): Promise<void> {
-		this.commands = await loadEntities<Command>(dirname);
+		this.commands = await loadEntities<Command>(dirname, this);
 	}
 
 	async initializeCommands(): Promise<void> {
@@ -130,6 +113,10 @@ export default class HellCore {
 
 		const distCommands = [];
 		for (const [name, command] of this.commands) {
+			if (name === 'default') {
+				continue;
+			}
+
 			distCommands.push(
 				new SlashCommandBuilder()
 					.setName(name)
@@ -144,17 +131,10 @@ export default class HellCore {
 	}
 
 	async loadExtensions(dirname: string): Promise<OptionMap<string, Extension>> {
-		return loadEntities<Extension>(dirname);
+		return loadEntities<Extension>(dirname, this);
 	}
 
-	async initializeExtensions(extensions: OptionMap<string, Extension>): Promise<void> {
-		for (const extension of extensions.values()) {
-			try {
-				await extension.initialize(this);
-			}
-			catch (error) {
-				console.error('init 4 real!11', error);
-			}
-		}
+	async initializeExtensions(extensions: OptionMap<string, Extension>): Promise<unknown[]> {
+		return Promise.all(Array.from(extensions.values()).map(extension => extension.initialize(this)));
 	}
 }
