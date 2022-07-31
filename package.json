@@ -10,7 +10,8 @@
     "discord.js": "^14.1.0",
     "dotenv": "^16.0.0",
     "hedis": "https://github.com/pagequit/hedis",
-    "redis": "4.2.0"
+    "redis": "4.2.0",
+    "redis-om": "^0.3.6"
   },
   "devDependencies": {
     "@babel/core": "^7.16.12",

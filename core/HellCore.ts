@@ -1,6 +1,7 @@
 import {
 	Client,
 	GatewayIntentBits,
+	Guild,
 	RoleManager,
 	Routes,
 	SlashCommandBuilder,
@@ -15,6 +16,8 @@ import OptionMap from '#core/generics/OptionMap';
 import { Messages } from '#core/composition/i18n/Messages';
 import DiscordInteractionHandler from '#core/composition/interaction/DiscordInteractionHandler';
 import HedisInteractionHandler from '#core/composition/interaction/HedisInteractionHandler';
+import Option from './generics/Option';
+import HellStore from '#core/HellStore';
 
 export default class HellCore {
 	config: HellConfig;
@@ -28,6 +31,12 @@ export default class HellCore {
 
 	get redis(): typeof this.hedis.client {
 		return this.hedis.client;
+	}
+
+	get guild(): Option<Guild> {
+		return new Option(
+			this.client.guilds.cache.find(g => g.id === this.config.discordConfig.guildId)
+		);
 	}
 
 	constructor(config: HellConfig) {
@@ -61,14 +70,17 @@ export default class HellCore {
 		this.hedis.on('message', this.hedisInteractionHandler.handle.bind(this.hedisInteractionHandler));
 		await this.hedis.connect();
 
+		const hellStore = new HellStore();
+		await hellStore.setup(this.hedis.client);
+
 		this.client.once('ready', client => {
 			const { guildId } = this.config.discordConfig;
-			const guild = client.guilds.cache.find(g => g.id === guildId);
-			if (guild === undefined) {
-				throw new Error(`Guild '${guildId}' not found!`);
-			}
+			const guild = new Option(client.guilds.cache.find(g => g.id === guildId))
+				.unwrapOrElse(() => {
+					throw new Error(`Guild '${guildId}' not found.`);
+				});
 
-			this.sortGuildRoles(guild.roles);
+			this.sortGuildRoles(guild.roles); // TODO: check when the cache becomes refreshed
 
 			console.log(`Logged in as: '${client.user.tag}'.`);
 		});
