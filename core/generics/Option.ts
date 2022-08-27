@@ -17,11 +17,11 @@ export default class Option<T> {
 	}
 
 	isNone(): boolean {
-		return isNone(this.value);
+		return isNone.call(this, this.value);
 	}
 
 	isSome(): boolean {
-		return isSome(this.value);
+		return isSome.call(this, this.value);
 	}
 
 	unwrap(): T {
