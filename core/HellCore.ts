@@ -17,7 +17,8 @@ import { Messages } from '#core/composition/i18n/Messages';
 import DiscordInteractionHandler from '#core/composition/interaction/DiscordInteractionHandler';
 import HedisInteractionHandler from '#core/composition/interaction/HedisInteractionHandler';
 import Option from './generics/Option';
-import HellStore from '#core/HellStore';
+import HellStore from '#core/store/HellStore';
+import { isPrivate } from '#core/composition/command/accessLevelHelpers';
 
 export default class HellCore {
 	config: HellConfig;
@@ -33,10 +34,10 @@ export default class HellCore {
 		return this.hedis.client;
 	}
 
-	get guild(): Option<Guild> {
-		return new Option(
-			this.client.guilds.cache.find(g => g.id === this.config.discordConfig.guildId)
-		);
+	get guild(): Guild {
+		return new Option<Guild>(
+			this.client.guilds.cache.first()
+		).unwrap();
 	}
 
 	constructor(config: HellConfig) {
@@ -120,26 +121,37 @@ export default class HellCore {
 		}
 	}
 
-	async deployCommands(): Promise<unknown> {
+	async deployCommands(): Promise<unknown[]> {
 		const { clientId, guildId } = this.config.discordConfig;
 
 		const distCommands = [];
+		const distGuildCommands = [];
 		for (const [name, command] of this.commands) {
 			if (name === 'default') {
 				continue;
 			}
 
-			distCommands.push(
-				new SlashCommandBuilder()
-					.setName(name)
-					.setDescription(command.description)
-					.toJSON()
-			);
+			const builtCommand = new SlashCommandBuilder()
+				.setName(name)
+				.setDescription(command.description)
+				.toJSON();
+
+			if (isPrivate(command.accessLevel)) {
+				distGuildCommands.push(builtCommand);
+			}
+			else {
+				distCommands.push(builtCommand);
+			}
 		}
 
-		return this.rest.put(Routes.applicationGuildCommands(clientId, guildId), {
-			body: distCommands,
-		});
+		return Promise.all([
+			this.rest.put(Routes.applicationGuildCommands(clientId, guildId), {
+				body: distGuildCommands,
+			}),
+			this.rest.put(Routes.applicationCommands(clientId), {
+				body: distCommands,
+			})
+		]);
 	}
 
 	async loadExtensions(dirname: string): Promise<OptionMap<string, Extension>> {

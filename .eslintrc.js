@@ -20,5 +20,6 @@ module.exports = {
 		'@typescript-eslint/indent': ['warn', 'tab'],
 		'no-unused-vars': 'off',
 		'@typescript-eslint/no-unused-vars': ['warn', { 'args': 'none'}],
+		'@typescript-eslint/no-namespace': 'off',
 	},
 };

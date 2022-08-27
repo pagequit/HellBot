@@ -1,9 +1,10 @@
-import { CommandInteraction, InteractionResponse } from 'discord.js';
+import { CommandInteraction, InteractionResponse, GuildMember } from 'discord.js';
 import HellCore from '#core/HellCore';
 import loadMessages from '#core/composition/i18n/loadMessages';
 import translate from '#core/composition/i18n/translate';
 import { Messages } from '#core/composition/i18n/Messages';
-import { isAuthorised } from '../interaction/DiscordInteractionHandler';
+import { isAuthorised } from '#core/composition/interaction/DiscordInteractionHandler';
+import Option from '#core/generics/Option';
 
 export default abstract class Command {
 	accessLevel: number;
@@ -18,7 +19,7 @@ export default abstract class Command {
 	}
 
 	constructor(core: HellCore, dirname: string) {
-		this.accessLevel = Number.POSITIVE_INFINITY;
+		this.accessLevel = -1;
 		this.core = core;
 		this.dirname = dirname;
 	}
@@ -29,7 +30,8 @@ export default abstract class Command {
 	}
 
 	async proxiedExecute(interaction: CommandInteraction, isAuthorised: isAuthorised): Promise<InteractionResponse<boolean>> {
-		if (isAuthorised(interaction, this.core.guild.unwrap().roles, this.accessLevel)) {
+		// TODO
+		if (isAuthorised(interaction, this.accessLevel, this.core.guild)) {
 			return this.execute(interaction);
 		} else {
 			return interaction.reply(this.$t('source', 'command_rejection_permission'));

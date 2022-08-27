@@ -1,7 +1,31 @@
-import { CommandInteraction, Interaction, InteractionType, RoleManager } from 'discord.js';
+import {
+	CommandInteraction,
+	Interaction,
+	InteractionType,
+	Guild,
+	GuildMember,
+	PermissionsBitField,
+} from 'discord.js';
 import InteractionHandler from '#core/composition/interaction/InteractionHandler';
+import Option from '#core/generics/Option';
+import { needsRegistration } from '#core/composition/command/accessLevelHelpers';
 
-function isAuthorised(interaction: CommandInteraction, roles: RoleManager,accessLevel: number): boolean {
+function isAuthorised(interaction: CommandInteraction, accessLevel: number, guild: Guild): boolean {
+	const member = new Option<GuildMember>(
+		guild.members.cache.get(interaction.user.id)
+	);
+
+	if (
+		accessLevel === -1 || member.isSome()
+		&& member.unwrap().permissions.bitfield ===  PermissionsBitField.Flags.Administrator
+	) {
+		return true;
+	}
+
+	if (needsRegistration(accessLevel)) {
+		// TODO
+	}
+
 	// TODO
 	return true;
 }
