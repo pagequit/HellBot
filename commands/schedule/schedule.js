@@ -9,9 +9,6 @@ class Schedule extends Command {
 	}
 
 	async execute(args, message) {
-		const prismaUser = await this.$prisma.getPrismaUserById(message.author.id);
-		const locale = prismaUser.locale;
-		
 		// Step 1: Parse the user's input
 		const datetimeList = args[0].split(',');
 
