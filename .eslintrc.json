@@ -1,0 +1,27 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 2021
+    },
+    "env": {
+        "browser": true,
+        "node": true,
+        "commonjs": true
+    },
+    "plugins": ["@typescript-eslint"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "prettier"
+    ],
+    "rules": {
+        "quotes": "off",
+        "@typescript-eslint/quotes": [
+            "warn",
+            "double",
+            { "avoidEscape": true }
+        ],
+        "semi": "off",
+        "@typescript-eslint/semi": ["warn", "always"]
+    }
+}

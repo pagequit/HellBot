@@ -1,164 +1,174 @@
+import * as fs from "node:fs";
 import {
-	Client,
-	GatewayIntentBits,
-	Guild,
-	RoleManager,
-	Routes,
-	SlashCommandBuilder,
-} from 'discord.js';
-import { REST } from '@discordjs/rest';
-import Hedis from 'hedis';
-import Command from '#core/composition/entity/Command';
-import { HellConfig } from '#core/types';
-import Extension from '#core/composition/entity/Extension';
-import loadEntities from '#core/composition/entity/loadEntities';
-import OptionMap from '#core/generics/OptionMap';
-import { Messages } from '#core/composition/i18n/Messages';
-import DiscordInteractionHandler from '#core/composition/interaction/DiscordInteractionHandler';
-import HedisInteractionHandler from '#core/composition/interaction/HedisInteractionHandler';
-import Option from './generics/Option';
-import HellStore from '#core/store/HellStore';
-import { isPrivate } from '#core/composition/command/accessLevelHelpers';
+    Client,
+    GatewayIntentBits,
+    Guild,
+    RESTPostAPIChatInputApplicationCommandsJSONBody,
+    Routes,
+    SlashCommandBuilder,
+} from "discord.js";
+import { HellConfig } from "../hell.config";
+import { REST } from "@discordjs/rest";
+import Hedis from "@pagequit/hedis";
+import Option, { None, Some } from "@pagequit/hedis/dist/unwrap/option";
+import Result, { Err, Ok } from "@pagequit/hedis/dist/unwrap/result";
+import OMap from "@pagequit/hedis/dist/unwrap/OMap";
+import Command from "#core/command/Command";
+import Help from "#core/command/help/Help";
+import { HellPlugin } from "#core/HellPlugin";
+import DiscordInteractionHandler from "#core/interaction/DiscordInteractionHandler";
+import HedisInteractionHandler from "#core/interaction/HedisInteractionHandler";
 
 export default class HellCore {
-	config: HellConfig;
-	client: Client;
-	rest: REST;
-	hedis: Hedis;
-	commands: OptionMap<string, Command>;
-	messages: Messages;
-	discordInteractionHandler: DiscordInteractionHandler;
-	hedisInteractionHandler: HedisInteractionHandler;
+    config: HellConfig;
+    discord: { client: Client; guild: Option<Guild>; rest: REST };
+    hedis: Hedis;
+    commands: OMap<string, Command>;
+    discordInteractionHandler: DiscordInteractionHandler;
+    hedisInteractionHandler: HedisInteractionHandler;
 
-	get redis(): typeof this.hedis.client {
-		return this.hedis.client;
-	}
+    get redisClient(): typeof this.hedis.client {
+        return this.hedis.client;
+    }
 
-	get guild(): Guild {
-		return new Option<Guild>(
-			this.client.guilds.cache.first()
-		).unwrap();
-	}
+    get discordClient(): typeof this.discord.client {
+        return this.discord.client;
+    }
 
-	constructor(config: HellConfig) {
-		this.config = config;
+    get guild(): Guild {
+        return this.discord.guild.unwrap();
+    }
 
-		this.client = new Client({
-			intents: [GatewayIntentBits.Guilds],
-		});
+    constructor(config: HellConfig) {
+        this.config = config;
 
-		const { restVersion, token } = config.discordConfig;
-		this.rest = new REST({
-			version: restVersion,
-		}).setToken(token);
+        const { restVersion, token } = config.discordConfig;
 
-		const { username, prefix, redisConfig } = config.hedisConfig;
-		this.hedis = new Hedis(username, prefix, redisConfig);
+        this.discord = {
+            client: new Client({ intents: [GatewayIntentBits.Guilds] }),
+            guild: None(),
+            rest: new REST({ version: restVersion }).setToken(token),
+        };
 
-		this.commands = new Map();
+        const { username, prefix, redisConfig } = config.hedisConfig;
+        this.hedis = new Hedis(username, prefix, redisConfig);
 
-		this.discordInteractionHandler = new DiscordInteractionHandler(this);
-		this.hedisInteractionHandler = new HedisInteractionHandler(this);
-	}
+        this.commands = new OMap();
 
-	sortGuildRoles(roles: RoleManager) {
-		return roles.cache.sort((cur, nxt) => {
-			return nxt.rawPosition - cur.rawPosition;
-		});
-	}
+        this.discordInteractionHandler = new DiscordInteractionHandler(this);
+        this.hedisInteractionHandler = new HedisInteractionHandler();
+    }
 
-	async initialize(): Promise<void> {
-		this.hedis.on('message', this.hedisInteractionHandler.handle.bind(this.hedisInteractionHandler));
-		await this.hedis.connect();
+    async initialize(): Promise<void> {
+        await this.hedis.init();
+        this.hedis.listen(this.hedisInteractionHandler.handle);
 
-		const hellStore = new HellStore();
-		await hellStore.setup(this.hedis.client);
+        this.discordClient.once("ready", (client) => {
+            this.discord.guild.insert(
+                client.guilds.cache.find((guild) => {
+                    return guild.id === this.config.discordConfig.guildId;
+                }) as Guild
+            );
 
-		this.client.once('ready', client => {
-			const { guildId } = this.config.discordConfig;
-			const guild = new Option(client.guilds.cache.find(g => g.id === guildId))
-				.unwrapOrElse(() => {
-					throw new Error(`Guild '${guildId}' not found.`);
-				});
+            console.log(`Logged in as: '${client.user.tag}'.`);
+        });
 
-			this.sortGuildRoles(guild.roles); // TODO: check when the cache becomes refreshed
+        this.discordClient.on(
+            "interactionCreate",
+            this.discordInteractionHandler.handle.bind(
+                this.discordInteractionHandler
+            )
+        );
 
-			console.log(`Logged in as: '${client.user.tag}'.`);
-		});
-		this.client.on('interactionCreate', this.discordInteractionHandler.handle.bind(this.discordInteractionHandler));
+        this.registerCommand("help", new Help(this.commands));
 
-		await this.loadCommands(__dirname + './../commands');
-		await this.initializeCommands();
+        const { basedir, pluginsPath } = this.config.appConfig;
+        await this.loadPlugins(`${basedir}/${pluginsPath}`)
+            .then(async (plugins) => {
+                await this.initializePlugins(plugins);
+            })
+            .catch((error) => {
+                console.error(
+                    `Unable to load plugins from: '${basedir}/${pluginsPath}'.`,
+                    error
+                );
+            });
 
-		const { basedir, extensionsPaths } = this.config;
-		await this.loadExtensions(`${basedir}/${extensionsPaths}`).then(async extensions => {
-			await this.initializeExtensions(extensions);
-		}).catch(error => {
-			console.error(`Unable to load extensions from: '${basedir}/${extensionsPaths}'.`, error);
-		});
+        await this.discordInteractionHandler.initialize();
+    }
 
-		this.deployCommands();
+    registerCommand(
+        name: string,
+        command: Command
+    ): Result<Promise<void>, Error> {
+        if (this.commands.has(name)) {
+            return Err(new Error(`Command '${name}' already exists!`));
+        }
+        this.commands.set(name, command);
 
-		this.client.login(this.config.discordConfig.token);
-	}
+        return Ok(command.initialize());
+    }
 
-	async registerCommand(name: string, command: Command): Promise<void> {
-		if (this.commands.has(name)) {
-			return Promise.reject(new Error(`Command '${name}' already exists!`));
-		}
+    async loadPlugins(dirname: string): Promise<OMap<string, HellPlugin>> {
+        const plugins = new OMap<string, Command>();
 
-		this.commands.set(name, command);
-		return command.initialize();
-	}
+        for (const name of fs.readdirSync(dirname)) {
+            const targetDir = `${dirname}/${name}`;
 
-	async loadCommands(dirname: string): Promise<void> {
-		this.commands = await loadEntities<Command>(dirname, this);
-	}
+            if (fs.statSync(targetDir).isDirectory()) {
+                const HellPlugin = await import(targetDir);
+                plugins.set(name, new HellPlugin.default(dirname));
+            }
+        }
 
-	async initializeCommands(): Promise<void> {
-		for (const command of this.commands.values()) {
-			await command.initialize();
-		}
-	}
+        return plugins;
+    }
 
-	async deployCommands(): Promise<unknown[]> {
-		const { clientId, guildId } = this.config.discordConfig;
+    async initializePlugins(
+        plugins: OMap<string, HellPlugin>
+    ): Promise<void[]> {
+        return Promise.all(
+            Array.from(plugins.values()).map((plugin: HellPlugin) =>
+                plugin.initialize(this)
+            )
+        );
+    }
 
-		const distCommands = [];
-		const distGuildCommands = [];
-		for (const [name, command] of this.commands) {
-			if (name === 'default') {
-				continue;
-			}
+    async login(): Promise<string> {
+        return this.discordClient.login(this.config.discordConfig.token);
+    }
 
-			const builtCommand = new SlashCommandBuilder()
-				.setName(name)
-				.setDescription(command.description)
-				.toJSON();
+    async deployCommands(): Promise<unknown[]> {
+        const { clientId, guildId } = this.config.discordConfig;
 
-			if (isPrivate(command.accessLevel)) {
-				distGuildCommands.push(builtCommand);
-			}
-			else {
-				distCommands.push(builtCommand);
-			}
-		}
+        const distCommands: RESTPostAPIChatInputApplicationCommandsJSONBody[] =
+            [];
+        const distGuildCommands: RESTPostAPIChatInputApplicationCommandsJSONBody[] =
+            [];
 
-		return Promise.all([
-			this.rest.put(Routes.applicationGuildCommands(clientId, guildId), {
-				body: distGuildCommands,
-			}),
-			this.rest.put(Routes.applicationCommands(clientId), {
-				body: distCommands,
-			})
-		]);
-	}
+        for (const [name, command] of this.commands) {
+            const builtCommand = new SlashCommandBuilder()
+                .setName(name)
+                .setDescription(command.description)
+                .toJSON();
 
-	async loadExtensions(dirname: string): Promise<OptionMap<string, Extension>> {
-		return loadEntities<Extension>(dirname, this);
-	}
+            if (command.isPublic) {
+                distCommands.push(builtCommand);
+            } else {
+                distGuildCommands.push(builtCommand);
+            }
+        }
 
-	async initializeExtensions(extensions: OptionMap<string, Extension>): Promise<unknown[]> {
-		return Promise.all(Array.from(extensions.values()).map(extension => extension.initialize(this)));
-	}
+        return Promise.all([
+            this.discord.rest.put(
+                Routes.applicationGuildCommands(clientId, guildId),
+                {
+                    body: distGuildCommands,
+                }
+            ),
+            this.discord.rest.put(Routes.applicationCommands(clientId), {
+                body: distCommands,
+            }),
+        ]);
+    }
 }

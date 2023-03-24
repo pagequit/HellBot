@@ -1,1 +1,0 @@
-export { HellConfig } from './HellConfig';
