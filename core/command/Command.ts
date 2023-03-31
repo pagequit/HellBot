@@ -3,6 +3,7 @@ import {
     Guild,
     InteractionResponse,
     PermissionsBitField,
+    SlashCommandBuilder,
 } from "discord.js";
 import loadMessages from "#core/intl/loadMessages";
 import { Messages } from "#core/intl/Messages";
@@ -16,6 +17,7 @@ export default abstract class Command {
     icon: string;
     isPublic: boolean;
     messages: Messages;
+    slashCommandBuilder: SlashCommandBuilder;
 
     get description(): string {
         return this.messages.get("source")?.get("description") ?? "n/a";
@@ -27,6 +29,7 @@ export default abstract class Command {
         this.isPublic = false;
         this.icon = ":question:";
         this.messages = new Map();
+        this.slashCommandBuilder = new SlashCommandBuilder();
     }
 
     hasAccess(requestLevel: number): boolean {

@@ -146,16 +146,13 @@ export default class HellCore {
         const distGuildCommands: RESTPostAPIChatInputApplicationCommandsJSONBody[] =
             [];
 
-        for (const [name, command] of this.commands) {
-            const builtCommand = new SlashCommandBuilder()
-                .setName(name)
-                .setDescription(command.description)
-                .toJSON();
+        for (const [_, command] of this.commands) {
+            const buildCommand = command.slashCommandBuilder.toJSON();
 
             if (command.isPublic) {
-                distCommands.push(builtCommand);
+                distCommands.push(buildCommand);
             } else {
-                distGuildCommands.push(builtCommand);
+                distGuildCommands.push(buildCommand);
             }
         }
 
