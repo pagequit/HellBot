@@ -25,7 +25,10 @@ export default class Help extends Command {
     async execute(
         interaction: CommandInteraction
     ): Promise<InteractionResponse<boolean>> {
-        const reply = t.call(this, interaction.locale.slice(0, 2), "reply");
+        const locale = interaction.locale.slice(0, 2);
+        const reply = t.call(this, locale, "reply");
+
+        this.toEmbed(interaction.locale);
 
         return interaction.reply(reply);
     }

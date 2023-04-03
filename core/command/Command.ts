@@ -4,6 +4,7 @@ import {
     InteractionResponse,
     PermissionsBitField,
     SlashCommandBuilder,
+    Locale
 } from "discord.js";
 import loadMessages from "#core/intl/loadMessages";
 import { Messages } from "#core/intl/Messages";
@@ -18,10 +19,6 @@ export default abstract class Command {
     isPublic: boolean;
     messages: Messages;
     slashCommandBuilder: SlashCommandBuilder;
-
-    get description(): string {
-        return this.messages.get("source")?.get("description") ?? "n/a";
-    }
 
     constructor(dirname: string) {
         this.dirname = dirname;
@@ -60,6 +57,12 @@ export default abstract class Command {
         }
 
         return Err(new PermissionsRejection());
+    }
+
+    toEmbed(locale: Locale) {
+        const description_localizations = this.slashCommandBuilder.description_localizations?.[locale];
+        const description = description_localizations ?? this.slashCommandBuilder.description;
+        description;
     }
 
     abstract execute(
