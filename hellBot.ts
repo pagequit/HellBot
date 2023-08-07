@@ -1,13 +1,10 @@
-#!/usr/bin/node
+import "https://deno.land/std@0.197.0/dotenv/load.ts";
+import { Client, Events, GatewayIntentBits } from "npm:discord.js";
 
-import "dotenv/config";
-import HellBot from "#core/HellCore";
-import config from "./hell.config";
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-!(async function () {
-    const hellBot = new HellBot(config);
+client.once(Events.ClientReady, (client: Client<true>) => {
+  console.log(`Logged in as ${client.user.tag}`);
+});
 
-    await hellBot.initialize();
-    await hellBot.login();
-    await hellBot.deployCommands();
-})();
+client.login(Deno.env.get("token"));
