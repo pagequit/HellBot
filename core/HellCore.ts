@@ -1,5 +1,5 @@
-import "https://deno.land/std@0.197.0/dotenv/load.ts";
-import { Client, Events, GatewayIntentBits } from "npm:discord.js@14.12.1";
+import "std/dotenv/load.ts";
+import { Client, Events, GatewayIntentBits } from "discord";
 
 export default class HellCore {
   client: Client;

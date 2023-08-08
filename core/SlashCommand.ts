@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "npm:discord.js@14.12.1";
+import { SlashCommandBuilder } from "discord";
 
 export default interface SlashCommand {
   data: SlashCommandBuilder;
