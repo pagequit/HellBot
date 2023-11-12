@@ -21,32 +21,49 @@ export default class HellCore {
       console.log(`Logged in as ${client.user.tag}`);
     });
 
-    this.client.on("interactionCreate", async (interaction) => {
+    this.client.on("interactionCreate", (interaction) => {
       if (!interaction.isChatInputCommand()) {
         return;
       }
 
       if (interaction.commandName === "wichtel") {
-        interaction.options.get("wichtel")?.value?.toString().split(" ")
-          .forEach((wichtel) => {
-            const match = interaction.guild?.members.cache.find((member) =>
-              member.displayName === wichtel
-            );
-            console.log(match);
+        const list = interaction.options.get("wichtel")!.value!.toString()
+          .split(" ");
+        const length = list.length;
+        const pairs = [];
+        let pair = [];
 
-            if (match) {
-              match.user.send("ACK");
-            }
+        for (let i = 0; i < length; i++) {
+          pair.push(...list.splice(Math.floor(Math.random() * list.length), 1));
+
+          if (pair.length > 1) {
+            pairs.push(pair);
+            pair = [];
+          }
+        }
+
+        for (const [a, b] of pairs) {
+          console.log(a, b);
+          const memberA = interaction.guild?.members.cache.find((member) => {
+            return member.displayName === a;
+          });
+          const memberB = interaction.guild?.members.cache.find((member) => {
+            return member.displayName === b;
           });
 
-        interaction.reply("ACK");
+          if (memberA && memberB) {
+            memberA.user.send(memberB.displayName);
+            memberB.user.send(memberA.displayName);
+          } else {
+            interaction.user.send(`Meh, ${a} or ${b} are not on the server.`);
+          }
+        }
       }
     });
   }
 
   login(token: string) {
     this.client.login(token);
-    registerSlashCommands();
   }
 }
 
