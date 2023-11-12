@@ -6,6 +6,6 @@
     "discord": "npm:discord.js@14.12.1"
   },
   "tasks": {
-    "run": "deno run --allow-net=discord.com,gateway.discord.gg --allow-read --allow-env hellBot.ts"
+    "run": "deno run --allow-net=discord.com,gateway.discord.gg --allow-read --allow-env main.ts"
   }
 }
