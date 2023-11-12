@@ -1,2 +1,2 @@
 import HellCore from "./core/HellCore.ts";
-new HellCore(`${Deno.env.get("DISCORD_KEY")}`);
+new HellCore().login(`${Deno.env.get("DISCORD_TOKEN")}`);
