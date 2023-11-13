@@ -43,7 +43,7 @@ export default class HellCore {
         }
 
         for (const [a, b] of pairs) {
-          console.log(a, b);
+          // console.log(a, b);
           const memberA = interaction.guild?.members.cache.find((member) => {
             return member.displayName === a;
           });
