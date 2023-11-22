@@ -1,2 +1,4 @@
-import HellCore from "./core/HellCore.ts";
-new HellCore().login(`${Deno.env.get("DISCORD_TOKEN")}`);
+import HellCore from "/core/HellCore.ts";
+import { discord } from "/config.ts";
+
+new HellCore().login(discord.token);
