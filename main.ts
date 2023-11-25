@@ -1,9 +1,7 @@
 import HellCore from "/core/HellCore.ts";
 import { discord } from "/config.ts";
-import ping from "/feature/ping/index.ts";
 
 const hellBot = new HellCore();
+hellBot.loadFeatures();
 
-hellBot.use(ping);
-
-hellBot.login(discord.token);
+// hellBot.login(discord.token);
