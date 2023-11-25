@@ -1,7 +1,7 @@
-export type Command = {
-  tag: "command";
-  name: string;
-  execute: (args: string[]) => void;
-};
+import type { SlashCommandBuilder } from "discord";
 
-export default "command";
+export interface Command {
+  name: string;
+  data: SlashCommandBuilder;
+  handler: (args: string[]) => void;
+}

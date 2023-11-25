@@ -1,51 +1,49 @@
-import { Client, Events, GatewayIntentBits } from "discord";
-import type { Feature } from "./Feature.ts";
-import Plugin from "./Plugin.ts";
-import Command from "./Command.ts";
+import { Collection, Err, Result } from "unwrap";
+import {
+  ChatInputCommandInteraction,
+  Client,
+  Events,
+  GatewayIntentBits,
+  Interaction,
+} from "discord";
 
 export default class HellCore {
   client: Client;
+  chatInputCommandHandlers: Collection<
+    string,
+    (interactin: ChatInputCommandInteraction) => Result<void, string>
+  >;
 
   constructor() {
     this.client = new Client({
       intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
     });
+    this.chatInputCommandHandlers = new Collection();
 
     this.client.once(Events.ClientReady, (client: Client<true>) => {
       console.log(`Logged in as ${client.user.tag}`);
     });
-  }
 
-  use(feature: Feature) {
-    console.log(feature);
-    match(feature);
+    this.client.on(Events.InteractionCreate, (interaction: Interaction) => {
+      if (!interaction.isChatInputCommand()) {
+        return;
+      }
+
+      this.chatInputCommandHandlers.get(
+        interaction.commandName,
+      ).getOrInsertWith(() => () =>
+        Err(`Command ${interaction.commandName} not found.`)
+      )(interaction).isErrAnd((err) => {
+        interaction.reply({ content: err }).catch((error) => {
+          console.error(error);
+        });
+
+        return true;
+      });
+    });
   }
 
   login(token: string) {
     this.client.login(token);
-  }
-
-  async loadFeatures() {
-    for await (
-      const feature of Deno.readDir(Deno.cwd() + "/features")
-    ) {
-      const module = await import(`../features/${feature.name}/index.ts`);
-      this.use(module.default);
-    }
-  }
-}
-
-function match<T>(value: Feature): T {
-  switch (value.tag) {
-    case Plugin: {
-      console.log("plugin");
-      console.log(value);
-      return value.name as T;
-    }
-    case Command: {
-      console.log("command");
-      console.log(value);
-      return value.name as T;
-    }
   }
 }

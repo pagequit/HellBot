@@ -3,6 +3,7 @@
     "/": "./",
     "./": "./",
     "std/": "https://deno.land/std@0.206.0/",
+    "unwrap": "https://deno.land/x/unwrap@v1.1.2/mod.ts",
     "discord": "npm:discord.js@14.12.1"
   },
   "tasks": {
