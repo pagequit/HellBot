@@ -1,8 +1,9 @@
 import type { ChatInputCommandInteraction, SlashCommandBuilder } from "discord";
+import type { Result } from "unwrap";
 
 export type ChatInputCommandHandler = (
   interaction: ChatInputCommandInteraction,
-) => void;
+) => Result<void, string>;
 
 export interface Command {
   data: SlashCommandBuilder;

@@ -1,4 +1,4 @@
-import { Collection, Err, Result } from "unwrap";
+import { Collection, Err, Ok, Result } from "unwrap";
 import {
   ChatInputCommandInteraction,
   Client,
@@ -51,10 +51,7 @@ export default class HellCore {
         const { default: featureModule } = await import(
           `../features/${feature.name}/index.ts`
         );
-        this.chatInputCommandHandlers.set(
-          featureModule.data.name,
-          featureModule.handler,
-        );
+        this.register(featureModule.data, featureModule.handler);
       }
     }
   }
