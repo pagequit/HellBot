@@ -1,4 +1,11 @@
-import type { Command } from "./Command.ts";
-import type { Plugin } from "./Plugin.ts";
+import type { ChatInputCommandInteraction, SlashCommandBuilder } from "discord";
+import type { Result } from "unwrap";
 
-export type Feature = Command | Plugin;
+export type Feature<T> = {
+  register: (
+    register: (
+      data: SlashCommandBuilder,
+      handler: (interaction: ChatInputCommandInteraction) => void,
+    ) => Result<void, string>,
+  ) => Result<void, string>;
+} & T;

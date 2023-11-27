@@ -5,7 +5,9 @@ import {
   Events,
   GatewayIntentBits,
   Interaction,
+  SlashCommandBuilder,
 } from "discord";
+import { ChatInputCommandHandler } from "./Command.ts";
 
 export default class HellCore {
   client: Client;
@@ -41,6 +43,32 @@ export default class HellCore {
         return true;
       });
     });
+  }
+
+  async loadFeatures() {
+    for await (const feature of Deno.readDir(Deno.cwd() + "/features")) {
+      if (feature.isDirectory) {
+        const { default: featureModule } = await import(
+          `../features/${feature.name}/index.ts`
+        );
+        this.chatInputCommandHandlers.set(
+          featureModule.data.name,
+          featureModule.handler,
+        );
+      }
+    }
+  }
+
+  register(
+    data: SlashCommandBuilder,
+    handler: ChatInputCommandHandler,
+  ): Result<void, string> {
+    if (this.chatInputCommandHandlers.has(data.name)) {
+      return Err(`Command ${data.name} already registered.`);
+    }
+
+    this.chatInputCommandHandlers.set(data.name, handler);
+    return Ok(undefined);
   }
 
   login(token: string) {

@@ -1,7 +1,10 @@
-import type { SlashCommandBuilder } from "discord";
+import type { ChatInputCommandInteraction, SlashCommandBuilder } from "discord";
+
+export type ChatInputCommandHandler = (
+  interaction: ChatInputCommandInteraction,
+) => void;
 
 export interface Command {
-  name: string;
   data: SlashCommandBuilder;
-  handler: (args: string[]) => void;
+  handler: ChatInputCommandHandler;
 }

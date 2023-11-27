@@ -1,7 +1,21 @@
-import type { Command } from "/core/Command.ts";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord";
+import type { Result } from "unwrap";
+import type { Feature } from "/core/Feature.ts";
+import type { ChatInputCommandHandler, Command } from "/core/Command.ts";
 
 export default {
-  name: "ping",
-  execute: (args: string[]) => {
+  data: new SlashCommandBuilder()
+    .setName("ping")
+    .setDescription("Replies with Pong!"),
+  handler(interaction: ChatInputCommandInteraction) {
+    interaction.reply("Pong!");
   },
-} as Command;
+  register(
+    register: (
+      data: SlashCommandBuilder,
+      handler: ChatInputCommandHandler,
+    ) => Result<void, string>,
+  ): Result<void, string> {
+    return register(this.data, this.handler);
+  },
+} satisfies Feature<Command>;
