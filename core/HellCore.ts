@@ -12,7 +12,7 @@ import { Feature } from "./Feature.ts";
 
 export default class HellCore {
   client: Client;
-  chatInputCommandHandlers: Collection<
+  chatInputCommands: Collection<
     string,
     {
       data: SlashCommandBuilder;
@@ -24,7 +24,7 @@ export default class HellCore {
     this.client = new Client({
       intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
     });
-    this.chatInputCommandHandlers = new Collection();
+    this.chatInputCommands = new Collection();
 
     this.client.once(Events.ClientReady, (client: Client<true>) => {
       console.log(`Logged in as ${client.user.tag}`);
@@ -35,7 +35,7 @@ export default class HellCore {
         return;
       }
 
-      const result = this.chatInputCommandHandlers.get(
+      const result = this.chatInputCommands.get(
         interaction.commandName,
       ).map(({ handler }) => handler(interaction)).okOr(
         `Command ${interaction.commandName} not found.`,
@@ -64,7 +64,7 @@ export default class HellCore {
 
   async registerCommands() {
     await registerSlashCommands(
-      [...this.chatInputCommandHandlers.map(({ data }) => data).values()],
+      [...this.chatInputCommands.map(({ data }) => data).values()],
     );
   }
 
@@ -75,12 +75,12 @@ export default class HellCore {
       handler: ChatInputCommandHandler;
     },
   ): Result<void, string> {
-    if (this.chatInputCommandHandlers.has(name)) {
+    if (this.chatInputCommands.has(name)) {
       return Err(`Command ${name} already registered.`);
     }
 
-    this.chatInputCommandHandlers.set(name, { data, handler });
-    return Ok(undefined);
+    this.chatInputCommands.set(name, { data, handler });
+    return Ok(undefined as never); // FIXME
   }
 
   login(token: string) {
