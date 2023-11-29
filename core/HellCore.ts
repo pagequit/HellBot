@@ -1,6 +1,5 @@
 import { Collection, Err, Ok, Result } from "unwrap";
 import {
-  ChatInputCommandInteraction,
   Client,
   Events,
   GatewayIntentBits,
@@ -15,7 +14,10 @@ export default class HellCore {
   client: Client;
   chatInputCommandHandlers: Collection<
     string,
-    (interactin: ChatInputCommandInteraction) => Result<void, string>
+    {
+      data: SlashCommandBuilder;
+      handler: ChatInputCommandHandler;
+    }
   >;
 
   constructor() {
@@ -33,17 +35,15 @@ export default class HellCore {
         return;
       }
 
-      this.chatInputCommandHandlers.get(
+      const result = this.chatInputCommandHandlers.get(
         interaction.commandName,
-      ).getOrInsertWith(() => () =>
-        Err(`Command ${interaction.commandName} not found.`)
-      )(interaction).isErrAnd((err) => {
-        interaction.reply({ content: err }).catch((error) => {
-          console.error(error);
-        });
+      ).map(({ handler }) => handler(interaction)).okOr(
+        `Command ${interaction.commandName} not found.`,
+      ).flatten();
 
-        return true;
-      });
+      if (result.isErr()) {
+        console.error(result.unwrapErr());
+      }
     });
   }
 
@@ -54,24 +54,32 @@ export default class HellCore {
           await import(
             `${path}/${feature.name}/index.ts`
           );
-        this.register(featureModule.data, featureModule.handler);
+        this.register(featureModule.data.name, {
+          data: featureModule.data,
+          handler: featureModule.handler,
+        });
       }
     }
   }
 
   async registerCommands() {
-    await registerSlashCommands([...this.chatInputCommandHandlers.keys()]); // FIXME
+    await registerSlashCommands(
+      [...this.chatInputCommandHandlers.map(({ data }) => data).values()],
+    );
   }
 
   register(
-    data: SlashCommandBuilder,
-    handler: ChatInputCommandHandler,
+    name: string,
+    { data, handler }: {
+      data: SlashCommandBuilder;
+      handler: ChatInputCommandHandler;
+    },
   ): Result<void, string> {
-    if (this.chatInputCommandHandlers.has(data.name)) {
-      return Err(`Command ${data.name} already registered.`);
+    if (this.chatInputCommandHandlers.has(name)) {
+      return Err(`Command ${name} already registered.`);
     }
 
-    this.chatInputCommandHandlers.set(data.name, handler);
+    this.chatInputCommandHandlers.set(name, { data, handler });
     return Ok(undefined);
   }
 
