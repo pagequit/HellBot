@@ -6,7 +6,8 @@ import {
   Interaction,
   SlashCommandBuilder,
 } from "discord";
-import { ChatInputCommandHandler, Command } from "./Command.ts";
+import type { ChatInputCommandHandler, CommandDTO } from "./Command.ts";
+import Command from "./Command.ts";
 import { registerSlashCommands } from "./procedures/registerSlashCommands.ts";
 import { Feature } from "./Feature.ts";
 
@@ -50,11 +51,12 @@ export default class HellCore {
   async loadFeatures(path: string) {
     for await (const feature of Deno.readDir(path)) {
       if (feature.isDirectory) {
-        const { default: featureModule }: { default: Feature<Command> } =
+        const { default: featureModule }: { default: Feature & Command } =
           await import(
             `${path}/${feature.name}/index.ts`
           );
-        this.register(featureModule.data.name, {
+        this.register({
+          name: featureModule.data.name,
           data: featureModule.data,
           handler: featureModule.handler,
         });
@@ -68,13 +70,7 @@ export default class HellCore {
     );
   }
 
-  register(
-    name: string,
-    { data, handler }: {
-      data: SlashCommandBuilder;
-      handler: ChatInputCommandHandler;
-    },
-  ): Result<void, string> {
+  register({ name, data, handler }: CommandDTO): Result<void, string> {
     if (this.chatInputCommands.has(name)) {
       return Err(`Command ${name} already registered.`);
     }

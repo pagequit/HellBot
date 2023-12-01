@@ -1,11 +1,8 @@
-import type { ChatInputCommandInteraction, SlashCommandBuilder } from "discord";
 import type { Result } from "unwrap";
+import type { CommandDTO } from "./Command.ts";
 
-export type Feature<T> = {
+export type Feature = {
   register: (
-    register: (
-      data: SlashCommandBuilder,
-      handler: (interaction: ChatInputCommandInteraction) => void,
-    ) => Result<void, string>,
+    register: (command: CommandDTO) => Result<void, string>,
   ) => Result<void, string>;
-} & T;
+};
