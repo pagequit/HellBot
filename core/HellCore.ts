@@ -1,3 +1,4 @@
+import type { HellConfig } from "./HellConfig.ts";
 import type { Command } from "./Command.ts";
 import { Collection, Err, Ok, Result } from "unwrap";
 import {
@@ -11,11 +12,14 @@ import { registerSlashCommands } from "./procedures/registerSlashCommands.ts";
 import HellLog from "./HellLog.ts";
 
 export default class HellCore {
-  chatInputCommands: Collection<string, Command>;
-  client: Client;
-  logger: HellLog;
+  private config: HellConfig;
+  private chatInputCommands: Collection<string, Command>;
 
-  constructor({ botlog }: { botlog: { id: string; token: string } }) {
+  public client: Client;
+  public logger: HellLog;
+
+  constructor(config: HellConfig) {
+    this.config = config;
     this.chatInputCommands = new Collection();
 
     this.client = new Client({
@@ -24,13 +28,13 @@ export default class HellCore {
 
     this.logger = new HellLog(
       new WebhookClient({
-        id: botlog.id,
-        token: botlog.token,
+        id: config.botlog.id,
+        token: config.botlog.token,
       }),
     );
 
     this.client.once(Events.ClientReady, (client: Client<true>) => {
-      console.log(`Logged in as ${client.user.tag}`);
+      this.logger.log(`Logged in as ${client.user.tag}`);
     });
 
     this.client.on(Events.InteractionCreate, (interaction: Interaction) => {
@@ -41,18 +45,24 @@ export default class HellCore {
       const command = this.chatInputCommands.get(interaction.commandName);
 
       if (command.isNone()) {
-        console.error(`Command ${interaction.commandName} not found.`);
+        this.logger.error(`Command ${interaction.commandName} not found.`);
       }
 
       try {
         command.unwrap().handle(interaction);
       } catch (error) {
-        console.error(error);
+        this.logger.error(error.message, error);
       }
     });
   }
 
-  async loadFeatures(path: string) {
+  public async init(): Promise<void> {
+    await this.loadFeatures(this.config.path.features);
+    await this.registerCommands();
+    await this.login(this.config.discord.token);
+  }
+
+  private async loadFeatures(path: string) {
     for await (const feature of Deno.readDir(path)) {
       if (feature.isDirectory) {
         const { default: featureModule }: { default: Command } = await import(
@@ -63,13 +73,13 @@ export default class HellCore {
     }
   }
 
-  async registerCommands() {
+  private async registerCommands() {
     await registerSlashCommands(
       [...this.chatInputCommands.map(({ data }) => data).values()],
     );
   }
 
-  register(
+  private register(
     name: string,
     command: Command,
   ): Result<Collection<string, Command>, string> {
@@ -80,7 +90,7 @@ export default class HellCore {
     return Ok(this.chatInputCommands.set(name, command));
   }
 
-  login(token: string) {
-    this.client.login(token);
+  private login(token: string): Promise<string> {
+    return this.client.login(token);
   }
 }

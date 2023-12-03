@@ -3,7 +3,7 @@ import { load } from "std/dotenv/mod.ts";
 const env = await load();
 
 export const path = {
-  features: env.FEATURES_PATH,
+  features: `${Deno.cwd()}/${env.FEATURES_PATH}`,
 };
 
 export const discord = {
