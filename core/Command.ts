@@ -1,35 +1,10 @@
 import type { ChatInputCommandInteraction, SlashCommandBuilder } from "discord";
-import type { Result } from "unwrap";
-import type HellCore from "./HellCore.ts";
 
-export type ChatInputCommandHandler = (
+export type ChatInputCommandHandle = (
   interaction: ChatInputCommandInteraction,
-) => Result<void, string>;
+) => Promise<void>;
 
-export type CommandDTO = {
-  name: string;
+export type Command = {
   data: SlashCommandBuilder;
-  handler: ChatInputCommandHandler;
+  handle: ChatInputCommandHandle;
 };
-
-export default abstract class Command {
-  data: SlashCommandBuilder;
-
-  constructor(
-    data: SlashCommandBuilder,
-  ) {
-    this.data = data;
-  }
-
-  abstract handler(
-    interaction: ChatInputCommandInteraction,
-  ): Result<void, string>;
-
-  register(register: HellCore["register"]): Result<void, string> {
-    return register({
-      name: this.data.name,
-      data: this.data,
-      handler: this.handler,
-    });
-  }
-}

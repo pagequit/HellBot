@@ -1,16 +1,12 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord";
-import { Ok } from "unwrap";
-import type { Result } from "unwrap";
-import type { Feature } from "/core/Feature.ts";
-import Command from "/core/Command.ts";
+import type { Command } from "/core/Command.ts";
+import { SlashCommandBuilder } from "discord";
 
-export default class Ping extends Command implements Feature {
-  data = new SlashCommandBuilder()
+export default {
+  data: new SlashCommandBuilder()
     .setName("ping")
-    .setDescription("Replies with Pong!");
+    .setDescription("Replies with Pong!"),
 
-  handler(interaction: ChatInputCommandInteraction): Result<void, string> {
-    interaction.reply("Pong!");
-    return Ok(undefined as never);
-  }
-}
+  async handle(interaction) {
+    await interaction.reply("Pong!");
+  },
+} satisfies Command;

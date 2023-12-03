@@ -1,31 +1,33 @@
+import type { Command } from "./Command.ts";
 import { Collection, Err, Ok, Result } from "unwrap";
 import {
   Client,
   Events,
   GatewayIntentBits,
   Interaction,
-  SlashCommandBuilder,
+  WebhookClient,
 } from "discord";
-import type { ChatInputCommandHandler, CommandDTO } from "./Command.ts";
-import Command from "./Command.ts";
 import { registerSlashCommands } from "./procedures/registerSlashCommands.ts";
-import { Feature } from "./Feature.ts";
+import HellLog from "./HellLog.ts";
 
 export default class HellCore {
+  chatInputCommands: Collection<string, Command>;
   client: Client;
-  chatInputCommands: Collection<
-    string,
-    {
-      data: SlashCommandBuilder;
-      handler: ChatInputCommandHandler;
-    }
-  >;
+  logger: HellLog;
 
-  constructor() {
+  constructor({ botlog }: { botlog: { id: string; token: string } }) {
+    this.chatInputCommands = new Collection();
+
     this.client = new Client({
       intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
     });
-    this.chatInputCommands = new Collection();
+
+    this.logger = new HellLog(
+      new WebhookClient({
+        id: botlog.id,
+        token: botlog.token,
+      }),
+    );
 
     this.client.once(Events.ClientReady, (client: Client<true>) => {
       console.log(`Logged in as ${client.user.tag}`);
@@ -36,14 +38,16 @@ export default class HellCore {
         return;
       }
 
-      const result = this.chatInputCommands.get(
-        interaction.commandName,
-      ).map(({ handler }) => handler(interaction)).okOr(
-        `Command ${interaction.commandName} not found.`,
-      ).flatten();
+      const command = this.chatInputCommands.get(interaction.commandName);
 
-      if (result.isErr()) {
-        console.error(result.unwrapErr());
+      if (command.isNone()) {
+        console.error(`Command ${interaction.commandName} not found.`);
+      }
+
+      try {
+        command.unwrap().handle(interaction);
+      } catch (error) {
+        console.error(error);
       }
     });
   }
@@ -51,15 +55,10 @@ export default class HellCore {
   async loadFeatures(path: string) {
     for await (const feature of Deno.readDir(path)) {
       if (feature.isDirectory) {
-        const { default: featureModule }: { default: Feature & Command } =
-          await import(
-            `${path}/${feature.name}/index.ts`
-          );
-        this.register({
-          name: featureModule.data.name,
-          data: featureModule.data,
-          handler: featureModule.handler,
-        });
+        const { default: featureModule }: { default: Command } = await import(
+          `${path}/${feature.name}/index.ts`
+        );
+        this.register(featureModule.data.name, featureModule);
       }
     }
   }
@@ -70,13 +69,15 @@ export default class HellCore {
     );
   }
 
-  register({ name, data, handler }: CommandDTO): Result<void, string> {
+  register(
+    name: string,
+    command: Command,
+  ): Result<Collection<string, Command>, string> {
     if (this.chatInputCommands.has(name)) {
       return Err(`Command ${name} already registered.`);
     }
 
-    this.chatInputCommands.set(name, { data, handler });
-    return Ok(undefined as never); // FIXME
+    return Ok(this.chatInputCommands.set(name, command));
   }
 
   login(token: string) {
