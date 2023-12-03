@@ -6,6 +6,8 @@ export const path = {
   features: `${Deno.cwd()}/${env.FEATURES_PATH}`,
 };
 
+console.log(path.features);
+
 export const discord = {
   token: env.DISCORD_TOKEN,
   guildId: env.HELLNET_ID,

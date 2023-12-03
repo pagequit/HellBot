@@ -18,7 +18,7 @@ export default class HellLog {
           .setColor(0xf2f3f5)
           .setDescription(message)
           .setTimestamp(new Date())
-          .setURL("https://dash.deno.com/"),
+          .setURL("https://dash.deno.com/projects/hellbot/logs"),
       ],
     });
   }
@@ -33,7 +33,7 @@ export default class HellLog {
           .setColor(0xf0b232)
           .setDescription(message)
           .setTimestamp(new Date())
-          .setURL("https://dash.deno.com/"),
+          .setURL("https://dash.deno.com/projects/hellbot/logs"),
       ],
     });
   }
@@ -48,7 +48,7 @@ export default class HellLog {
           .setColor(0xf23f43)
           .setDescription(message)
           .setTimestamp(new Date())
-          .setURL("https://dash.deno.com/"),
+          .setURL("https://dash.deno.com/projects/hellbot/logs"),
       ],
     });
   }
