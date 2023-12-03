@@ -65,8 +65,9 @@ export default class HellCore {
   private async loadFeatures(path: string) {
     for await (const feature of Deno.readDir(path)) {
       if (feature.isDirectory) {
+        const modulePath = `${path}/${feature.name}/index.ts`;
         const { default: featureModule }: { default: Command } = await import(
-          `${path}/${feature.name}/index.ts`
+          modulePath
         );
         this.register(featureModule.data.name, featureModule);
       }
