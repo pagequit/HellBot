@@ -12,14 +12,11 @@ import { registerSlashCommands } from "./procedures/registerSlashCommands.ts";
 import HellLog from "./HellLog.ts";
 
 export default class HellCore {
-  private config: HellConfig;
-  private chatInputCommands: Collection<string, Command>;
-
-  public client: Client;
-  public logger: HellLog;
+  chatInputCommands: Collection<string, Command>;
+  client: Client;
+  logger: HellLog;
 
   constructor(config: HellConfig) {
-    this.config = config;
     this.chatInputCommands = new Collection();
 
     this.client = new Client({
@@ -56,31 +53,13 @@ export default class HellCore {
     });
   }
 
-  public async init(): Promise<void> {
-    await this.loadFeatures(this.config.path.features);
-    await this.registerCommands();
-    await this.login(this.config.discord.token);
-  }
-
-  private async loadFeatures(path: string) {
-    for await (const feature of Deno.readDir(path)) {
-      if (feature.isDirectory) {
-        const modulePath = `${path}/${feature.name}/index.ts`;
-        const { default: featureModule }: { default: Command } = await import(
-          modulePath
-        );
-        this.register(featureModule.data.name, featureModule);
-      }
-    }
-  }
-
-  private async registerCommands() {
+  async registerCommands() {
     await registerSlashCommands(
       [...this.chatInputCommands.map(({ data }) => data).values()],
     );
   }
 
-  private register(
+  register(
     name: string,
     command: Command,
   ): Result<Collection<string, Command>, string> {
@@ -91,7 +70,7 @@ export default class HellCore {
     return Ok(this.chatInputCommands.set(name, command));
   }
 
-  private login(token: string): Promise<string> {
+  login(token: string): Promise<string> {
     return this.client.login(token);
   }
 }

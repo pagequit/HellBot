@@ -8,7 +8,4 @@ export type HellConfig = {
     guildId: string;
     clientId: string;
   };
-  path: {
-    features: string;
-  };
 };

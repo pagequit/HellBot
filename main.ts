@@ -1,4 +1,4 @@
 import HellCore from "/core/HellCore.ts";
-import { botlog, discord, path } from "/config.ts";
+import { botlog, discord } from "/config.ts";
 
-new HellCore({ botlog, discord, path }).init();
+new HellCore({ botlog, discord }).init();
