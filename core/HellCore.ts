@@ -53,19 +53,20 @@ export default class HellCore {
     });
   }
 
-  async use(feature: Feature): Promise<void> {
-    return await feature.setup(this);
+  use(feature: Feature): void {
+    feature.setup(this);
   }
 
-  addChatInputCommand(
-    name: string,
-    command: Command,
-  ): Result<Collection<string, Command>, string> {
-    if (this.chatInputCommands.has(name)) {
-      return Err(`Command ${name} already registered.`);
-    }
+  addChatInputCommand(command: Command): Result<void, string> {
+    if (this.chatInputCommands.has(command.data.name)) {
+      const error = `Command ${command.data.name} already registered.`;
+      this.logger.error(error);
 
-    return Ok(this.chatInputCommands.set(name, command));
+      return Err(error);
+    }
+    this.chatInputCommands.set(command.data.name, command);
+
+    return Ok(undefined);
   }
 
   login(token: string): Promise<string> {
