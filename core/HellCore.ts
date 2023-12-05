@@ -1,5 +1,6 @@
 import type { HellConfig } from "./HellConfig.ts";
 import type { Command } from "./Command.ts";
+import type { Feature } from "./Feature.ts";
 import { Collection, Err, Ok, Result } from "unwrap";
 import {
   Client,
@@ -8,7 +9,6 @@ import {
   Interaction,
   WebhookClient,
 } from "discord";
-import { registerSlashCommands } from "./procedures/registerSlashCommands.ts";
 import HellLog from "./HellLog.ts";
 
 export default class HellCore {
@@ -31,7 +31,7 @@ export default class HellCore {
     );
 
     this.client.once(Events.ClientReady, (client: Client<true>) => {
-      this.logger.log(`Logged in as ${client.user.tag}`);
+      this.logger.log(`Logged in as ${client.user.tag}.`);
     });
 
     this.client.on(Events.InteractionCreate, (interaction: Interaction) => {
@@ -53,13 +53,11 @@ export default class HellCore {
     });
   }
 
-  async registerCommands() {
-    await registerSlashCommands(
-      [...this.chatInputCommands.map(({ data }) => data).values()],
-    );
+  async use(feature: Feature): Promise<void> {
+    return await feature.setup(this);
   }
 
-  register(
+  addChatInputCommand(
     name: string,
     command: Command,
   ): Result<Collection<string, Command>, string> {
