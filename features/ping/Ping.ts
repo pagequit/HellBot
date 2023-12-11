@@ -1,16 +1,19 @@
 import type { ChatInputCommandInteraction } from "discord";
-import type { Command } from "/core/Command.ts";
+import type { I18n } from "/core/I18n.ts";
+import { I18nCommand } from "/core/I18n.ts";
 import { SlashCommandBuilder } from "discord";
-import { i18n, useDefaults, useLocale } from "/core/i18n.ts";
-import defaults from "./locale/defaults.ts";
-import de from "./locale/de.ts";
 
-export default class Ping implements Command {
-  @useDefaults(defaults)
-  @useLocale(de)
-  data = new SlashCommandBuilder();
+export default class Ping extends I18nCommand {
+  constructor(i18n: I18n) {
+    super(
+      i18n,
+      new SlashCommandBuilder()
+        .setName("ping")
+        .setDescription("Ping!"),
+    );
+  }
 
   async handle(interaction: ChatInputCommandInteraction) {
-    await interaction.reply(i18n.t(interaction.locale, "example", "Pong"));
+    await interaction.reply(this.i18n.t(interaction.locale, "example", "Pong"));
   }
 }
