@@ -9,7 +9,12 @@ export default class Ping extends I18nCommand {
       i18n,
       new SlashCommandBuilder()
         .setName("ping")
-        .setDescription("Ping!"),
+        .setDescription(i18n.t("en-GB", "description"))
+        .setDescriptionLocalizations({
+          ["en-GB"]: i18n.t("en-GB", "description"),
+          ["en-US"]: i18n.t("en-US", "description"),
+          ["de"]: i18n.t("de", "description"),
+        }),
     );
   }
 

@@ -1,4 +1,4 @@
-import type { Locale } from "/core/i18n.ts";
+import type { Locale } from "/core/I18n.ts";
 
 export default {
   name: () => "ping",

@@ -1,6 +1,5 @@
 import type HellCore from "/core/HellCore.ts";
 import type { Feature } from "/core/Feature.ts";
-import { Locale } from "discord";
 import { I18n } from "/core/I18n.ts";
 import { Collection } from "unwrap";
 import Ping from "./Ping.ts";
@@ -12,9 +11,9 @@ export default {
     core.addChatInputCommand(
       new Ping(
         new I18n(Collection.from([
-          [Locale.EnglishUS, defaults],
-          [Locale.EnglishGB, defaults],
-          [Locale.German, de],
+          ["en-GB", defaults],
+          ["en-US", defaults],
+          ["de", de],
         ])),
       ),
     );
