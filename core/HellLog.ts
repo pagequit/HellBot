@@ -14,11 +14,9 @@ export default class HellLog {
     return this.client.send({
       embeds: [
         new EmbedBuilder()
-          .setTitle("Log")
           .setColor(0xf2f3f5)
           .setDescription(message)
-          .setTimestamp(new Date())
-          .setURL("https://dash.deno.com/projects/hellbot/logs"),
+          .setTimestamp(new Date()),
       ],
     });
   }
@@ -29,11 +27,9 @@ export default class HellLog {
     return this.client.send({
       embeds: [
         new EmbedBuilder()
-          .setTitle("Warn")
           .setColor(0xf0b232)
           .setDescription(message)
-          .setTimestamp(new Date())
-          .setURL("https://dash.deno.com/projects/hellbot/logs"),
+          .setTimestamp(new Date()),
       ],
     });
   }
@@ -44,11 +40,9 @@ export default class HellLog {
     return this.client.send({
       embeds: [
         new EmbedBuilder()
-          .setTitle("Error")
           .setColor(0xf23f43)
           .setDescription(message)
-          .setTimestamp(new Date())
-          .setURL("https://dash.deno.com/projects/hellbot/logs"),
+          .setTimestamp(new Date()),
       ],
     });
   }
