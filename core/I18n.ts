@@ -5,9 +5,10 @@ type Translate = (...args: string[]) => string;
 type Translation = Collection<string, Translate>;
 type Translations = Collection<LocaleString, Translation>;
 
+type I18nSlashCommandMethod = (key: string) => I18nSlashCommandBuilder;
 type I18nSlashCommandBuilder = {
-  withName: (name: string) => I18nSlashCommandBuilder;
-  withDescription: (description: string) => I18nSlashCommandBuilder;
+  withName: I18nSlashCommandMethod;
+  withDescription: I18nSlashCommandMethod;
 } & SlashCommandBuilder;
 
 export type RawTranslation = {
@@ -35,20 +36,19 @@ export class I18n {
 
   buildSlashCommand(): I18nSlashCommandBuilder {
     const builder = new SlashCommandBuilder();
-
     Object.assign(builder, {
-      withName: (name: string) => {
-        builder.setName(this.t(this.source, name));
+      withName: (key: string) => {
+        builder.setName(this.t(this.source, key));
         for (const locale of this.translations.keys()) {
-          builder.setNameLocalization(locale, this.t(locale, name));
+          builder.setNameLocalization(locale, this.t(locale, key));
         }
       },
-      withDescription: (description: string) => {
-        builder.setDescription(this.t(this.source, description));
+      withDescription: (key: string) => {
+        builder.setDescription(this.t(this.source, key));
         for (const locale of this.translations.keys()) {
           builder.setDescriptionLocalization(
             locale,
-            this.t(locale, description),
+            this.t(locale, key),
           );
         }
       },
