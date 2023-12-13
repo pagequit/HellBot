@@ -1,7 +1,7 @@
-import HellCore from "./HellCore.ts";
+import type { Core } from "./HellCore.ts";
 
 export type Feature = {
-  setup(core: HellCore): void;
+  setup(core: Core): void;
 };
 
 export async function loadFeatures(

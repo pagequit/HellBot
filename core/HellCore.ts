@@ -11,6 +11,12 @@ import {
 } from "discord";
 import HellLog from "./HellLog.ts";
 
+export type Core = {
+  client: HellCore["client"];
+  logger: HellCore["logger"];
+  addChatInputCommand: HellCore["addChatInputCommand"];
+};
+
 export default class HellCore {
   chatInputCommands: Collection<string, Command>;
   client: Client;
@@ -54,7 +60,13 @@ export default class HellCore {
   }
 
   use(feature: Feature): void {
-    feature.setup(this);
+    feature.setup(
+      {
+        client: this.client,
+        logger: this.logger,
+        addChatInputCommand: this.addChatInputCommand,
+      } satisfies Core,
+    );
   }
 
   addChatInputCommand(command: Command): Result<void, string> {

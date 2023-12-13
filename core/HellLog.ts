@@ -15,8 +15,7 @@ export default class HellLog {
       embeds: [
         new EmbedBuilder()
           .setColor(0xf2f3f5)
-          .setDescription(message)
-          .setTimestamp(new Date()),
+          .setDescription(message),
       ],
     });
   }
@@ -28,8 +27,7 @@ export default class HellLog {
       embeds: [
         new EmbedBuilder()
           .setColor(0xf0b232)
-          .setDescription(message)
-          .setTimestamp(new Date()),
+          .setDescription(message),
       ],
     });
   }
@@ -41,8 +39,7 @@ export default class HellLog {
       embeds: [
         new EmbedBuilder()
           .setColor(0xf23f43)
-          .setDescription(message)
-          .setTimestamp(new Date()),
+          .setDescription(message),
       ],
     });
   }
