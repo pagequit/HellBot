@@ -1,5 +1,5 @@
-import type { Locale } from "/core/I18n.ts";
+import type { RawTranslation } from "/core/I18n.ts";
 
 export default {
-  description: () => "TBD",
-} satisfies Locale;
+  description: () => "Zu definieren.",
+} satisfies RawTranslation;
