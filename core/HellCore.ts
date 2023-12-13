@@ -40,13 +40,13 @@ export default class HellCore {
       }
 
       const command = this.chatInputCommands.get(interaction.commandName);
-
       if (command.isNone()) {
         this.logger.error(`Command ${interaction.commandName} not found.`);
+        return;
       }
 
       try {
-        command.unwrap().handle(interaction);
+        command.unwrap().execute(interaction);
       } catch (error) {
         this.logger.error(error.message, error);
       }

@@ -14,7 +14,7 @@ export default {
   data: i18n.buildSlashCommand()
     .withName("name")
     .withDescription("description"),
-  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+  async execute(interaction: ChatInputCommandInteraction): Promise<void> {
     await interaction.reply(
       i18n.t(interaction.locale, "example", "timer", "unused argument"),
     );

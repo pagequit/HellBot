@@ -1,22 +1,18 @@
-import {
-  type ChatInputCommandInteraction,
-  type LocaleString,
-  SlashCommandBuilder,
-} from "discord";
-import type { Command } from "./Command.ts";
+import { type LocaleString, SlashCommandBuilder } from "discord";
 import { Collection, Some } from "unwrap";
 
-export type Translate = (...args: string[]) => string;
-export type Translation = Collection<string, Translate>;
-export type Translations = Collection<LocaleString, Translation>;
-export type RawTranslation = {
-  [key: string]: Translate;
-};
+type Translate = (...args: string[]) => string;
+type Translation = Collection<string, Translate>;
+type Translations = Collection<LocaleString, Translation>;
 
-export type I18nSlashCommandBuilder = {
+type I18nSlashCommandBuilder = {
   withName: (name: string) => I18nSlashCommandBuilder;
   withDescription: (description: string) => I18nSlashCommandBuilder;
 } & SlashCommandBuilder;
+
+export type RawTranslation = {
+  [key: string]: Translate;
+};
 
 export class I18n {
   source: LocaleString;
@@ -39,27 +35,25 @@ export class I18n {
 
   buildSlashCommand(): I18nSlashCommandBuilder {
     const builder = new SlashCommandBuilder();
+
     Object.assign(builder, {
       withName: (name: string) => {
         builder.setName(this.t(this.source, name));
+        for (const locale of this.translations.keys()) {
+          builder.setNameLocalization(locale, this.t(locale, name));
+        }
       },
       withDescription: (description: string) => {
         builder.setDescription(this.t(this.source, description));
+        for (const locale of this.translations.keys()) {
+          builder.setDescriptionLocalization(
+            locale,
+            this.t(locale, description),
+          );
+        }
       },
     });
 
     return builder as I18nSlashCommandBuilder;
   }
-}
-
-export abstract class I18nCommand implements Command {
-  i18n: I18n;
-  data: SlashCommandBuilder;
-
-  constructor(i18n: I18n, data: SlashCommandBuilder) {
-    this.i18n = i18n;
-    this.data = data;
-  }
-
-  abstract handle(interaction: ChatInputCommandInteraction): Promise<void>;
 }

@@ -6,5 +6,5 @@ export type ChatInputCommandHandle = (
 
 export type Command = {
   data: SlashCommandBuilder;
-  handle: ChatInputCommandHandle;
+  execute: ChatInputCommandHandle;
 };
