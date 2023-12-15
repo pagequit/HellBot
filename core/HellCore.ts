@@ -47,7 +47,7 @@ export default class HellCore {
 
       const command = this.chatInputCommands.get(interaction.commandName);
       if (command.isNone()) {
-        this.logger.error(`Command ${interaction.commandName} not found.`);
+        this.logger.error(`Command '${interaction.commandName}' not found.`);
         return;
       }
 
@@ -59,19 +59,34 @@ export default class HellCore {
     });
   }
 
-  use(feature: Feature): void {
-    feature.setup(
-      {
-        client: this.client,
-        logger: this.logger,
-        addChatInputCommand: this.addChatInputCommand.bind(this),
-      } satisfies Core,
-    );
+  async setup(): Promise<void> {
+    await this.loadFeatures();
+  }
+
+  async loadFeatures(path = `${Deno.cwd()}/features`): Promise<void> {
+    for await (const dir of Deno.readDir(path)) {
+      if (!dir.isDirectory) {
+        continue;
+      }
+
+      const feature = (await import(`${path}/${dir.name}/index.ts`)).default;
+      try {
+        feature.setup(
+          {
+            client: this.client,
+            logger: this.logger,
+            addChatInputCommand: this.addChatInputCommand.bind(this),
+          } satisfies Core,
+        );
+      } catch (error) {
+        this.logger.error(error.message, error);
+      }
+    }
   }
 
   addChatInputCommand(command: Command): Result<void, string> {
     if (this.chatInputCommands.has(command.data.name)) {
-      const error = `Command ${command.data.name} already registered.`;
+      const error = `Command '${command.data.name}' already registered.`;
       this.logger.error(error);
 
       return Err(error);
