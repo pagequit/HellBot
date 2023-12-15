@@ -1,12 +1,11 @@
-import { type ChatInputCommandInteraction, Locale } from "discord";
-import { I18n } from "/core/I18n.ts";
+import { type ChatInputCommandInteraction } from "discord";
+import { I18n, Locale } from "/core/I18n.ts";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
 import { type Command } from "/core/Command.ts";
 
 const i18n = new I18n([
   [Locale.EnglishGB, en],
-  [Locale.EnglishUS, en],
   [Locale.German, de],
 ]);
 

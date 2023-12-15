@@ -6,7 +6,8 @@ export default {
   setup(core: Core): void {
     core.addChatInputCommand({
       data: new SlashCommandBuilder()
-        .setName("ping"),
+        .setName("ping")
+        .setDescription("Replies with 'pong'."),
       async execute(interaction: ChatInputCommandInteraction): Promise<void> {
         await interaction.reply("pong");
       },

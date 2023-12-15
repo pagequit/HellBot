@@ -24,7 +24,10 @@ export class I18n {
   ) {
     this.source = translations[0][0];
     this.translations = Collection.from(translations.map(([locale, raw]) => {
-      return [locale, Collection.from(Object.entries(raw))];
+      return [
+        locale,
+        Collection.from(Object.entries({ ...translations[0][1], ...raw })),
+      ];
     }));
   }
 
@@ -35,25 +38,64 @@ export class I18n {
   }
 
   buildSlashCommand(): I18nSlashCommandBuilder {
-    const builder = new SlashCommandBuilder();
+    const builder = new SlashCommandBuilder() as I18nSlashCommandBuilder;
+
     Object.assign(builder, {
-      withName: (key: string) => {
+      withName: (key: string): I18nSlashCommandBuilder => {
         builder.setName(this.t(this.source, key));
         for (const locale of this.translations.keys()) {
           builder.setNameLocalization(locale, this.t(locale, key));
         }
+
+        return builder;
       },
-      withDescription: (key: string) => {
+      withDescription: (key: string): I18nSlashCommandBuilder => {
         builder.setDescription(this.t(this.source, key));
         for (const locale of this.translations.keys()) {
-          builder.setDescriptionLocalization(
-            locale,
-            this.t(locale, key),
-          );
+          builder.setDescriptionLocalization(locale, this.t(locale, key));
         }
+
+        return builder;
       },
     });
 
-    return builder as I18nSlashCommandBuilder;
+    return builder;
   }
+}
+
+/**
+ * https://discord.com/developers/docs/reference#locales
+ */
+export enum Locale {
+  Indonesian = "id",
+  EnglishUS = "en-US",
+  EnglishGB = "en-GB",
+  Bulgarian = "bg",
+  ChineseCN = "zh-CN",
+  ChineseTW = "zh-TW",
+  Croatian = "hr",
+  Czech = "cs",
+  Danish = "da",
+  Dutch = "nl",
+  Finnish = "fi",
+  French = "fr",
+  German = "de",
+  Greek = "el",
+  Hindi = "hi",
+  Hungarian = "hu",
+  Italian = "it",
+  Japanese = "ja",
+  Korean = "ko",
+  Lithuanian = "lt",
+  Norwegian = "no",
+  Polish = "pl",
+  PortugueseBR = "pt-BR",
+  Romanian = "ro",
+  Russian = "ru",
+  SpanishES = "es-ES",
+  Swedish = "sv-SE",
+  Thai = "th",
+  Turkish = "tr",
+  Ukrainian = "uk",
+  Vietnamese = "vi",
 }
