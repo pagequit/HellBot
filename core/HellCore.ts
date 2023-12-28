@@ -1,7 +1,5 @@
-import type { HellConfig } from "./HellConfig.ts";
-import type { Command } from "./Command.ts";
-import type { Feature } from "./Feature.ts";
-import { Collection, Err, Ok, Result } from "unwrap";
+import { type HellConfig } from "./HellConfig.ts";
+import { type Command } from "./Command.ts";
 import {
   Client,
   Events,
@@ -9,7 +7,12 @@ import {
   Interaction,
   WebhookClient,
 } from "discord";
+import { Collection, Err, Ok, Result } from "unwrap";
 import HellLog from "./HellLog.ts";
+import {
+  registerCommands,
+  registerGuildCommands,
+} from "./procedures/registerSlashCommands.ts";
 
 export type Core = {
   client: HellCore["client"];
@@ -19,11 +22,13 @@ export type Core = {
 
 export default class HellCore {
   chatInputCommands: Collection<string, Command>;
+  chatInputGuildCommands: Collection<string, Command>;
   client: Client;
   logger: HellLog;
 
   constructor(config: HellConfig) {
     this.chatInputCommands = new Collection();
+    this.chatInputGuildCommands = new Collection();
 
     this.client = new Client({
       intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
@@ -61,6 +66,12 @@ export default class HellCore {
 
   async setup(): Promise<void> {
     await this.loadFeatures();
+    await registerCommands([
+      ...this.chatInputCommands.map((c) => c.data).values(),
+    ]);
+    await registerGuildCommands([
+      ...this.chatInputCommands.map((c) => c.data).values(),
+    ]);
   }
 
   async loadFeatures(path = `${Deno.cwd()}/features`): Promise<void> {
@@ -82,6 +93,18 @@ export default class HellCore {
         this.logger.error(error.message, error);
       }
     }
+  }
+
+  addChatInputGuildCommand(command: Command): Result<void, string> {
+    if (this.chatInputGuildCommands.has(command.data.name)) {
+      const error = `Guild command '${command.data.name}' already registered.`;
+      this.logger.error(error);
+
+      return Err(error);
+    }
+    this.chatInputGuildCommands.set(command.data.name, command);
+
+    return Ok(undefined);
   }
 
   addChatInputCommand(command: Command): Result<void, string> {
