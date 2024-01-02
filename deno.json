@@ -2,9 +2,9 @@
   "imports": {
     "/": "./",
     "./": "./",
-    "std/": "https://deno.land/std@0.206.0/",
+    "std/": "https://deno.land/std@0.210.0/",
     "unwrap": "https://deno.land/x/unwrap@v1.1.4/mod.ts",
-    "discord": "npm:discord.js@14.12.1"
+    "discord": "npm:discord.js@14.14.1"
   },
   "tasks": {
     "run": "deno run --allow-net=discord.com,gateway.discord.gg --allow-read --allow-env main.ts"

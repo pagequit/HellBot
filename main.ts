@@ -1,6 +1,7 @@
 import HellCore from "/core/HellCore.ts";
 import { botlog, discord } from "/config.ts";
+import HellLog from "/core/HellLog.ts";
 
-const hellBot = new HellCore({ botlog, discord });
-await hellBot.setup();
-hellBot.login(discord.token);
+new HellCore(new HellLog(botlog)).setup().then((hellBot) => {
+  hellBot.login(discord.token);
+});

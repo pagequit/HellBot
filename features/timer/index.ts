@@ -4,6 +4,6 @@ import timer from "./timer.ts";
 
 export default {
   setup(core: Core): void {
-    core.addChatInputCommand(timer);
+    core.addChatInputGuildCommand(timer);
   },
 } satisfies Feature;
