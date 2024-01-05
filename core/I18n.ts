@@ -5,12 +5,6 @@ type Translate = (...args: string[]) => string;
 type Translation = Collection<string, Translate>;
 type Translations = Collection<LocaleString, Translation>;
 
-type I18nSlashCommandMethod = (key: string) => I18nSlashCommandBuilder;
-type I18nSlashCommandBuilder = {
-  withName: I18nSlashCommandMethod;
-  withDescription: I18nSlashCommandMethod;
-} & SlashCommandBuilder;
-
 export type RawTranslation = {
   [key: string]: Translate;
 };
@@ -38,28 +32,106 @@ export class I18n {
   }
 
   buildSlashCommand(): I18nSlashCommandBuilder {
-    const builder = new SlashCommandBuilder() as I18nSlashCommandBuilder;
+    return new I18nSlashCommandBuilder(this);
+  }
+}
 
-    Object.assign(builder, {
-      withName: (key: string): I18nSlashCommandBuilder => {
-        builder.setName(this.t(this.source, key));
-        for (const locale of this.translations.keys()) {
-          builder.setNameLocalization(locale, this.t(locale, key));
-        }
+export class I18nSlashCommandBuilder extends SlashCommandBuilder {
+  i18n: I18n;
 
-        return builder;
-      },
-      withDescription: (key: string): I18nSlashCommandBuilder => {
-        builder.setDescription(this.t(this.source, key));
-        for (const locale of this.translations.keys()) {
-          builder.setDescriptionLocalization(locale, this.t(locale, key));
-        }
+  constructor(i18n: I18n) {
+    super();
+    this.i18n = i18n;
+  }
 
-        return builder;
-      },
+  withName(key: string): this {
+    this.setName(this.i18n.t(this.i18n.source, key));
+    for (const locale of this.i18n.translations.keys()) {
+      this.setNameLocalization(locale, this.i18n.t(locale, key));
+    }
+
+    return this;
+  }
+
+  withDescription(key: string): this {
+    this.setDescription(this.i18n.t(this.i18n.source, key));
+    for (const locale of this.i18n.translations.keys()) {
+      this.setDescriptionLocalization(locale, this.i18n.t(locale, key));
+    }
+
+    return this;
+  }
+
+  withStringOption(
+    nameKey: string,
+    descriptionKey: string,
+    required = false,
+  ): this {
+    this.addStringOption((option) => {
+      option.setName(this.i18n.t(this.i18n.source, nameKey))
+        .setDescription(this.i18n.t(this.i18n.source, descriptionKey))
+        .setRequired(required);
+
+      for (const locale of this.i18n.translations.keys()) {
+        option.setNameLocalization(locale, this.i18n.t(locale, nameKey))
+          .setDescriptionLocalization(
+            locale,
+            this.i18n.t(locale, descriptionKey),
+          );
+      }
+
+      return option;
     });
 
-    return builder;
+    return this;
+  }
+
+  withNumberOption(
+    nameKey: string,
+    descriptionKey: string,
+    required = false,
+  ): this {
+    this.addNumberOption((option) => {
+      option.setName(this.i18n.t(this.i18n.source, nameKey))
+        .setDescription(this.i18n.t(this.i18n.source, descriptionKey))
+        .setRequired(required);
+
+      for (const locale of this.i18n.translations.keys()) {
+        option.setNameLocalization(locale, this.i18n.t(locale, nameKey))
+          .setDescriptionLocalization(
+            locale,
+            this.i18n.t(locale, descriptionKey),
+          );
+      }
+
+      return option;
+    });
+
+    return this;
+  }
+
+  withIntegerOption(
+    nameKey: string,
+    descriptionKey: string,
+    required = false,
+  ): this {
+    this.addIntegerOption((option) => {
+      option.setName(this.i18n.t(this.i18n.source, nameKey))
+        .setDescription(this.i18n.t(this.i18n.source, descriptionKey))
+        .setRequired(required);
+
+      for (const locale of this.i18n.translations.keys()) {
+        option.setNameLocalization(locale, this.i18n.t(locale, nameKey))
+          .setDescriptionLocalization(
+            locale,
+            this.i18n.t(locale, descriptionKey),
+          );
+      }
+
+      return option;
+    });
+
+    return this;
   }
 }
 

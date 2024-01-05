@@ -12,10 +12,11 @@ const i18n = new I18n([
 export default {
   data: i18n.buildSlashCommand()
     .withName("name")
-    .withDescription("description"),
+    .withDescription("description")
+    .withIntegerOption("time_name", "time_description", true),
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
     await interaction.reply(
-      i18n.t(interaction.locale, "example", "timer", "unused argument"),
+      i18n.t(interaction.locale, "beep"),
     );
   },
 } satisfies Command;
