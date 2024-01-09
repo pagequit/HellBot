@@ -4,6 +4,6 @@ export default {
   name: () => "timer",
   description: () => "Responds with 'Beep' when the timer is up.",
   beep: () => "Beep, timer is up!",
-  time_name: () => "minutes",
-  time_description: () => "Minutes to wait before the timer is up.",
+  minutes: () => "minutes",
+  minutesDescription: () => "Minutes to wait before the timer is up.",
 } satisfies RawTranslation;
