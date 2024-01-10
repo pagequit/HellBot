@@ -6,4 +6,8 @@ export default {
   beep: () => "Beep, timer is up!",
   minutes: () => "minutes",
   minutesDescription: () => "Minutes to wait before the timer is up.",
+  cancel: () => "Cancel",
+  replySet: (minutes: string) => `Timer was set to ${minutes} minutes.`,
+  replyCancel: () => "Timer was cancelled.",
+  replyExeption: () => "Timer must be set between 1 and 1440 minutes.",
 } satisfies RawTranslation;

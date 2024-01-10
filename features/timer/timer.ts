@@ -20,36 +20,46 @@ export default {
     .withDescription("description")
     .withIntegerOption("minutes", "minutesDescription", true),
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
-    const minutes = interaction.options.getInteger("minutes")!;
+    const { user, locale, options } = interaction;
+    const minutes = options.getInteger("minutes")!;
     const timer = minutes * 60 * 1000;
 
-    if (minutes > 1440) {
-      await interaction.reply("Too much time!");
+    if (minutes < 1 || minutes > 1440) {
+      interaction.reply({
+        content: i18n.t(locale, "replyExeption"),
+        ephemeral: true,
+      });
+
+      return;
     }
 
     const actionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
         .setCustomId("cancel")
-        .setLabel("Cancel")
+        .setLabel(i18n.t(locale, "cancel"))
         .setStyle(ButtonStyle.Secondary)
         .setEmoji("❌"),
     );
 
     const response = await interaction.reply({
-      content: "Timer is set to " + minutes + " minutes.",
+      content: i18n.t(locale, "replySet", String(minutes)),
       components: [actionRow],
+      ephemeral: true,
     });
 
-    const cancel = await response.awaitMessageComponent({
-      filter: (i) => i.user.id === interaction.user.id,
+    response.awaitMessageComponent({
+      filter: (i) => i.user.id === user.id,
       time: timer,
-    });
-
-    if (cancel) {
-      await interaction.editReply({
-        content: "Timer is canceled.",
+    }).then((i) => {
+      i.update({
+        content: i18n.t(locale, "replyCancel"),
         components: [],
       });
-    }
+    }).catch(() => {
+      interaction.editReply({
+        components: [],
+      });
+      user.send(i18n.t(locale, "beep"));
+    });
   },
 } satisfies Command;

@@ -62,14 +62,12 @@ export default class HellCore {
   async setup(): Promise<HellCore> {
     await this.loadFeatures();
 
-    await deleteSlashCommands();
-
-    await registerCommands([
-      ...this.chatInputCommands.map((c) => c.data).values(),
-    ]);
-    await registerGuildCommands([
-      ...this.chatInputGuildCommands.map((c) => c.data).values(),
-    ]);
+    // await registerCommands([
+    //   ...this.chatInputCommands.map((c) => c.data).values(),
+    // ]);
+    // await registerGuildCommands([
+    //   ...this.chatInputGuildCommands.map((c) => c.data).values(),
+    // ]);
 
     return this;
   }
