@@ -7,7 +7,10 @@ export default {
   minutes: () => "minutes",
   minutesDescription: () => "Minutes to wait before the timer is up.",
   cancel: () => "Cancel",
-  replySet: (minutes: string) => `Timer was set to ${minutes} minutes.`,
-  replyCancel: () => "Timer was cancelled.",
+  replySet: (minutes: string) => `Timer has been set to ${minutes} minutes.`,
+  replyCancel: () => "Timer has been cancelled.",
+  replyIsUp: () => "Timer is up.",
   replyExeption: () => "Timer must be set between 1 and 1440 minutes.",
+  replyAlreadySet: (minutes: string, seconds: string) =>
+    `Timer already set with ${minutes} minutes and ${seconds} seconds remaining.`,
 } satisfies RawTranslation;

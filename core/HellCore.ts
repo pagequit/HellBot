@@ -31,9 +31,12 @@ export default class HellCore {
     });
 
     this.client.once(Events.ClientReady, (client: Client<true>) => {
-      this.logger.log(`Logged in as ${client.user.tag}.`);
+      // this.logger.log(`Logged in as ${client.user.tag}.`);
+      console.log(`Logged in as ${client.user.tag}.`);
     });
 
+    // I don't know when that happens, but the API has this event.
+    // (Onces it happens, we will see it in the botlog)
     this.client.on(Events.Warn, (info: string) => {
       this.logger.warn(info);
     });

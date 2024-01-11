@@ -8,11 +8,14 @@ import { I18n, Locale } from "/core/I18n.ts";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
 import { type Command } from "/core/Command.ts";
+import { Collection } from "unwrap";
 
 const i18n = new I18n([
   [Locale.EnglishGB, en],
   [Locale.German, de],
 ]);
+
+const timers = new Collection<string, number>();
 
 export default {
   data: i18n.buildSlashCommand()
@@ -33,33 +36,52 @@ export default {
       return;
     }
 
-    const actionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder()
-        .setCustomId("cancel")
-        .setLabel(i18n.t(locale, "cancel"))
-        .setStyle(ButtonStyle.Secondary)
-        .setEmoji("❌"),
-    );
+    const previousTimer = timers.get(user.id);
+    if (previousTimer.isSome()) {
+      const remainingTime = previousTimer.unwrap() - Date.now();
+      interaction.reply({
+        content: i18n.t(
+          locale,
+          "replyAlreadySet",
+          String(Math.floor(remainingTime / 1000 / 60)),
+          String(Math.floor(remainingTime / 1000 % 60)),
+        ),
+        ephemeral: true,
+      });
+
+      return;
+    }
 
     const response = await interaction.reply({
       content: i18n.t(locale, "replySet", String(minutes)),
-      components: [actionRow],
+      components: [new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder()
+          .setCustomId("cancel")
+          .setLabel(i18n.t(locale, "cancel"))
+          .setStyle(ButtonStyle.Secondary)
+          .setEmoji("❌"),
+      )],
       ephemeral: true,
     });
 
+    timers.set(user.id, timer + Date.now());
+
     response.awaitMessageComponent({
-      filter: (i) => i.user.id === user.id,
       time: timer,
-    }).then((i) => {
-      i.update({
+      dispose: true,
+    }).then(() => {
+      interaction.editReply({
         content: i18n.t(locale, "replyCancel"),
         components: [],
       });
     }).catch(() => {
       interaction.editReply({
+        content: i18n.t(locale, "replyIsUp"),
         components: [],
       });
       user.send(i18n.t(locale, "beep"));
+    }).finally(() => {
+      timers.delete(user.id);
     });
   },
 } satisfies Command;

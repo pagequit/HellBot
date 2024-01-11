@@ -8,6 +8,9 @@ export default {
   cancel: () => "Abbrechen",
   replySet: (minutes: string) => `Timer wurde auf ${minutes} minuten gestellt.`,
   replyCancel: () => "Timer wurde abgebrochen.",
+  replyIsUp: () => "Timer ist abgelaufen.",
   replyExeption: () =>
     "Timer muss zwischen 1 und 1440 minuten gestellt werden.",
+  replyAlreadySet: (minutes: string, seconds: string) =>
+    `Timer bereits gestellt mit ${minutes} minuten und ${seconds} sekunden verbleibend.`,
 } satisfies RawTranslation;
