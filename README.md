@@ -12,7 +12,7 @@ Verify deno version
 ```sh
 deno --version
 
-# deno 1.39.1
+# deno 1.39.2
 # v8 12.0.267.8
 # typescript 5.3.3
 ```
@@ -80,6 +80,14 @@ deno task run
 Ignore the `Warning: Not implemented: ClientRequest.options.createConnection`
 message.
 
+## Docker
+
+https://hub.docker.com/r/denoland/deno
+
+```sh
+docker build -t app . && docker run -it --init -p 1993:1993 app
+```
+
 ## Docs
 
 ### Deno
@@ -104,3 +112,7 @@ message.
 - https://discord.com/developers/docs/getting-started
 - https://old.discordjs.dev/#/docs/discord.js/14.14.1/general/welcome
 - https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks
+
+### Docker
+
+- https://docs.docker.com/
