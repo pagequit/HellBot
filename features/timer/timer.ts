@@ -24,7 +24,7 @@ export default {
     .withIntegerOption("minutes", "minutesDescription", true),
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
     const { user, locale, options } = interaction;
-    const minutes = options.getInteger("minutes")!;
+    const minutes = options.getInteger("minutes", true);
     const timer = minutes * 60 * 1000;
 
     if (minutes < 1 || minutes > 1440) {

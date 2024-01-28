@@ -18,7 +18,7 @@ export default {
     .withStringOption("subjects", "subjectsDescription", true),
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
     const subjects = [
-      ...interaction.options.getString("subjects")!.matchAll(/[^\s,]+/g),
+      ...interaction.options.getString("subjects", true).matchAll(/[^\s,]+/g),
     ].flat();
 
     if (subjects.length > emojis.length) {
