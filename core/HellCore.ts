@@ -31,7 +31,8 @@ export default class HellCore {
     });
 
     this.client.once(Events.ClientReady, (client: Client<true>) => {
-      this.logger.log(`Logged in as ${client.user.tag}.`);
+      // this.logger.log(`Logged in as ${client.user.tag}.`);
+      console.log(`Logged in as ${client.user.tag}.`);
     });
 
     this.client.on(Events.InteractionCreate, (interaction: Interaction) => {
@@ -58,14 +59,14 @@ export default class HellCore {
   async setup(): Promise<HellCore> {
     await this.loadFeatures();
 
-    await deleteSlashCommands();
+    // await deleteSlashCommands();
 
-    await registerCommands([
-      ...this.chatInputCommands.map((c) => c.data).values(),
-    ]);
-    await registerGuildCommands([
-      ...this.chatInputGuildCommands.map((c) => c.data).values(),
-    ]);
+    // await registerCommands([
+    //   ...this.chatInputCommands.map((c) => c.data).values(),
+    // ]);
+    // await registerGuildCommands([
+    //   ...this.chatInputGuildCommands.map((c) => c.data).values(),
+    // ]);
 
     return this;
   }
