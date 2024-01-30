@@ -4,11 +4,16 @@ import de from "./translations/de.ts";
 import en from "./translations/en.ts";
 import { type Command } from "/core/Command.ts";
 import { getSubs } from "./getSubs.ts";
+import { Collection } from "unwrap";
 
 const i18n = new I18n([
   [Locale.EnglishGB, en],
   [Locale.German, de],
 ]);
+
+const localeMap = new Collection<Locale, string>();
+localeMap.set(Locale.EnglishGB, "English");
+localeMap.set(Locale.German, "German");
 
 export default {
   data: i18n.buildSlashCommand()
@@ -36,7 +41,9 @@ export default {
           model: "mistral",
           prompt: `Summarize this: "${
             (await getSubs(link)).unwrap()
-          }", Why should I care? Let me know whether this is a serious talk, or meant as a joke. Open your response with "This video is about".`,
+          }", Why should I care? Let me know whether this is a serious talk, or meant as a joke. Please respond in ${
+            localeMap.get(locale).unwrapOr("English")
+          }.`,
           stream: false,
         }),
       }).then(async (res) => (await res.json()).response).catch(console.error),

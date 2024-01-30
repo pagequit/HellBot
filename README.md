@@ -11,9 +11,8 @@ Verify deno version
 
 ```sh
 deno --version
-
-# deno 1.39.2
-# v8 12.0.267.8
+# deno 1.40.2
+# v8 12.1.285.6
 # typescript 5.3.3
 ```
 
@@ -90,7 +89,7 @@ docker build -t app . && docker run -it --init -p 1993:1993 app
 ### Deno
 
 - https://docs.deno.com/runtime/manual
-- https://deno.land/api@v1.39.1
+- https://deno.land/api@v1.40.2
 - https://deno.land/std@0.210.0
 
 ### Typescript
