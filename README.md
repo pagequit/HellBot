@@ -48,7 +48,7 @@ and set up the following files:
         "--inspect-wait",
         "--allow-read",
         "--allow-env",
-        "--allow-net=discord.com,gateway.discord.gg"
+        "--allow-net=discord.com,gateway.discord.gg,deno.land"
       ],
       "attachSimplePort": 9229
     }

@@ -9,6 +9,6 @@
     "discord": "npm:discord.js@14.14.1"
   },
   "tasks": {
-    "run": "deno run --allow-net=discord.com,gateway.discord.gg --allow-read --allow-env main.ts"
+    "run": "deno run --allow-net=discord.com,gateway.discord.gg,deno.land --allow-read --allow-env main.ts"
   }
 }
