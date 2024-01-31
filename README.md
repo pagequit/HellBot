@@ -45,10 +45,12 @@ and set up the following files:
       "runtimeExecutable": "PATH/TO/DENO/BIN",
       "runtimeArgs": [
         "run",
+        "--unstable-cron",
+        "--unstable-kv",
         "--inspect-wait",
         "--allow-read",
         "--allow-env",
-        "--allow-net=discord.com,gateway.discord.gg,deno.land"
+        "--allow-net"
       ],
       "attachSimplePort": 9229
     }
