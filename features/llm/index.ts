@@ -4,10 +4,6 @@ import ytsum from "./ytsum/ytsum.ts";
 
 export default {
   setup(core: Core): void {
-    if (false) {
-      core.addChatInputCommand(ytsum);
-    } else {
-      // core.logger.warn("no llm");
-    }
+    core.addChatInputCommand(ytsum);
   },
 } satisfies Feature;

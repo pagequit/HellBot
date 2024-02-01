@@ -11,19 +11,16 @@ export function postJSON(
   })
     .then((res) =>
       res.json()
-        .then((json) => Ok<string, Error>(json))
+        .then((json) => Ok<string, Error>(json.content))
         .catch((err) => Err<string, Error>(err))
     )
     .catch((err) => Err<string, Error>(err));
 }
 
 export default function (prompt: string): Promise<Result<string, Error>> {
-  return postJSON(
-    new URL("http://localhost:11434/api/generate"),
-    {
-      model: "mistral",
-      stream: false,
-      prompt,
-    },
-  );
+  return postJSON(new URL("http://localhost:8000/completion"), {
+    n_predict: 256,
+    temperature: 0.7,
+    prompt,
+  });
 }
