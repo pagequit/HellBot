@@ -11,7 +11,7 @@ Verify deno version
 
 ```sh
 deno --version
-# deno 1.40.2
+# deno 1.40.3
 # v8 12.1.285.6
 # typescript 5.3.3
 ```
@@ -83,7 +83,7 @@ message.
 https://hub.docker.com/r/denoland/deno
 
 ```sh
-docker build -t app . && docker run -it --init -p 1993:1993 app
+docker build -t hellbot . && docker run -it --init -p 1993:1993 hellbot
 ```
 
 ## Docs

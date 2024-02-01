@@ -5,5 +5,3 @@ import HellLog from "/core/HellLog.ts";
 new HellCore(new HellLog(botlog)).setup().then((hellBot) => {
   hellBot.login(discord.token);
 });
-
-fetch("https://arc.pagequit.net/").then(console.log);
