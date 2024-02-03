@@ -2,6 +2,19 @@ import { decodeHTML5 } from "entities";
 import { DOMParser } from "dom";
 import { Err, Ok, type Result } from "unwrap";
 
+const cache: Map<string, string> = new Map();
+const buffer: string[] = new Array(10);
+
+function pushToCache(key: string, value: string) {
+  if (cache.has(key)) {
+    return;
+  }
+
+  cache.delete(buffer.shift()!);
+  buffer.push(key);
+  cache.set(key, value);
+}
+
 export function fetchText(url: URL): Promise<Result<string, Error>> {
   return fetch(url)
     .then((res) =>
@@ -31,6 +44,10 @@ export async function getSubsUrl(url: URL): Promise<Result<URL, Error>> {
 }
 
 export async function getSubs(url: URL): Promise<Result<string, Error>> {
+  if (cache.has(url.toString())) {
+    return Ok(cache.get(url.toString())!);
+  }
+
   const subsUrl = await getSubsUrl(url);
   if (subsUrl.isErr()) {
     return subsUrl;
@@ -52,5 +69,9 @@ export async function getSubs(url: URL): Promise<Result<string, Error>> {
     return Err(new Error("no text"));
   }
 
-  return Ok(decodeHTML5(text));
+  const subs = decodeHTML5(text);
+
+  pushToCache(url.toString(), subs);
+
+  return Ok(subs);
 }

@@ -11,7 +11,7 @@ export function postJSON(
   })
     .then((res) =>
       res.json()
-        .then((json) => Ok<string, Error>(json.content))
+        .then((json) => Ok<string, Error>(json.content)) // TODO: add a type
         .catch((err) => Err<string, Error>(err))
     )
     .catch((err) => Err<string, Error>(err));

@@ -11,6 +11,8 @@ const i18n = new I18n([
   [Locale.German, de],
 ]);
 
+let isThinking = false;
+
 export default {
   data: i18n.buildSlashCommand()
     .withName("name")
@@ -30,11 +32,21 @@ export default {
 
     await interaction.deferReply();
 
+    if (isThinking) {
+      interaction.editReply({
+        content: "I'm busy, please wait.",
+      });
+    }
+
+    isThinking = true;
+
     const response = await prompt(
-      `Summarize this: "${
+      `"${
         (await getSubs(link)).unwrap()
-      }". Why should I care. Let me know if this is a serious talk. Keep your answer as short as possible`,
+      }", summarize this. Why should I care? Let me know whether this is a serious talk, or ment as a joke.`,
     );
+
+    isThinking = false;
 
     interaction.editReply({
       content: response.unwrapOr("Error"),

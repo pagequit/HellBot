@@ -11,6 +11,7 @@ Verify deno version
 
 ```sh
 deno --version
+
 # deno 1.40.3
 # v8 12.1.285.6
 # typescript 5.3.3
