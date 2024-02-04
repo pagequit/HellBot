@@ -4,6 +4,6 @@ import ytsum from "./ytsum/ytsum.ts";
 
 export default {
   setup(core: Core): void {
-    // core.addChatInputCommand(ytsum);
+    core.addChatInputCommand(ytsum);
   },
 } satisfies Feature;

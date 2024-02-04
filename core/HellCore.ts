@@ -32,7 +32,6 @@ export default class HellCore {
 
     this.client.once(Events.ClientReady, (client: Client<true>) => {
       this.logger.log(`Logged in as ${client.user.tag}.`);
-      // console.log(`Logged in as ${client.user.tag}.`);
     });
 
     this.client.on(Events.InteractionCreate, (interaction: Interaction) => {
