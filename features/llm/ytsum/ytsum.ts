@@ -5,6 +5,7 @@ import en from "./translations/en.ts";
 import { type Command } from "/core/Command.ts";
 import { getSubs } from "./getSubs.ts";
 import prompt from "../promt.ts";
+import { type Core } from "/core/HellCore.ts";
 
 const i18n = new I18n([
   [Locale.EnglishGB, en],
@@ -13,43 +14,64 @@ const i18n = new I18n([
 
 let isThinking = false;
 
-export default {
-  data: i18n.buildSlashCommand()
-    .withName("name")
-    .withDescription("description")
-    .withStringOption("link", "linkDescription", true),
-  async execute(interaction: ChatInputCommandInteraction): Promise<void> {
-    const { options } = interaction;
-    const link = new URL(options.getString("link", true));
-    const youtubeDomains = ["www.youtube.com", "youtu.be"];
+export default function (core: Core) {
+  return {
+    data: i18n.buildSlashCommand()
+      .withName("name")
+      .withDescription("description")
+      .withStringOption("link", "linkDescription", true),
+    async execute(interaction: ChatInputCommandInteraction): Promise<void> {
+      const { options } = interaction;
+      const link = new URL(options.getString("link", true));
+      const youtubeDomains = ["www.youtube.com", "youtu.be"];
 
-    if (!youtubeDomains.includes(link.hostname)) {
-      interaction.reply({
-        content: "Provided link is not a youtube link.",
-        ephemeral: true,
-      });
-    }
+      if (!youtubeDomains.includes(link.hostname)) {
+        interaction.reply({
+          content: "Provided link is not a youtube link.",
+          ephemeral: true,
+        });
 
-    await interaction.deferReply();
+        return;
+      }
 
-    if (isThinking) {
+      if (isThinking) {
+        interaction.reply({
+          content: "I'm busy, please wait.",
+          ephemeral: true,
+        });
+
+        return;
+      }
+
+      interaction.deferReply();
+
+      const subs = await getSubs(link);
+      if (subs.isErr()) {
+        const err = subs.unwrapErr();
+        core.logger.error(`${err.message}\n${link}`, err);
+
+        interaction.editReply({
+          content: "Error",
+        });
+
+        return;
+      }
+
+      isThinking = true;
+
+      const response = await prompt(
+        `"${subs}", summarize this. Why should I care? Let me know whether this is a serious talk, or ment as a joke.`,
+      );
+
+      isThinking = false;
+
       interaction.editReply({
-        content: "I'm busy, please wait.",
+        content: response.unwrapOrElse((err) => {
+          core.logger.error(err.message, err);
+
+          return "Error";
+        }),
       });
-    }
-
-    isThinking = true;
-
-    const response = await prompt(
-      `"${
-        (await getSubs(link)).unwrap()
-      }", summarize this. Why should I care? Let me know whether this is a serious talk, or ment as a joke.`,
-    );
-
-    isThinking = false;
-
-    interaction.editReply({
-      content: response.unwrapOr("Error"),
-    });
-  },
-} satisfies Command;
+    },
+  } satisfies Command;
+}
