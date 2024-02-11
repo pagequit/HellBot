@@ -1,5 +1,12 @@
 import { type Command } from "./Command.ts";
-import { Client, Events, GatewayIntentBits, Interaction } from "discord";
+import {
+  ChannelType,
+  Client,
+  Events,
+  GatewayIntentBits,
+  type Interaction,
+  type Message,
+} from "discord";
 import { Collection, Err, Ok, Result } from "unwrap";
 import { deleteSlashCommands } from "./procedures/deleteSlashCommands.ts";
 import {
@@ -27,11 +34,24 @@ export default class HellCore {
     this.logger = logger;
 
     this.client = new Client({
-      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
+      intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.DirectMessages,
+        GatewayIntentBits.MessageContent,
+      ],
     });
 
     this.client.once(Events.ClientReady, (client: Client<true>) => {
       this.logger.log(`Logged in as ${client.user.tag}.`);
+    });
+
+    this.client.on(Events.MessageCreate, (message: Message) => {
+      if (message.channel.type !== ChannelType.DM) {
+        return;
+      }
+
+      message.reply("check");
     });
 
     this.client.on(Events.InteractionCreate, (interaction: Interaction) => {

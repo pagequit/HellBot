@@ -21,13 +21,13 @@ export default function (core: Core) {
       .withDescription("description")
       .withStringOption("link", "linkDescription", true),
     async execute(interaction: ChatInputCommandInteraction): Promise<void> {
-      const { options } = interaction;
+      const { options, locale } = interaction;
       const link = new URL(options.getString("link", true));
       const youtubeDomains = ["www.youtube.com", "youtu.be"];
 
       if (!youtubeDomains.includes(link.hostname)) {
         interaction.reply({
-          content: "Provided link is not a youtube link.",
+          content: i18n.t(locale, "notAYouTubeLink"),
           ephemeral: true,
         });
 
@@ -36,7 +36,7 @@ export default function (core: Core) {
 
       if (isThinking) {
         interaction.reply({
-          content: "I'm busy, please wait.",
+          content: i18n.t(locale, "busy"),
           ephemeral: true,
         });
 
@@ -51,7 +51,7 @@ export default function (core: Core) {
         core.logger.error(`${err.message}\n${link}`, err);
 
         interaction.editReply({
-          content: "Error",
+          content: i18n.t(locale, "noSubs"),
         });
 
         return;
