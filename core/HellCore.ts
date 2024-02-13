@@ -1,11 +1,10 @@
 import { type Command } from "./Command.ts";
 import {
-  ChannelType,
   Client,
   Events,
   GatewayIntentBits,
   type Interaction,
-  type Message,
+  Partials,
 } from "discord";
 import { Collection, Err, Ok, Result } from "unwrap";
 import { deleteSlashCommands } from "./procedures/deleteSlashCommands.ts";
@@ -40,6 +39,7 @@ export default class HellCore {
         GatewayIntentBits.DirectMessages,
         GatewayIntentBits.MessageContent,
       ],
+      partials: [Partials.Channel],
     });
 
     this.client.once(Events.ClientReady, (client: Client<true>) => {
@@ -70,14 +70,14 @@ export default class HellCore {
   async setup(): Promise<HellCore> {
     await this.loadFeatures();
 
-    await deleteSlashCommands();
+    // await deleteSlashCommands();
 
-    await registerCommands([
-      ...this.chatInputCommands.map((c) => c.data).values(),
-    ]);
-    await registerGuildCommands([
-      ...this.chatInputGuildCommands.map((c) => c.data).values(),
-    ]);
+    // await registerCommands([
+    //   ...this.chatInputCommands.map((c) => c.data).values(),
+    // ]);
+    // await registerGuildCommands([
+    //   ...this.chatInputGuildCommands.map((c) => c.data).values(),
+    // ]);
 
     return this;
   }
