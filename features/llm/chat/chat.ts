@@ -6,7 +6,6 @@ import {
   StringSelectMenuOptionBuilder,
 } from "discord";
 import { Command } from "/core/Command.ts";
-import geminiChat from "./gemini/gemini.ts";
 
 const Models = {
   Gemini: "gemini-pro",
