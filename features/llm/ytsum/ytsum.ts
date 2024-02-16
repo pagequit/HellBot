@@ -4,7 +4,7 @@ import de from "./translations/de.ts";
 import en from "./translations/en.ts";
 import { type Command } from "/core/Command.ts";
 import { getSubs } from "./getSubs.ts";
-import prompt from "../mistral/promt.ts";
+import prompt from "./promt.ts";
 import { type Core } from "/core/HellCore.ts";
 
 const i18n = new I18n([
