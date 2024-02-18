@@ -37,7 +37,7 @@ function googleChat() {
 }
 
 function openAIChat() {
-  return openAIChat;
+  return openAI;
 }
 
 export function startChat(model: Model) {
