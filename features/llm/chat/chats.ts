@@ -1,4 +1,5 @@
 import { Collection, Ok, type Result } from "unwrap";
+import { Model } from "../Model.ts";
 
 export type Message = {
   role: "user" | "system" | "assistant";
@@ -10,17 +11,21 @@ export type ChatBody = {
   content: string;
 };
 
-const chats = new Collection<string, { sendMessage: typeof sendMessage }>();
+const chats = new Collection<
+  ChatBody["sessionId"],
+  { sendMessage: typeof sendMessage }
+>();
 
-async function sendMessage(content: string): Promise<Result<string, Error>> {
+async function sendMessage(
+  this: Message[],
+  content: string,
+): Promise<Result<string, Error>> {
   await new Promise((resolve) => setTimeout(resolve, 2000));
-  return Ok(content);
-}
 
-enum Model {
-  Gemini = "gemini-pro",
-  ChatGPT = "gpt-3.5-turbo",
-  Mistral = "mistral-7b",
+  this.push({ role: "user", content });
+  this.push({ role: "assistant", content: "Hello!" });
+
+  return Ok(content);
 }
 
 const Mode: Record<Model, () => void> = {
