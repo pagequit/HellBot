@@ -1,20 +1,15 @@
 import { Collection, Ok, type Result } from "unwrap";
 import { Model } from "../Model.ts";
+import { type ChatBody } from "../ChatBody.ts";
+import gemini from "../handler/gemini.ts";
+import openAI from "../handler/openAI.ts";
 
 export type Message = {
   role: "user" | "system" | "assistant";
   content: string;
 };
 
-export type ChatBody = {
-  sessionId: string;
-  content: string;
-};
-
-const chats = new Collection<
-  ChatBody["sessionId"],
-  { sendMessage: typeof sendMessage }
->();
+const chats = new Collection<string, { sendMessage: typeof sendMessage }>();
 
 async function sendMessage(
   this: Message[],
@@ -28,15 +23,22 @@ async function sendMessage(
   return Ok(content);
 }
 
-const Mode: Record<Model, () => void> = {
+const Mode: Record<
+  Model,
+  () => (sessionId: string, content: string) => Promise<ChatBody>
+> = {
   [Model.Gemini]: googleChat,
   [Model.ChatGPT]: openAIChat,
   [Model.Mistral]: openAIChat,
 };
 
-function googleChat() {}
+function googleChat() {
+  return gemini;
+}
 
-function openAIChat() {}
+function openAIChat() {
+  return openAIChat;
+}
 
 export function startChat(model: Model) {
   Mode[model]();
@@ -46,4 +48,8 @@ export function startChat(model: Model) {
   return {
     sendMessage: sendMessage.bind(context),
   };
+}
+
+export function getChat(sessionId: string) {
+  return chats.get(sessionId);
 }

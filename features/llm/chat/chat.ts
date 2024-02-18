@@ -7,12 +7,7 @@ import {
 } from "discord";
 import { Command } from "/core/Command.ts";
 import { type Core } from "/core/HellCore.ts";
-
-const Models = {
-  Gemini: "gemini-pro",
-  ChatGPT: "gpt-3.5-turbo",
-  Mistral: "mistral-7b",
-} as const;
+import { Model } from "./../Model.ts";
 
 export default function (core: Core) {
   return {
@@ -37,14 +32,14 @@ export default function (core: Core) {
         .setPlaceholder("Select a model")
         .addOptions([
           new StringSelectMenuOptionBuilder()
-            .setLabel(Models.Gemini)
-            .setValue(Models.Gemini),
+            .setLabel(Model.Gemini)
+            .setValue(Model.Gemini),
           new StringSelectMenuOptionBuilder()
-            .setLabel(Models.ChatGPT)
-            .setValue(Models.ChatGPT),
+            .setLabel(Model.ChatGPT)
+            .setValue(Model.ChatGPT),
           new StringSelectMenuOptionBuilder()
-            .setLabel(Models.Mistral)
-            .setValue(Models.Mistral),
+            .setLabel(Model.Mistral)
+            .setValue(Model.Mistral),
         ]);
 
       const row = new ActionRowBuilder<StringSelectMenuBuilder>()
