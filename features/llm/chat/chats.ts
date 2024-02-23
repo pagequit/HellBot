@@ -33,17 +33,20 @@ const chats = new Collection<string, Chat>();
 
 const Mode: Record<Model, (sessionId: string) => Chat> = {
   [Model.Gemini]: (sessionId) => {
-    return new Chat(sessionId);
+    const handler = () => {};
+    return new Chat(sessionId, handler);
   },
   [Model.ChatGPT]: (sessionId) => {
-    return new Chat(sessionId);
+    const handler = () => {};
+    return new Chat(sessionId, handler);
   },
   [Model.Mistral]: (sessionId) => {
-    return new Chat(sessionId);
+    const handler = () => {};
+    return new Chat(sessionId, handler);
   },
 };
 
-export function startChat(model: Model, sessionId: string) {
+export function createChat(model: Model, sessionId: string) {
   const chat = Mode[model](sessionId);
   chats.set(sessionId, chat);
 

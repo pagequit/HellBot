@@ -26,7 +26,10 @@ export default {
     const { user, locale, options } = interaction;
     const minutes = options.getInteger("minutes", true);
     const ms = minutes * 60 * 1000;
+<<<<<<< HEAD
     const timer = ms + Date.now();
+=======
+>>>>>>> db6ef87 (WIP)
 
     if (minutes < 1 || minutes > 1440) {
       interaction.reply({
@@ -54,7 +57,11 @@ export default {
     }
 
     const response = await interaction.reply({
+<<<<<<< HEAD
       content: i18n.t(locale, "replySet", `<t:${Math.floor(timer / 1000)}:R>`),
+=======
+      content: i18n.t(locale, "replySet", String(minutes)), // <t:timestamp:R>
+>>>>>>> db6ef87 (WIP)
       components: [new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setCustomId("cancel")
@@ -65,7 +72,11 @@ export default {
       ephemeral: true,
     });
 
+<<<<<<< HEAD
     timers.set(user.id, timer);
+=======
+    timers.set(user.id, ms + Date.now());
+>>>>>>> db6ef87 (WIP)
 
     response.awaitMessageComponent({
       time: ms,
