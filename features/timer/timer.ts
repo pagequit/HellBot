@@ -25,7 +25,8 @@ export default {
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
     const { user, locale, options } = interaction;
     const minutes = options.getInteger("minutes", true);
-    const timer = minutes * 60 * 1000;
+    const ms = minutes * 60 * 1000;
+    const timer = ms + Date.now();
 
     if (minutes < 1 || minutes > 1440) {
       interaction.reply({
@@ -53,7 +54,7 @@ export default {
     }
 
     const response = await interaction.reply({
-      content: i18n.t(locale, "replySet", String(minutes)),
+      content: i18n.t(locale, "replySet", `<t:${Math.floor(timer / 1000)}:R>`),
       components: [new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setCustomId("cancel")
@@ -64,7 +65,7 @@ export default {
       ephemeral: true,
     });
 
-    timers.set(user.id, timer + Date.now());
+    timers.set(user.id, timer);
 
     response.awaitMessageComponent({
       time: timer,

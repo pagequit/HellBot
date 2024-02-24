@@ -6,7 +6,7 @@ export default {
   minutes: () => "minuten",
   minutesDescription: () => "Minuten bis der Timer abgelaufen ist.",
   cancel: () => "Abbrechen",
-  replySet: (minutes: string) => `Timer wurde auf ${minutes} minuten gestellt.`,
+  replySet: (time: string) => `Timer piept ${time}.`,
   replyCancel: () => "Timer wurde abgebrochen.",
   replyIsUp: () => "Timer ist abgelaufen.",
   replyExeption: () =>
