@@ -8,24 +8,24 @@ export type Message = {
 };
 
 class Chat {
-  sessionId: string;
-  handler: () => void;
   context: Array<Message>;
+  sessionId: string;
+  handle: (content: string) => void;
 
-  constructor(sessionId: string, handler: Chat["handler"]) {
-    this.sessionId = sessionId;
-    this.handler = handler;
+  constructor(sessionId: string, handle: Chat["handle"]) {
     this.context = [];
+    this.sessionId = sessionId;
+    this.handle = handle;
   }
 
   async sendMessage(content: string) {
-    const response = await this.handler.sendMessage(content);
-    let reply = "";
-    if (response.isOK) {
-      reply = response.body.text;
-    }
+    const response = await this.handle(content);
+    // let reply = "";
+    // if (response.isOK) {
+    //   reply = response.body.text;
+    // }
 
-    return reply;
+    // return reply;
   }
 }
 
