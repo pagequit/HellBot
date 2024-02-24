@@ -46,14 +46,6 @@ export default class HellCore {
       this.logger.log(`Logged in as ${client.user.tag}.`);
     });
 
-    this.client.on(Events.MessageCreate, (message: Message) => {
-      if (message.channel.type !== ChannelType.DM) {
-        return;
-      }
-
-      message.reply("check");
-    });
-
     this.client.on(Events.InteractionCreate, (interaction: Interaction) => {
       if (!interaction.isChatInputCommand()) {
         return;

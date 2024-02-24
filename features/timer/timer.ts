@@ -68,7 +68,7 @@ export default {
     timers.set(user.id, timer);
 
     response.awaitMessageComponent({
-      time: timer,
+      time: ms,
       dispose: true,
     }).then(() => {
       interaction.editReply({
