@@ -23,14 +23,20 @@ export default function (core: Core) {
       .withName("name")
       .withDescription("description"),
     async execute(interaction: ChatInputCommandInteraction): Promise<void> {
-      const { user } = interaction;
+      const { user, locale } = interaction;
 
       const file = `${Deno.cwd()}/user.json`;
-      const users = JSON.parse(Deno.readTextFileSync(file));
+      try {
+        const users = JSON.parse(Deno.readTextFileSync(file));
+      } catch (error) {
+        core.logger.error(error.message, error);
+
+        return;
+      }
 
       const select = new StringSelectMenuBuilder()
         .setCustomId("model")
-        .setPlaceholder("Select a model")
+        .setPlaceholder(i18n.t(locale, "select"))
         .addOptions([
           new StringSelectMenuOptionBuilder()
             .setLabel(Model.Gemini)
