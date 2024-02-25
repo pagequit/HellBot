@@ -1,20 +1,27 @@
 import {
   ActionRowBuilder,
   type ChatInputCommandInteraction,
-  SlashCommandBuilder,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
 } from "discord";
-import { Command } from "/core/Command.ts";
+import { I18n, Locale } from "/core/I18n.ts";
+import de from "./translations/de.ts";
+import en from "./translations/en.ts";
+import { type Command } from "/core/Command.ts";
 import { type Core } from "/core/HellCore.ts";
 import { Model } from "./../Model.ts";
 import { createChat } from "./chats.ts";
 
+const i18n = new I18n([
+  [Locale.EnglishGB, en],
+  [Locale.German, de],
+]);
+
 export default function (core: Core) {
   return {
-    data: new SlashCommandBuilder()
-      .setName("chat")
-      .setDescription("WIP"),
+    data: i18n.buildSlashCommand()
+      .withName("name")
+      .withDescription("description"),
     async execute(interaction: ChatInputCommandInteraction): Promise<void> {
       const { user } = interaction;
 
@@ -51,5 +58,5 @@ export default function (core: Core) {
         });
       });
     },
-  } as Command;
+  } satisfies Command;
 }
