@@ -1,21 +1,13 @@
+import type { Message } from "./Message.ts";
+
 export default class Chat {
   sessionId: string;
-  handler: () => void;
+  sendMessage: (content: string) => Promise<string>;
   context: Array<Message>;
 
-  constructor(sessionId: string, handler: Chat["handler"]) {
+  constructor(sessionId: string, sendMessage: Chat["sendMessage"]) {
     this.sessionId = sessionId;
-    this.handler = handler;
+    this.sendMessage = sendMessage;
     this.context = [];
-  }
-
-  async sendMessage(content: string) {
-    const response = await this.handler.sendMessage(content);
-    let reply = "";
-    if (response.isOK) {
-      reply = response.body.text;
-    }
-
-    return reply;
   }
 }
