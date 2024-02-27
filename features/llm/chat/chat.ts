@@ -2,7 +2,6 @@ import {
   ActionRowBuilder,
   type ChatInputCommandInteraction,
   StringSelectMenuBuilder,
-  StringSelectMenuComponent,
   StringSelectMenuInteraction,
   StringSelectMenuOptionBuilder,
 } from "discord";
@@ -12,6 +11,7 @@ import en from "./translations/en.ts";
 import { type Command } from "/core/Command.ts";
 import { type Core } from "/core/HellCore.ts";
 import { Model } from "./../Model.ts";
+import { type User } from "./user.schema.ts";
 import { createChat } from "../chats.ts";
 
 const i18n = new I18n([
@@ -26,15 +26,6 @@ export default function (core: Core) {
       .withDescription("description"),
     async execute(interaction: ChatInputCommandInteraction): Promise<void> {
       const { user, locale } = interaction;
-
-      const file = `${Deno.cwd()}/features/llm/chat/user.json`;
-      try {
-        const users = JSON.parse(Deno.readTextFileSync(file));
-      } catch (error) {
-        core.logger.error(error.message, error);
-
-        return;
-      }
 
       const select = new StringSelectMenuBuilder()
         .setCustomId("model")
@@ -64,6 +55,21 @@ export default function (core: Core) {
         const value = (i as StringSelectMenuInteraction)
           .values[0] as Model;
         createChat(value, user.id);
+
+        const file = `${Deno.cwd()}/features/llm/chat/user.json`;
+        try {
+          const llmUser: User = JSON.parse(Deno.readTextFileSync(file));
+          Deno.writeFileSync(
+            file,
+            new TextEncoder().encode(
+              JSON.stringify({ ...llmUser, [user.id]: value }, null, 2),
+            ),
+          );
+        } catch (error) {
+          core.logger.error(error.message, error);
+
+          return;
+        }
 
         interaction.editReply({
           content: `${value} selected`,

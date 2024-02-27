@@ -82,7 +82,8 @@ export default class HellCore {
     return this;
   }
 
-  async loadFeatures(path = `${Deno.cwd()}/features`): Promise<void> {
+  async loadFeatures(): Promise<void> {
+    const path = `${Deno.cwd()}/features`;
     for await (const dir of Deno.readDir(path)) {
       if (!dir.isDirectory) {
         continue;
