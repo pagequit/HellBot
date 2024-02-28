@@ -2,34 +2,49 @@ import { ChannelType, Events, type Message } from "discord";
 import type { Core } from "/core/HellCore.ts";
 import type { Feature } from "/core/Feature.ts";
 import chat from "./chat/chat.ts";
-import { getChat } from "./chats.ts";
-import { Option } from "unwrap";
+import { createChat, getChat } from "./chats.ts";
+import { type User } from "./chat/user.schema.ts";
+import { type Result, Some, teaCall } from "unwrap";
 
 export default {
   setup(core: Core): void {
     core.addChatInputCommand(chat(core));
 
-    // core.client.on(Events.MessageCreate, (message: Message) => {
-    //   if (message.author.bot || message.channel.type !== ChannelType.DM) {
-    //     return;
-    //   }
+    core.client.on(Events.MessageCreate, (message: Message) => {
+      if (message.author.bot || message.channel.type !== ChannelType.DM) {
+        return;
+      }
 
-    //   const chat = getChat(message.author.id);
-    //   if (chat.isNone()) {
-    //     message.reply("No model selected, use `/chat` to select a model.");
-    //     return;
-    //   }
+      const chat = getChat(message.author.id);
+      if (chat.and(Some(false)).unwrap()) { // FIXME
+        const llmUser: Result<User, Error> = teaCall(
+          JSON.parse,
+          Deno.readTextFileSync(`${Deno.cwd()}/features/llm/chat/user.json`),
+        );
 
-    //   chat.unwrap().sendMessage(message).then((response) => {
-    //     if (response.isErr()) {
-    //       message.reply(response.unwrapErr().message);
-    //     }
+        if (llmUser.isErr()) {
+          core.logger.error(llmUser.unwrapErr().message, llmUser.unwrapErr());
+          message.reply("An error occurred while loading user data.");
 
-    //     message.reply(response.unwrap());
-    //   }).catch((error) => {
-    //     core.logger.error(error);
-    //     message.reply("An error occurred while processing your request.");
-    //   });
-    // });
+          return;
+        }
+
+        if (!llmUser.unwrap()[message.author.id]) {
+          message.reply("No model selected, use `/chat` to select a model.");
+          return;
+        }
+
+        chat.insert(
+          createChat(llmUser.unwrap()[message.author.id], message.author.id),
+        );
+      }
+
+      chat.unwrap().sendMessage(message.content).then((response) => {
+        message.reply(response);
+      }).catch((error) => {
+        core.logger.error(error);
+        message.reply("An error occurred while processing your request.");
+      });
+    });
   },
 } satisfies Feature;
