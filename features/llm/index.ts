@@ -4,7 +4,7 @@ import type { Feature } from "/core/Feature.ts";
 import chat from "./chat/chat.ts";
 import { createChat, getChat } from "./chats.ts";
 import { type User } from "./chat/user.schema.ts";
-import { type Result, Some, teaCall } from "unwrap";
+import { OptionType, type Result, teaCall } from "unwrap";
 
 export default {
   setup(core: Core): void {
@@ -16,7 +16,7 @@ export default {
       }
 
       const chat = getChat(message.author.id);
-      if (chat.and(Some(false)).unwrap()) { // FIXME
+      if (chat.discriminant === OptionType.None) { // isNone()
         const llmUser: Result<User, Error> = teaCall(
           JSON.parse,
           Deno.readTextFileSync(`${Deno.cwd()}/features/llm/chat/user.json`),
