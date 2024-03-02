@@ -10,6 +10,6 @@
     "discord": "npm:discord.js@14.14.1"
   },
   "tasks": {
-    "run": "deno run --unstable-cron --unstable-kv --allow-read --allow-env --allow-net main.ts"
+    "run": "deno run --unstable-cron --unstable-kv --allow-read --allow-write --allow-env --allow-net main.ts"
   }
 }

@@ -1,6 +1,7 @@
 import { type ChatBody } from "../ChatBody.ts";
+import type Chat from "../Chat.ts";
 
-export default function (
+export function geminiProxyCall(
   sessionId: string,
   content: string,
 ): Promise<ChatBody> {
@@ -14,4 +15,15 @@ export default function (
       content,
     }),
   }).then((res) => res.json() as Promise<ChatBody>);
+}
+
+export default async function (chat: Chat): Promise<string> {
+  const response = await geminiProxyCall(
+    chat.sessionId,
+    chat.context[chat.context.length - 1].content,
+  );
+
+  console.log(response);
+
+  return response.content;
 }
