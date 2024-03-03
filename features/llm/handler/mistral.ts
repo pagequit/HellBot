@@ -1,4 +1,5 @@
 import { type Message } from "../Message.ts";
+import type Chat from "../Chat.ts";
 
 function prompt(context: Array<Message>, content: string): string {
   return context.reduce((acc, cur, idx) => {
@@ -8,38 +9,18 @@ function prompt(context: Array<Message>, content: string): string {
   }, "<s>") + `[INST] ${content} [/INST]`;
 }
 
-export default function () {
-  const context: Array<Message> = [
-    {
-      role: "user",
-      content: "Hello, world!",
-    },
-    {
-      role: "assistant",
-      content: "Hello from the other side!",
-    },
-    {
-      role: "user",
-      content: "Whasup, there?",
-    },
-    {
-      role: "assistant",
-      content: "Well, how are you?",
-    },
-  ];
+export function mistralCall(messages: Array<Message>): Promise<string> {
+  return fetch("http://llm:8080/completion", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      n_predict: 256,
+      temperature: 0.8,
+      prompt: prompt(messages, messages[messages.length - 1].content),
+    }),
+  }).then((res) => res.json().then((json) => json.content));
+}
 
-  const content = "Foo bar?";
-
-  console.log(prompt(context, content));
-
-  console.log(
-    "<s>[INST] Hello, world! [/INST] Hello from the other side!</s>[INST] Whasup, there? [/INST] Well, how are you?</s>[INST] Foo bar? [/INST]" ===
-      prompt(context, content),
-  );
-
-  console.log(prompt([], content));
-
-  console.log(
-    "<s>[INST] Foo bar? [/INST]" === prompt([], content),
-  );
+export default async function (chat: Chat): Promise<string> {
+  return await mistralCall(chat.context);
 }
