@@ -60,7 +60,7 @@ export default function (core: Core) {
       isThinking = true;
 
       const response = await prompt(
-        `"${subs}", summarize this. Why should I care? Let me know whether this is a serious talk, or ment as a joke.`,
+        `<s>[INST]"${subs}", summarize this. Why should I care? Let me know whether this is a serious talk, or ment as a joke.[/INST]</s>`,
       );
 
       isThinking = false;

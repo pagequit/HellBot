@@ -6,6 +6,9 @@ import { createChat, getChat } from "./chats.ts";
 import { type User } from "./chat/user.schema.ts";
 import { OptionType, type Result, teaCall } from "unwrap";
 
+import m from "./handler/mistral.ts";
+m();
+
 export default {
   setup(core: Core): void {
     core.addChatInputCommand(chat(core));

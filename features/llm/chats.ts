@@ -1,4 +1,4 @@
-import { Collection } from "unwrap";
+import { Collection, type Option } from "unwrap";
 import { Model } from "./Model.ts";
 import Chat from "./Chat.ts";
 import openAIHandler from "./handler/openAI.ts";
@@ -20,13 +20,13 @@ const Mode: Record<Model, (sessionId: string) => Chat> = {
   },
 };
 
-export function createChat(model: Model, sessionId: string) {
+export function createChat(model: Model, sessionId: string): Chat {
   const chat = Mode[model](sessionId);
   chats.set(sessionId, chat);
 
   return chat;
 }
 
-export function getChat(sessionId: string) {
+export function getChat(sessionId: string): Option<Chat> {
   return chats.get(sessionId);
 }
