@@ -14,13 +14,19 @@ export default class Chat {
   async sendMessage(content: string) {
     this.context.push({ role: "user", content });
 
-    // handle error?
-    const response = await this.handle(this);
-    console.log(response);
+    let response = "An error occurred.";
+    try {
+      response = await this.handle(this);
+      this.context.push({ role: "assistant", content: response });
+    } catch (error) {
+      this.context.pop();
+      console.error(error);
 
-    this.context.push({ role: "assistant", content: response });
+      // the error is handled by the caller
+      // FIXME: this sucks
+      throw error;
+    }
 
-    console.log(this.context);
     return response;
   }
 }

@@ -23,7 +23,5 @@ export default async function (chat: Chat): Promise<string> {
     chat.context[chat.context.length - 1].content,
   );
 
-  console.log(response);
-
   return response.content;
 }

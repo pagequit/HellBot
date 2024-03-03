@@ -16,7 +16,7 @@ export default {
       }
 
       const chat = getChat(message.author.id);
-      if (chat.discriminant === OptionType.None) { // isNone()
+      if (chat.discriminant === OptionType.None) {
         const llmUser: Result<User, Error> = teaCall(
           JSON.parse,
           Deno.readTextFileSync(`${Deno.cwd()}/features/llm/chat/user.json`),
