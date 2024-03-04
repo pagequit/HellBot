@@ -46,7 +46,7 @@ export default function (core: Core) {
         .addComponents(select);
 
       const response = await interaction.reply({
-        content: "Select a model",
+        content: i18n.t(locale, "disclaimer"),
         components: [row],
         ephemeral: true,
       });
@@ -72,7 +72,7 @@ export default function (core: Core) {
         }
 
         interaction.editReply({
-          content: `${value} selected`,
+          content: i18n.t(locale, "confirmation", value),
           components: [],
         });
       });
