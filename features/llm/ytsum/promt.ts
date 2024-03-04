@@ -1,6 +1,4 @@
 import { Err, Ok, Result } from "unwrap";
-// import { load } from "std/dotenv/mod.ts";
-// import OpenAI from "openai";
 
 export function postJSON(
   url: URL,
@@ -27,17 +25,3 @@ export default function (prompt: string): Promise<Result<string, Error>> {
     prompt,
   });
 }
-
-// export default async function (promt: string): Promise<Result<string, Error>> {
-//   const env = await load();
-//   const openai = new OpenAI({
-//     apiKey: Deno.env.get("OPENAI_API_KEY") ?? env.OPENAI_API_KEY,
-//   });
-
-//   const response = await openai.chat.completions.create({
-//     model: "gpt-3.5-turbo",
-//     messages: [{ role: "user", content: promt }],
-//   });
-
-//   return Ok(response.choices[0].message?.content ?? "");
-// }
