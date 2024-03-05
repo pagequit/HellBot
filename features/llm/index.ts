@@ -42,7 +42,7 @@ export default {
       chat.unwrap().sendMessage(message.content).then((response) => {
         message.reply(response);
       }).catch((error) => {
-        core.logger.error(error);
+        core.logger.error(error.message, error);
         message.reply("An error occurred while processing your request.");
       });
     });
