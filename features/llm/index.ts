@@ -1,19 +1,21 @@
 import { ChannelType, Events, type Message } from "discord";
-import type { Core } from "/core/HellCore.ts";
-import type { Feature } from "/core/Feature.ts";
+import { type Core } from "/core/HellCore.ts";
+import { type Feature } from "/core/Feature.ts";
+import { type User } from "./chat/user.schema.ts";
 import chat from "./chat/chat.ts";
 import { createChat, getChat } from "./chats.ts";
-import { type User } from "./chat/user.schema.ts";
 import { OptionType, type Result, teaCall } from "unwrap";
 
 export default {
   setup(core: Core): void {
     core.addChatInputCommand(chat(core));
 
-    core.client.on(Events.MessageCreate, (message: Message) => {
+    core.client.on(Events.MessageCreate, async (message: Message) => {
       if (message.author.bot || message.channel.type !== ChannelType.DM) {
         return;
       }
+
+      const m = await message.reply("...");
 
       const chat = getChat(message.author.id);
       if (chat.discriminant === OptionType.None) {
@@ -24,13 +26,13 @@ export default {
 
         if (llmUser.isErr()) {
           core.logger.error(llmUser.unwrapErr().message, llmUser.unwrapErr());
-          message.reply("An error occurred while loading user data.");
+          m.edit("An error occurred while loading user data.");
 
           return;
         }
 
         if (!llmUser.unwrap()[message.author.id]) {
-          message.reply("No model selected, use `/chat` to select a model.");
+          m.edit("No model selected, use `/chat` to select a model.");
           return;
         }
 
@@ -40,10 +42,10 @@ export default {
       }
 
       chat.unwrap().sendMessage(message.content).then((response) => {
-        message.reply(response);
+        m.edit(response);
       }).catch((error) => {
         core.logger.error(error.message, error);
-        message.reply("An error occurred while processing your request.");
+        m.edit("An error occurred while processing your request.");
       });
     });
   },

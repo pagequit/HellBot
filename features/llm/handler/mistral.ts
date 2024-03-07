@@ -14,7 +14,6 @@ export function mistralCall(messages: Array<Message>): Promise<string> {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      n_predict: 256,
       temperature: 0.8,
       prompt: prompt(messages, messages[messages.length - 1].content),
     }),

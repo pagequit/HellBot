@@ -1,5 +1,5 @@
-import type { Core } from "/core/HellCore.ts";
-import type { Feature } from "/core/Feature.ts";
+import { type Core } from "/core/HellCore.ts";
+import { type Feature } from "/core/Feature.ts";
 import poll from "./poll.ts";
 
 export default {
