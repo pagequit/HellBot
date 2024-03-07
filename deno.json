@@ -2,9 +2,9 @@
   "imports": {
     "/": "./",
     "./": "./",
-    "std/": "https://deno.land/std@0.210.0/",
-    "dom": "https://deno.land/x/deno_dom@v0.1.43/deno-dom-wasm.ts",
-    "openai": "npm:openai",
+    "std/": "https://deno.land/std@0.218.2/",
+    "dom": "https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm.ts",
+    "openai": "npm:openai@4.28.4",
     "unwrap": "https://deno.land/x/unwrap@v1.1.4/mod.ts",
     "entities": "npm:entities@4.5.0",
     "discord": "npm:discord.js@14.14.1"
