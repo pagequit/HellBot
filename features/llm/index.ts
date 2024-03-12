@@ -1,52 +1,44 @@
-import { ChannelType, Events, type Message } from "discord";
-import { type Core } from "/core/HellCore.ts";
-import { type Feature } from "/core/Feature.ts";
-import { type User } from "./chat/user.schema.ts";
+import type { Feature } from "@/core/Feature.ts";
+import type { Core } from "@/core/HellCore.ts";
+import { ChannelType, Events, type Message } from "discord.js";
+import { OptionType } from "unwrap/mod.ts";
 import chat from "./chat/chat.ts";
+import llmUser from "./chat/user.json";
+import type { User } from "./chat/user.schema.ts";
 import { createChat, getChat } from "./chats.ts";
-import { OptionType, type Result, teaCall } from "unwrap";
 
 export default {
-  setup(core: Core): void {
-    core.addChatInputCommand(chat(core));
+	setup(core: Core): void {
+		core.addChatInputCommand(chat(core));
 
-    core.client.on(Events.MessageCreate, async (message: Message) => {
-      if (message.author.bot || message.channel.type !== ChannelType.DM) {
-        return;
-      }
+		core.client.on(Events.MessageCreate, async (message: Message) => {
+			if (message.author.bot || message.channel.type !== ChannelType.DM) {
+				return;
+			}
 
-      const m = await message.reply("...");
+			const m = await message.reply("...");
 
-      const chat = getChat(message.author.id);
-      if (chat.discriminant === OptionType.None) {
-        const llmUser: Result<User, Error> = teaCall(
-          JSON.parse,
-          Deno.readTextFileSync(`${Deno.cwd()}/features/llm/chat/user.json`),
-        );
+			const chat = getChat(message.author.id);
+			if (chat.discriminant === OptionType.None) {
+				const user = (llmUser as User)[message.author.id];
+				if (!user) {
+					m.edit("No model selected, use `/chat` to select a model.");
+					return;
+				}
 
-        if (llmUser.isErr()) {
-          core.logger.error(llmUser.unwrapErr().message, llmUser.unwrapErr());
-          m.edit("An error occurred while loading user data.");
+				chat.insert(createChat(user, message.author.id));
+			}
 
-          return;
-        }
-
-        if (!llmUser.unwrap()[message.author.id]) {
-          m.edit("No model selected, use `/chat` to select a model.");
-          return;
-        }
-
-        chat.insert(
-          createChat(llmUser.unwrap()[message.author.id], message.author.id),
-        );
-      }
-
-      chat.unwrap().sendMessage(message.content).then((response) => {
-        m.edit(response);
-      }).catch((error) => {
-        core.logger.error(error.message, error);
-        m.edit("An error occurred while processing your request.");
-      });
-    });
-  },
+			chat
+				.unwrap()
+				.sendMessage(message.content)
+				.then((response) => {
+					m.edit(response);
+				})
+				.catch((error) => {
+					core.logger.error(error.message, error);
+					m.edit("An error occurred while processing your request.");
+				});
+		});
+	},
 } satisfies Feature;

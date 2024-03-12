@@ -1,14 +1,10 @@
-import { load } from "std/dotenv/mod.ts";
-
-const env = await load();
-
 export const discord = {
-  token: Deno.env.get("DISCORD_TOKEN") ?? env.DISCORD_TOKEN,
-  guildId: Deno.env.get("HELLNET_ID") ?? env.HELLNET_ID,
-  clientId: Deno.env.get("HELLBOT_ID") ?? env.HELLBOT_ID,
+	token: process.env.DISCORD_TOKEN as string,
+	guildId: process.env.HELLNET_ID as string,
+	clientId: process.env.HELLBOT_ID as string,
 };
 
 export const botlog = {
-  id: Deno.env.get("BOTLOG_ID") ?? env.BOTLOG_ID,
-  token: Deno.env.get("BOTLOG_TOKEN") ?? env.BOTLOG_TOKEN,
+	id: process.env.BOTLOG_ID as string,
+	token: process.env.BOTLOG_TOKEN as string,
 };

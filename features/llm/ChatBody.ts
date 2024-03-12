@@ -1,4 +1,4 @@
 export type ChatBody = {
-  sessionId: string;
-  content: string;
+	sessionId: string;
+	content: string;
 };

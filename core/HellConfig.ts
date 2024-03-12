@@ -1,7 +1,7 @@
 export type HellConfig = {
-  discord: {
-    token: string;
-    guildId: string;
-    clientId: string;
-  };
+	discord: {
+		token: string;
+		guildId: string;
+		clientId: string;
+	};
 };
