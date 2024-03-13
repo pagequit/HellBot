@@ -1,17 +1,18 @@
 {
-	"name": "hellbot",
-	"module": "main.ts",
-	"type": "module",
-	"devDependencies": {
-		"@biomejs/biome": "^1.6.1",
-		"@types/bun": "latest"
-	},
-	"peerDependencies": {
-		"typescript": "^5.0.0"
-	},
-	"dependencies": {
-		"discord.js": "^14.14.1",
-		"openai": "^4.28.4",
-		"unwrap": "git+https://github.com/pagequit/unwrap.git"
-	}
+  "name": "hellbot",
+  "module": "main.ts",
+  "type": "module",
+  "devDependencies": {
+    "@biomejs/biome": "^1.6.1",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "elysia": "^0.8.17",
+    "openai": "^4.28.4",
+    "unwrap": "git+https://github.com/pagequit/unwrap.git"
+  }
 }
