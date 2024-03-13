@@ -5,7 +5,7 @@
 			"type": "bun",
 			"request": "launch",
 			"name": "Debug Bun",
-			"program": "${file}",
+			"program": "./main.ts",
 			"args": [],
 			"cwd": "${workspaceFolder}",
 			"env": {},
