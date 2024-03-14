@@ -10,6 +10,8 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@elysiajs/cookie": "^0.8.0",
+    "@elysiajs/jwt": "^0.8.0",
     "discord.js": "^14.14.1",
     "elysia": "^0.8.17",
     "openai": "^4.28.4",
