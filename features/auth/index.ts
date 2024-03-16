@@ -16,7 +16,7 @@ function auth(_core: Core): Command {
 			const token = Math.random().toString(16).substring(2);
 			const inviteLink = `http://localhost:8080/auth/${token}`;
 
-			crappyStore.set(token, interaction.user.displayName);
+			crappyStore.set(token, interaction.user.id);
 
 			interaction.reply({
 				content: inviteLink,

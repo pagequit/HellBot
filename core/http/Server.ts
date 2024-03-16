@@ -1,5 +1,4 @@
 import { useCrappyStore } from "@/core/CrappyStore";
-import { cookie } from "@elysiajs/cookie";
 import { jwt } from "@elysiajs/jwt";
 import { Elysia } from "elysia";
 
@@ -9,11 +8,10 @@ export default new Elysia()
 	.use(
 		jwt({
 			name: "jwt",
-			secret: "MYSUPERSECRET",
+			secret: process.env.JWT_SECRET as string,
 		}),
 	)
-	.use(cookie())
-	.get("/auth/:token", async ({ jwt, set, setCookie, params }) => {
+	.get("/auth/:token", async ({ jwt, set, cookie: { auth }, params }) => {
 		const user = crappyStore.get(params.token);
 
 		if (user.isNone()) {
@@ -21,20 +19,24 @@ export default new Elysia()
 			return "Unauthorized";
 		}
 
-		setCookie("auth", await jwt.sign({ user: user.unwrap(), ...params }), {
+		auth.set({
+			value: await jwt.sign({ id: user.unwrap(), ...params }),
 			httpOnly: true,
+			maxAge: 7 * 86400,
+			path: "/",
+			secure: false, // FIXME for production
 		});
 
 		crappyStore.delete(params.token);
 
 		return `Sign in as ${user.unwrap()}`;
 	})
-	.get("/profile", async ({ jwt, set, cookie: { auth } }) => {
-		const profile = await jwt.verify(auth);
+	.get("/", async ({ jwt, set, cookie: { auth } }) => {
+		const user = await jwt.verify(auth.value);
 
-		if (!profile) {
+		if (!user) {
 			set.status = 401;
 			return "Unauthorized";
 		}
-		return `Hello ${profile.user}`;
+		return `Hello ${user.id}`;
 	});
