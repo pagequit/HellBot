@@ -5,13 +5,12 @@ const db = new Database("db.sqlite", { create: true });
 export default class Table<T extends {}> {
 	readonly name: string;
 
-	constructor(name: string, columns: Map<string, string>) {
+	constructor(name: string, columns: Record<keyof T, string>) {
 		this.name = name;
-		const sql = `CREATE TABLE IF NOT EXISTS ${name} (${[...columns].reduce(
-			(acc, cur, idx) => {
-				return `${acc}${cur[0]} ${cur[1]}${
-					idx === columns.size - 1 ? "" : ", "
-				}`;
+		const c = Object.entries(columns);
+		const sql = `CREATE TABLE IF NOT EXISTS ${name} (${c.reduce(
+			(acc, [key, vlaue], idx) => {
+				return `${acc}${key} ${vlaue}${idx === c.length - 1 ? "" : ", "}`;
 			},
 			"",
 		)});`;
@@ -40,7 +39,7 @@ export default class Table<T extends {}> {
 		return result;
 	}
 
-	updateBy(column: string, data: Partial<T>) {
+	updateBy(column: string & keyof T, data: Partial<T>) {
 		const updates = Object.entries(data).reduce((acc, cur, idx) => {
 			return `${acc}${cur[0]} = '${cur[1]}'${
 				idx === Object.keys(data).length - 1 ? "" : ", "
@@ -49,7 +48,6 @@ export default class Table<T extends {}> {
 
 		const sql = `UPDATE ${this.name} SET ${updates} WHERE ${column} = ?`;
 		const query: Statement<T> = db.prepare(sql);
-		// @ts-ignore
 		query.run(data[column]);
 	}
 }
