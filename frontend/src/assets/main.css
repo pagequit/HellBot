@@ -5,7 +5,7 @@
 	margin: 0 auto;
 	padding: 2rem;
 	font-weight: normal;
-	background-color: var(--background-1);
+	background-color: var(--c-bg-1);
 }
 
 @media (min-width: 1024px) {

@@ -24,16 +24,6 @@
 	--rgb-black: 35, 39, 42;
 	--c-black: rgb(var(--rgb-black));
 
-	--c-bg-1: rgb(43 45 49);
-	--c-bg-2: rgb(49 51 56);
-	--c-bg-3: rgb(64 66 73);
-
-	--c-fg-1: rgb(219 222 225);
-	--c-fg-2: rgb(181 186 193);
-	--c-fg-3: rgb(113 116 120);
-
-	--font-color: var(--c-white);
-
 	--sp-1: 4px;
 	--sp-2: 8px;
 	--sp-3: 16px;
@@ -42,25 +32,32 @@
 	--sp-6: 48px;
 
 	--screen-tablet: 640px;
-	--screen-laptop: 1024px;
 	--screen-desktop: 1280px;
 }
 
 :root {
-	--background-0: var(--c-black);
-	--background-1: var(--c-bg-1);
-	--background-2: var(--c-bg-2);
-	--background-3: var(--c-bg-3);
+	--c-bg-0: rgb(35, 39, 42);
+	--c-bg-1: rgb(43, 45, 49);
+	--c-bg-2: rgb(49, 51, 56);
+	--c-bg-3: rgb(64, 66, 73);
+
+	--c-fg-0: rgb(255 255 225);
+	--c-fg-1: rgb(219 222 225);
+	--c-fg-2: rgb(181 186 193);
+	--c-fg-3: rgb(113 116 120);
 }
 
 @media (prefers-color-scheme: light) {
 	:root {
-		--font-color: var(--c-black);
+		--c-bg-0: rgb(227, 229, 232);
+		--c-bg-1: rgb(242, 243, 245);
+		--c-bg-2: rgb(255, 255, 255);
+		--c-bg-3: rgb(215, 217, 220);
 
-		--background-0: rgb(227, 229, 232);
-		--background-1: rgb(242, 243, 245);
-		--background-2: var(--c-white);
-		--background-3: rgb(215, 217, 220);
+		--c-fg-0: rgb(35, 39, 42);
+		--c-fg-1: rgb(43, 45, 49);
+		--c-fg-2: rgb(49, 51, 56);
+		--c-fg-3: rgb(64, 66, 73);
 	}
 }
 
@@ -73,13 +70,13 @@
 html {
 	font-family: var(--font-sans);
 	font-size: 16px;
-	color: var(--font-color);
+	color: var(--c-fg-0);
 	line-height: 1.15;
 }
 
 body {
 	margin: 0;
-	background-color: var(--background-0);
+	background-color: var(--c-bg-0);
 }
 
 hr {
