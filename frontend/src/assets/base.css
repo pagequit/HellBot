@@ -165,11 +165,11 @@ a:visited {
 		transition: 377ms;
 	}
 
-  a:hover {
-    background-color: rgba(var(--rgb-blurple), 0.2);
-  }
+	a:hover {
+		background-color: rgba(var(--rgb-blurple), 0.2);
+	}
 
 	a:visited:hover {
-    background-color: rgba(var(--rgb-fuchsia), 0.2);
+		background-color: rgba(var(--rgb-fuchsia), 0.2);
 	}
 }
