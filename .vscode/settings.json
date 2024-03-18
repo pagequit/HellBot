@@ -8,10 +8,10 @@
 		"quickfix.biome": "explicit",
 		"source.organizeImports.biome": "explicit"
 	},
-	"files.associations": {
-		"*.css": "tailwindcss"
-	},
 	"editor.quickSuggestions": {
 		"strings": "on"
+	},
+	"[css]": {
+		"editor.defaultFormatter": "vscode.css-language-features"
 	}
 }
