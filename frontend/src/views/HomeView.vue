@@ -5,6 +5,9 @@ import PaperPlane from "../components/icons/PaperPlane.vue";
 <template>
   <div class="grid">
     <div class="col-12">
+      <span>Foo:</span>
+    </div>
+    <div class="col-12">
       <div class="input">
         <input type="text" />
         <div class="paper-plane">
@@ -19,12 +22,13 @@ import PaperPlane from "../components/icons/PaperPlane.vue";
 
 .input {
   display: flex;
-  flex-direction: row nowrap;
+  flex-flow: row nowrap;
   margin: var(--sp-3);
   background: var(--c-bg-1);
   border-radius: var(--sp-2);
 
   input {
+    color: var(--c-fg-1);
     border-radius: var(--sp-2);
     padding: var(--sp-2);
     background: var(--c-bg-1);
