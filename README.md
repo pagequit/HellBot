@@ -14,55 +14,53 @@ HellBot is build with Bun. So you need to install Bun in order to run HellBot.
 
 ```json
 {
-	"bun.runtime": "~/.bun/bin/bun",
-	"bun.debugTerminal.enabled": true,
-	"bun.debugTerminal.stopOnEntry": false,
-	"editor.defaultFormatter": "biomejs.biome",
-	"editor.formatOnSave": true,
-	"editor.codeActionsOnSave": {
-		"quickfix.biome": "explicit",
-		"source.organizeImports.biome": "explicit"
-	},
-	"files.associations": {
-		"*.css": "tailwindcss"
-	},
-	"editor.quickSuggestions": {
-		"strings": "on"
-	}
+  "bun.runtime": "~/.bun/bin/bun",
+  "bun.debugTerminal.enabled": true,
+  "bun.debugTerminal.stopOnEntry": false,
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "quickfix.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  }
 }
-
 ```
 
 `.vscode/launch.json`
 
 ```json
 {
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"type": "bun",
-			"request": "launch",
-			"name": "Debug Bun",
-			"program": "./main.ts",
-			"args": [],
-			"cwd": "${workspaceFolder}",
-			"env": {},
-			"strictEnv": false,
-			"watchMode": false,
-			"stopOnEntry": false,
-			"noDebug": false,
-			"runtime": "bun",
-			"runtimeArgs": []
-		},
-		{
-			"type": "bun",
-			"request": "attach",
-			"name": "Attach to Bun",
-			"url": "ws://localhost:6499/"
-		}
-	]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "Debug Bun",
+      "program": "./main.ts",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "env": {},
+      "strictEnv": false,
+      "watchMode": false,
+      "stopOnEntry": false,
+      "noDebug": false,
+      "runtime": "bun",
+      "runtimeArgs": []
+    },
+    {
+      "type": "bun",
+      "request": "attach",
+      "name": "Attach to Bun",
+      "url": "ws://localhost:6499/"
+    }
+  ]
 }
-
 ```
 
 ## Run

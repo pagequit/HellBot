@@ -1,63 +1,92 @@
 <script setup lang="ts">
+import { ref } from "vue";
+import DieBestie from "../components/icons/DieBestie.vue";
 import PaperPlane from "../components/icons/PaperPlane.vue";
+
+const prompt = ref("");
 </script>
 
 <template>
-  <div class="grid">
-    <div class="col-12">
-      <span>Foo:</span>
-    </div>
-    <div class="col-12">
-      <div class="input">
-        <input type="text" />
-        <div class="paper-plane">
-          <PaperPlane />
-        </div>
-      </div>
+  <DieBestie class="die-bestie" />
+  <div class="home grid">
+    <div class="input col-12">
+      <textarea
+        class="prompt"
+        v-model="prompt"
+        placeholder="Enter your prompt here..."
+        oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';"
+      ></textarea>
+      <button
+        type="submit"
+        class="paper-plane"
+        @click.prevent="
+          console.log(prompt);
+          prompt = '';
+        "
+      >
+        <PaperPlane />
+      </button>
     </div>
   </div>
 </template>
 
 <style>
-
-.input {
-  display: flex;
-  flex-flow: row nowrap;
-  margin: var(--sp-3);
-  background: var(--c-bg-1);
-  border-radius: var(--sp-2);
-
-  input {
-    color: var(--c-fg-1);
-    border-radius: var(--sp-2);
-    padding: var(--sp-2);
-    background: var(--c-bg-1);
-    border: none;
-    flex: 1 1 auto;
-  }
+.die-bestie {
+  color: var(--c-bg-3);
 }
-.paper-plane {
-  flex: 1 1 aut;
-  --c-pp: var(--c-fg-3);
+.home {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 
+  .input {
+    display: flex;
+    flex-flow: row nowrap;
+    margin: var(--sp-3);
+    background: var(--c-bg-1);
+    border-radius: var(--sp-2);
 
-  cursor: pointer;
-  border-radius: var(--sp-2);
-  color: var(--c-pp);
-  padding: var(--sp-2);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: fit-content;
-  background: var(--c-bg-1);
+    &:has(.prompt:focus) {
+      outline-width: 2px;
+      outline-style: solid;
+      outline-color: var(--c-blurple);
+    }
 
-  &:hover {
-    background: var(--c-bg-2);
+    .prompt {
+      color: var(--c-fg-1);
+      border-radius: var(--sp-2);
+      padding: var(--sp-2);
+      background: transparent;
+      border: none;
+      flex: 1 0 auto;
+      resize: none;
+
+      &:focus {
+        outline: none;
+      }
+    }
   }
+  .paper-plane {
+    flex: 0 1 auto;
+    cursor: pointer;
+    border-radius: var(--sp-2);
+    border: none;
+    color: var(--c-fg-2);
+    padding: var(--sp-2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    background: var(--c-bg-1);
 
+    &:hover {
+      background: var(--c-bg-2);
+    }
 
-  svg {
-    transform: rotate(90deg);
+    svg {
+      transform: rotate(90deg);
+    }
   }
 }
 </style>
