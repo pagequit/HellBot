@@ -1,47 +1,71 @@
 <script setup lang="ts">
+import Bars from "@/frontend/src/components/icons/Bars.vue";
+import { ref } from "vue";
 import { RouterLink, RouterView } from "vue-router";
-import DieBestie from "./components/icons/DieBestie.vue";
+
+const menu = ref<HTMLElement | null>(null);
 </script>
 
 <template>
-  <header class="header">
-      <a class="home" href="/">
-        <DieBestie class="logo"/>
-        <span>HellNet</span>
-      </a>
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-  </header>
+  <div class="menu" ref="menu">
+    <nav>
+      <RouterLink to="/">Home</RouterLink>
+      <RouterLink to="/about">About</RouterLink>
+    </nav>
+  </div>
+  <button
+    type="button"
+    class="menu-toggle"
+    @click="menu!.classList.toggle('menu--open')"
+  >
+    <Bars />
+  </button>
 
   <RouterView />
 </template>
 
 <style>
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--sp-3);
-  background-color: var(--c-bg-1);
+.menu {
+  position: absolute;
+  background: var(--c-bg-1);
+  height: 100%;
+  padding-top: calc(var(--sp-4) + 3rem);
+  padding-right: 0;
+  padding-bottom: var(--sp-3);
+  padding-left: 0;
+  width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  transition: all 233ms ease-out;
 
-  .home {
-    font-size: larger;
-    font-weight: bold;
-    color: var(--c-fg-1);
-    text-decoration: none;
-    flex: 0 1 auto;
-    justify-content: start;
-    display: flex;
-    align-items: center;
-    width: fit-content;
+  &.menu--open {
+    width: 16rem;
+    transition: all 233ms ease-in;
+    padding-right: var(--sp-3);
+    padding-left: var(--sp-3);
+  }
+}
+
+.menu-toggle {
+  position: absolute;
+  cursor: pointer;
+  top: var(--sp-3);
+  left: var(--sp-3);
+  width: 3rem;
+  height: 3rem;
+  border: none;
+  border-radius: var(--sp-2);
+  color: var(--c-fg-2);
+  padding: var(--sp-2);
+  background: var(--c-bg-1);
+
+  &:hover {
+    background: var(--c-bg-2);
   }
 
-  .logo {
-    width: 32px;
-    height: 32px;
-    margin-right: var(--sp-2);
+  svg {
+    width: 100%;
+    height: 100%;
   }
 }
 </style>

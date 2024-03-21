@@ -1,9 +1,7 @@
 <template>
   <div class="grid">
     <div class="col-12">
-      <div class="spinner">
-
-      </div>
+      <div class="spinner"></div>
     </div>
     <div class="col-1">1</div>
     <div class="col-2">2</div>

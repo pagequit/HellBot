@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
+import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
 import { ref } from "vue";
-import DieBestie from "../components/icons/DieBestie.vue";
-import PaperPlane from "../components/icons/PaperPlane.vue";
 
 const prompt = ref("");
 </script>

@@ -7,7 +7,7 @@ export default defineConfig({
 	root: "./frontend",
 	resolve: {
 		alias: {
-			"@/frontend": fileURLToPath(new URL("./frontend/src", import.meta.url)),
+			"@/frontend": fileURLToPath(new URL("./frontend", import.meta.url)),
 		},
 	},
 });
