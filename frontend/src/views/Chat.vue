@@ -10,20 +10,12 @@ const prompt = ref("");
   <div class="chat">
     <DieBestie class="die-bestie" />
     <div class="input">
-      <textarea
-        class="prompt"
-        v-model="prompt"
-        placeholder="Enter your prompt here..."
-        oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';"
-      ></textarea>
-      <button
-        type="submit"
-        class="paper-plane btn"
-        @click.prevent="
-          console.log(prompt);
-          prompt = '';
-        "
-      >
+      <textarea class="prompt" v-model="prompt" placeholder="Enter your prompt here..."
+        oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';"></textarea>
+      <button type="submit" class="paper-plane btn" @click.prevent="
+        console.log(prompt);
+      prompt = '';
+      ">
         <PaperPlane />
       </button>
     </div>
@@ -34,12 +26,14 @@ const prompt = ref("");
 .die-bestie {
   color: var(--c-bg-3);
 }
+
 .chat {
   width: 100%;
   height: 100%;
-  max-width: 1200px;
+  max-width: 1024px;
   max-height: 100%;
   margin: 0 auto;
+  padding: 0 var(--sp-3);
   display: flex;
   flex-flow: column nowrap;
   justify-content: end;
@@ -47,7 +41,7 @@ const prompt = ref("");
   .input {
     display: flex;
     flex-flow: row nowrap;
-    margin: var(--sp-3);
+    margin: var(--sp-3) 0;
     background: var(--c-bg-1);
     border-radius: var(--sp-2);
 
@@ -71,6 +65,7 @@ const prompt = ref("");
       }
     }
   }
+
   .paper-plane {
     flex: 0 1 auto;
     display: flex;

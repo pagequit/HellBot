@@ -39,23 +39,18 @@ function handleMenu(event: MouseEvent) {
 
 <template>
   <div class="menu" ref="menu">
+    <button ref="toggle" type="button" class="menu-toggle btn" @click="handleMenu">
+      <Bars />
+    </button>
     <nav class="menu-nav">
-      <RouterLink class="menu-nav__item" to="/"
-        ><Chat /><span>Chat</span></RouterLink
-      >
-      <RouterLink class="menu-nav__item" to="/commands"
-        ><CodeBracket /><span>Commands</span></RouterLink
-      >
+      <RouterLink class="menu-nav__item" to="/">
+        <Chat /><span class="shrink">Chat</span>
+      </RouterLink>
+      <RouterLink class="menu-nav__item" to="/commands">
+        <CodeBracket /><span class="shrink">Commands</span>
+      </RouterLink>
     </nav>
   </div>
-  <button
-    ref="toggle"
-    type="button"
-    class="menu-toggle btn"
-    @click="handleMenu"
-  >
-    <Bars />
-  </button>
 
   <div ref="view" class="view">
     <RouterView />
@@ -66,33 +61,52 @@ function handleMenu(event: MouseEvent) {
 #app {
   height: 100vh;
   display: flex;
-  flex-flow: column nowrap;
+  flex-flow: row nowrap;
   position: relative;
 }
 
 .view {
   height: 100%;
+  flex: 1 1 auto;
 }
 
 .menu {
   position: absolute;
   background: var(--c-bg-1);
   height: 100%;
-  padding-top: calc(var(--sp-4) + 3rem);
-  padding-right: 0;
-  padding-bottom: var(--sp-3);
-  padding-left: 0;
-  width: 0;
+  width: 16rem;
   max-width: 100%;
+  padding-top: calc(var(--sp-4) + 3rem);
+  padding-right: var(--sp-3);
+  padding-bottom: var(--sp-3);
+  padding-left: var(--sp-3);
   overflow: hidden;
+  left: -16rem;
   transition: all 233ms ease-out;
 
   &.menu--open {
-    width: 16rem;
-    transition: all 233ms ease-in;
-    padding-right: var(--sp-3);
-    padding-left: var(--sp-3);
+    left: 0;
     box-shadow: 8px 0 16px 0 rgba(var(--rgb-black), 0.2);
+    transition: all 233ms ease-in;
+  }
+
+  @media screen and (min-width: 640px) {
+    position: static;
+    width: 4.5rem;
+
+    .shrink {
+      width: 0;
+      overflow: hidden;
+    }
+
+    &.menu--open {
+      box-shadow: none;
+      width: 16rem;
+
+      .shrink {
+        width: 100%;
+      }
+    }
   }
 }
 
@@ -121,12 +135,14 @@ function handleMenu(event: MouseEvent) {
 
   svg {
     width: 1.25em;
+    min-width: 1.25em;
     height: 1.25em;
+    min-height: 1.25em;
   }
 }
 
 .menu-toggle {
-  position: absolute;
+  position: fixed;
   top: var(--sp-3);
   left: var(--sp-3);
   width: 2.5rem;
