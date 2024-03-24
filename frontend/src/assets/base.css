@@ -23,7 +23,7 @@
   --rgb-white: 255, 255, 255;
   --c-white: rgb(var(--rgb-white));
 
-  --rgb-black: 35, 39, 42;
+  --rgb-black: 30, 31, 34;
   --c-black: rgb(var(--rgb-black));
 
   --sp-1: 4px;
@@ -38,7 +38,7 @@
 }
 
 :root {
-  --c-bg-0: rgb(35, 39, 42);
+  --c-bg-0: rgb(30, 31, 34);
   --c-bg-1: rgb(43, 45, 49);
   --c-bg-2: rgb(49, 51, 56);
   --c-bg-3: rgb(64, 66, 73);
@@ -56,7 +56,7 @@
     --c-bg-2: rgb(255, 255, 255);
     --c-bg-3: rgb(215, 217, 220);
 
-    --c-fg-0: rgb(35, 39, 42);
+    --c-fg-0: rgb(30, 31, 34);
     --c-fg-1: rgb(43, 45, 49);
     --c-fg-2: rgb(49, 51, 56);
     --c-fg-3: rgb(64, 66, 73);

@@ -107,7 +107,7 @@ function handleMenu(event: MouseEvent) {
   padding: var(--sp-2);
   border-radius: var(--sp-2);
   background: transparent;
-  color: var(--c-fg-1);
+  color: var(--c-fg-2);
   transition: all 233ms ease-in-out;
   display: flex;
   flex-flow: row nowrap;
@@ -115,7 +115,7 @@ function handleMenu(event: MouseEvent) {
 
   &:hover,
   &.active {
-    color: var(--c-fg-2);
+    color: var(--c-fg-1);
     background: var(--c-bg-2);
   }
 
@@ -132,6 +132,7 @@ function handleMenu(event: MouseEvent) {
   width: 2.5rem;
   height: 2.5rem;
   border: none;
+  color: var(--c-fg-2);
 
   svg {
     width: 100%;

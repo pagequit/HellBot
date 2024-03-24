@@ -7,9 +7,9 @@ const prompt = ref("");
 </script>
 
 <template>
-  <DieBestie class="die-bestie" />
-  <div class="home grid">
-    <div class="input col-12">
+  <div class="chat">
+    <DieBestie class="die-bestie" />
+    <div class="input">
       <textarea
         class="prompt"
         v-model="prompt"
@@ -34,11 +34,15 @@ const prompt = ref("");
 .die-bestie {
   color: var(--c-bg-3);
 }
-.home {
-  flex: 1 0 auto;
+.chat {
   width: 100%;
+  height: 100%;
   max-width: 1200px;
+  max-height: 100%;
   margin: 0 auto;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: end;
 
   .input {
     display: flex;
@@ -73,6 +77,7 @@ const prompt = ref("");
     justify-content: center;
     align-items: center;
     width: fit-content;
+    color: var(--c-fg-2);
 
     svg {
       transform: rotate(90deg);
