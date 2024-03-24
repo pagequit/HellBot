@@ -2,6 +2,9 @@
 import Bars from "@/frontend/src/components/icons/Bars.vue";
 import Chat from "@/frontend/src/components/icons/Chat.vue";
 import CodeBracket from "@/frontend/src/components/icons/CodeBracket.vue";
+import Language from "@/frontend/src/components/icons/Language.vue";
+import Moon from "@/frontend/src/components/icons/Moon.vue";
+import Sun from "@/frontend/src/components/icons/Sun.vue";
 import { ref } from "vue";
 import { RouterLink, RouterView } from "vue-router";
 
@@ -45,17 +48,26 @@ function handleMenu(event: MouseEvent) {
     </button>
 
     <nav class="menu-nav">
-      <RouterLink class="nav-item" to="/">
+      <RouterLink class="nav-item chat" to="/">
         <Chat class="item-icon" /><span class="item-label">Chat</span>
       </RouterLink>
-      <RouterLink class="nav-item" to="/commands">
+      <RouterLink class="nav-item commands" to="/commands">
         <CodeBracket class="item-icon" /><span class="item-label">Commands</span>
       </RouterLink>
     </nav>
 
-    <div class="avatar">
-      <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar" class="avatar-img" />
-      <span class="item-label">User</span>
+    <div class="menu-nav wip">
+      <button class="language-toggle nav-item btn">
+        <Language class="item-icon" /><span class="item-label">Language</span>
+      </button>
+      <button class="theme-toggle nav-item btn">
+        <Moon class="item-icon" /><span class="item-label">Theme</span>
+      </button>
+
+      <div class="avatar">
+        <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar" class="avatar-img" />
+        <span class="item-label">User</span>
+      </div>
     </div>
   </div>
 
@@ -72,7 +84,6 @@ function handleMenu(event: MouseEvent) {
   width: 16rem;
   max-width: 100%;
   padding: calc(var(--sp-4) + 3rem) var(--sp-3) var(--sp-3);
-  overflow: hidden;
   left: -16rem;
   display: flex;
   flex-flow: column nowrap;
@@ -93,12 +104,50 @@ function handleMenu(event: MouseEvent) {
       overflow: hidden;
     }
 
+    .nav-item {
+      position: relative;
+
+      &::after {
+        content: "";
+        font-size: 0.75em;
+        left: calc(100% + var(--sp-4));
+        font-weight: bold;
+        position: absolute;
+        display: block;
+        border-radius: var(--sp-1);
+        color: var(--c-fg-2);
+        padding: var(--sp-1) var(--sp-2);
+        background: var(--c-bg-1);
+        visibility: hidden;
+        opacity: 0;
+        transition: all 144ms ease-in 89ms;
+      }
+
+      &:hover::after {
+        opacity: 1;
+        visibility: visible;
+        transition: all 144ms ease-out 89ms;
+      }
+
+      &.chat::after {
+        content: "Chat";
+      }
+
+      &.commands::after {
+        content: "Commands";
+      }
+    }
+
     &.menu-open {
       box-shadow: none;
       width: 16rem;
 
       .item-label {
         width: 100%;
+      }
+
+      .nav-item::after {
+        content: none;
       }
     }
   }
@@ -153,13 +202,15 @@ function handleMenu(event: MouseEvent) {
 }
 
 .avatar {
+  margin-top: var(--sp-3);
+
   bottom: var(--sp-3);
   left: var(--sp-3);
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
   gap: var(--sp-2);
-  color: var(--c-fg-1);
+  color: var(--c-fg-2);
 }
 
 .avatar-img {

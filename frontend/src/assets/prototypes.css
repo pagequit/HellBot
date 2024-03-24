@@ -1,7 +1,7 @@
 .btn {
   cursor: pointer;
   border-radius: var(--sp-2);
-  color: var(--c-fg-3);
+  color: var(--c-fg-2);
   padding: var(--sp-2);
   background: var(--c-bg-1);
   border: none;
@@ -13,23 +13,4 @@
   &:active {
     color: var(--c-fg-1);
   }
-}
-
-// TBD
-.btn-rev {
-  cursor: pointer;
-  border-radius: var(--sp-2);
-  color: var(--c-fg-3);
-  padding: var(--sp-2);
-  background: var(--c-bg-1);
-  border: none;
-
-  &:hover {
-    color: var(--c-fg-1);
-  }
-
-  &:active {
-    background: var(--c-bg-2);
-  }
-
 }

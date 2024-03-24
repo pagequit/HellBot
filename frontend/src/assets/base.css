@@ -78,6 +78,7 @@
 html {
   font-family: var(--font-sans);
   font-size: 16px;
+  font-weight: 500;
   color: var(--c-fg-1);
   line-height: 1.15;
 }
