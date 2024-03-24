@@ -43,6 +43,7 @@ function handleMenu(event: MouseEvent) {
     <button ref="toggle" type="button" class="menu-toggle btn" @click="handleMenu">
       <Bars class="toggle-icon" />
     </button>
+
     <nav class="menu-nav">
       <RouterLink class="nav-item" to="/">
         <Chat class="item-icon" /><span class="item-label">Chat</span>
@@ -51,6 +52,11 @@ function handleMenu(event: MouseEvent) {
         <CodeBracket class="item-icon" /><span class="item-label">Commands</span>
       </RouterLink>
     </nav>
+
+    <div class="avatar">
+      <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar" class="avatar-img" />
+      <span class="item-label">User</span>
+    </div>
   </div>
 
   <div ref="view" class="view">
@@ -68,6 +74,9 @@ function handleMenu(event: MouseEvent) {
   padding: calc(var(--sp-4) + 3rem) var(--sp-3) var(--sp-3);
   overflow: hidden;
   left: -16rem;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
 
   &.menu-open {
     left: 0;
@@ -141,6 +150,22 @@ function handleMenu(event: MouseEvent) {
   height: 1.25em;
   min-height: 1.25em;
   margin: 0 0.125rem;
+}
+
+.avatar {
+  bottom: var(--sp-3);
+  left: var(--sp-3);
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--c-fg-1);
+}
+
+.avatar-img {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
 }
 
 .view {
