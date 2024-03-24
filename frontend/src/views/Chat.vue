@@ -53,7 +53,7 @@ const prompt = ref("");
 .prompt-input {
   color: var(--c-fg-1);
   border-radius: var(--sp-2);
-  padding: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
   background: transparent;
   border: none;
   flex: 1 0 auto;
@@ -69,8 +69,8 @@ const prompt = ref("");
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: var(--sp-2) var(--sp-3);
   width: fit-content;
-  color: var(--c-fg-2);
 }
 
 .submit-icon {

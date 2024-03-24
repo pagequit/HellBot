@@ -65,10 +65,7 @@ function handleMenu(event: MouseEvent) {
   height: 100%;
   width: 16rem;
   max-width: 100%;
-  padding-top: calc(var(--sp-4) + 3rem);
-  padding-right: var(--sp-3);
-  padding-bottom: var(--sp-3);
-  padding-left: var(--sp-3);
+  padding: calc(var(--sp-4) + 3rem) var(--sp-3) var(--sp-3);
   overflow: hidden;
   left: -16rem;
 
@@ -106,8 +103,6 @@ function handleMenu(event: MouseEvent) {
   left: var(--sp-3);
   width: 2.5rem;
   height: 2.5rem;
-  border: none;
-  color: var(--c-fg-2);
 
   .toggle-icon {
     width: 100%;
@@ -145,6 +140,7 @@ function handleMenu(event: MouseEvent) {
   min-width: 1.25em;
   height: 1.25em;
   min-height: 1.25em;
+  margin: 0 0.125rem;
 }
 
 .view {
