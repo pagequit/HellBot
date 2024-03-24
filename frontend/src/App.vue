@@ -7,16 +7,17 @@ import { RouterLink, RouterView } from "vue-router";
 
 const menu = ref<HTMLElement | null>(null);
 const view = ref<HTMLElement | null>(null);
+const menuOpenClass = "menu-open";
 
 function closeMenu(menu: HTMLElement) {
-  menu.classList.remove("menu--open");
+  menu.classList.remove(menuOpenClass);
 }
 
 function handleMenu(event: MouseEvent) {
   const m = menu.value as HTMLElement;
   const v = view.value as HTMLElement;
 
-  if (!m.classList.contains("menu--open")) {
+  if (!m.classList.contains(menuOpenClass)) {
     m.addEventListener(
       "click",
       () => {
@@ -33,21 +34,21 @@ function handleMenu(event: MouseEvent) {
     );
     event.stopPropagation();
   }
-  m.classList.toggle("menu--open");
+  m.classList.toggle(menuOpenClass);
 }
 </script>
 
 <template>
   <div class="menu" ref="menu">
     <button ref="toggle" type="button" class="menu-toggle btn" @click="handleMenu">
-      <Bars />
+      <Bars class="toggle-icon" />
     </button>
     <nav class="menu-nav">
-      <RouterLink class="menu-nav__item" to="/">
-        <Chat /><span class="shrink">Chat</span>
+      <RouterLink class="nav-item" to="/">
+        <Chat class="item-icon" /><span class="item-label">Chat</span>
       </RouterLink>
-      <RouterLink class="menu-nav__item" to="/commands">
-        <CodeBracket /><span class="shrink">Commands</span>
+      <RouterLink class="nav-item" to="/commands">
+        <CodeBracket class="item-icon" /><span class="item-label">Commands</span>
       </RouterLink>
     </nav>
   </div>
@@ -57,19 +58,7 @@ function handleMenu(event: MouseEvent) {
   </div>
 </template>
 
-<style>
-#app {
-  height: 100vh;
-  display: flex;
-  flex-flow: row nowrap;
-  position: relative;
-}
-
-.view {
-  height: 100%;
-  flex: 1 1 auto;
-}
-
+<style scoped>
 .menu {
   position: absolute;
   background: var(--c-bg-1);
@@ -82,9 +71,8 @@ function handleMenu(event: MouseEvent) {
   padding-left: var(--sp-3);
   overflow: hidden;
   left: -16rem;
-  transition: all 233ms ease-out;
 
-  &.menu--open {
+  &.menu-open {
     left: 0;
     box-shadow: 8px 0 16px 0 rgba(var(--rgb-black), 0.2);
     transition: all 233ms ease-in;
@@ -94,19 +82,36 @@ function handleMenu(event: MouseEvent) {
     position: static;
     width: 4.5rem;
 
-    .shrink {
+    .item-label {
       width: 0;
       overflow: hidden;
     }
 
-    &.menu--open {
+    &.menu-open {
       box-shadow: none;
       width: 16rem;
 
-      .shrink {
+      .item-label {
         width: 100%;
       }
     }
+  }
+
+  transition: all 233ms ease-out;
+}
+
+.menu-toggle {
+  position: fixed;
+  top: var(--sp-3);
+  left: var(--sp-3);
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  color: var(--c-fg-2);
+
+  .toggle-icon {
+    width: 100%;
+    height: 100%;
   }
 }
 
@@ -117,7 +122,7 @@ function handleMenu(event: MouseEvent) {
   width: 100%;
 }
 
-.menu-nav__item {
+.nav-item {
   padding: var(--sp-2);
   border-radius: var(--sp-2);
   background: transparent;
@@ -133,26 +138,17 @@ function handleMenu(event: MouseEvent) {
     background: var(--c-bg-2);
   }
 
-  svg {
-    width: 1.25em;
-    min-width: 1.25em;
-    height: 1.25em;
-    min-height: 1.25em;
-  }
 }
 
-.menu-toggle {
-  position: fixed;
-  top: var(--sp-3);
-  left: var(--sp-3);
-  width: 2.5rem;
-  height: 2.5rem;
-  border: none;
-  color: var(--c-fg-2);
+.item-icon {
+  width: 1.25em;
+  min-width: 1.25em;
+  height: 1.25em;
+  min-height: 1.25em;
+}
 
-  svg {
-    width: 100%;
-    height: 100%;
-  }
+.view {
+  height: 100%;
+  flex: 1 1 auto;
 }
 </style>

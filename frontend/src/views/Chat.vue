@@ -9,24 +9,17 @@ const prompt = ref("");
 <template>
   <div class="chat">
     <DieBestie class="die-bestie" />
-    <div class="input">
-      <textarea class="prompt" v-model="prompt" placeholder="Enter your prompt here..."
+    <div class="prompt">
+      <textarea class="prompt-input" v-model="prompt" placeholder="Enter your prompt here..."
         oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';"></textarea>
-      <button type="submit" class="paper-plane btn" @click.prevent="
-        console.log(prompt);
-      prompt = '';
-      ">
-        <PaperPlane />
+      <button type="submit" class="prompt-submit btn" @click.prevent="console.log(prompt); prompt = '';">
+        <PaperPlane class="submit-icon" />
       </button>
     </div>
   </div>
 </template>
 
-<style>
-.die-bestie {
-  color: var(--c-bg-3);
-}
-
+<style scoped>
 .chat {
   width: 100%;
   height: 100%;
@@ -37,46 +30,50 @@ const prompt = ref("");
   display: flex;
   flex-flow: column nowrap;
   justify-content: end;
+}
 
-  .input {
-    display: flex;
-    flex-flow: row nowrap;
-    margin: var(--sp-3) 0;
-    background: var(--c-bg-1);
-    border-radius: var(--sp-2);
+.die-bestie {
+  color: var(--c-bg-3);
+}
 
-    &:has(.prompt:focus) {
-      outline-width: 2px;
-      outline-style: solid;
-      outline-color: var(--c-blurple);
-    }
+.prompt {
+  display: flex;
+  flex-flow: row nowrap;
+  margin: var(--sp-3) 0;
+  background: var(--c-bg-1);
+  border-radius: var(--sp-2);
 
-    .prompt {
-      color: var(--c-fg-1);
-      border-radius: var(--sp-2);
-      padding: var(--sp-2);
-      background: transparent;
-      border: none;
-      flex: 1 0 auto;
-      resize: none;
-
-      &:focus {
-        outline: none;
-      }
-    }
+  &:has(.prompt__input:focus) {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-color: var(--c-blurple);
   }
+}
 
-  .paper-plane {
-    flex: 0 1 auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: fit-content;
-    color: var(--c-fg-2);
+.prompt-input {
+  color: var(--c-fg-1);
+  border-radius: var(--sp-2);
+  padding: var(--sp-2);
+  background: transparent;
+  border: none;
+  flex: 1 0 auto;
+  resize: none;
 
-    svg {
-      transform: rotate(90deg);
-    }
+  &:focus {
+    outline: none;
   }
+}
+
+.prompt-submit {
+  flex: 0 1 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  color: var(--c-fg-2);
+}
+
+.submit-icon {
+  transform: rotate(90deg);
 }
 </style>

@@ -1,0 +1,9 @@
+@import './base.css';
+@import './prototypes.css';
+
+#app {
+  height: 100vh;
+  display: flex;
+  flex-flow: row nowrap;
+  position: relative;
+}
