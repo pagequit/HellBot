@@ -18,7 +18,7 @@ const prompt = ref("");
       ></textarea>
       <button
         type="submit"
-        class="paper-plane"
+        class="paper-plane btn"
         @click.prevent="
           console.log(prompt);
           prompt = '';
@@ -69,20 +69,10 @@ const prompt = ref("");
   }
   .paper-plane {
     flex: 0 1 auto;
-    cursor: pointer;
-    border-radius: var(--sp-2);
-    border: none;
-    color: var(--c-fg-2);
-    padding: var(--sp-2);
     display: flex;
     justify-content: center;
     align-items: center;
     width: fit-content;
-    background: var(--c-bg-1);
-
-    &:hover {
-      background: var(--c-bg-2);
-    }
 
     svg {
       transform: rotate(90deg);

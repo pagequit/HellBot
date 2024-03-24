@@ -15,7 +15,7 @@
   --c-green: rgb(var(--rgb-green));
 
   --rgb-yellow: 240, 178, 50;
-  --c-yellow: rgb(var(---rgb-yellow));
+  --c-yellow: rgb(var(--rgb-yellow));
 
   --rgb-red: 218, 55, 60;
   --c-red: rgb(var(--rgb-red));
@@ -156,24 +156,10 @@ select {
 
 a {
   color: var(--c-blurple);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
-a:visited {
-  color: var(--c-fuchsia);
-}
-
-@media (hover: hover) {
-  a {
-    text-decoration: none;
-    transition: background-color 377ms;
-  }
-
-  a:hover {
-    background-color: rgba(var(--rgb-blurple), 0.2);
-  }
-
-  a:visited:hover {
-    background-color: rgba(var(--rgb-fuchsia), 0.2);
-  }
+a:hover {
+  transition: background-color 377ms;
+  background-color: rgba(var(--rgb-blurple), 0.2);
 }

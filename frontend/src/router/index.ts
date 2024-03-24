@@ -1,18 +1,19 @@
+import Chat from "@/frontend/src/views/Chat.vue";
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/Chat.vue";
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
+	linkActiveClass: "active",
 	routes: [
 		{
 			path: "/",
 			name: "chat",
-			component: HomeView,
+			component: Chat,
 		},
 		{
-			path: "/about",
-			name: "about",
-			component: () => import("../views/About.vue"),
+			path: "/commands",
+			name: "commands",
+			component: () => import("@/frontend/src/views/Commands.vue"),
 		},
 	],
 });
