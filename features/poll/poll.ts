@@ -1,10 +1,11 @@
 import type { Command } from "@/core/Command.ts";
-import { I18n, Locale } from "@/core/I18n.ts";
+import { Locale } from "@/core/i18n/I18n.ts";
+import { useI18n } from "@/core/i18n/useI18n.ts";
 import type { ChatInputCommandInteraction } from "discord.js";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
 
-const i18n = new I18n([
+const { i18n, i18nSlashCommandBuilder } = useI18n([
 	[Locale.EnglishGB, en],
 	[Locale.German, de],
 ]);
@@ -12,8 +13,7 @@ const i18n = new I18n([
 const emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
 
 export default {
-	data: i18n
-		.buildSlashCommand()
+	data: i18nSlashCommandBuilder
 		.withName("name")
 		.withDescription("description")
 		.withStringOption("subjects", "subjectsDescription", true),

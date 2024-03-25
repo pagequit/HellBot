@@ -1,5 +1,6 @@
 import type { Command } from "@/core/Command.ts";
-import { I18n, Locale } from "@/core/I18n.ts";
+import { Locale } from "@/core/i18n/I18n.ts";
+import { useI18n } from "@/core/i18n/useI18n.ts";
 import {
 	ActionRowBuilder,
 	ButtonBuilder,
@@ -10,7 +11,7 @@ import { Collection } from "unwrap/mod.ts";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
 
-const i18n = new I18n([
+const { i18n, i18nSlashCommandBuilder } = useI18n([
 	[Locale.EnglishGB, en],
 	[Locale.German, de],
 ]);
@@ -18,8 +19,7 @@ const i18n = new I18n([
 const timers = new Collection<string, number>();
 
 export default {
-	data: i18n
-		.buildSlashCommand()
+	data: i18nSlashCommandBuilder
 		.withName("name")
 		.withDescription("description")
 		.withIntegerOption("minutes", "minutesDescription", true),

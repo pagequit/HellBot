@@ -8,6 +8,20 @@ import Sun from "@/frontend/src/components/icons/Sun.vue";
 import { ref } from "vue";
 import { RouterLink, RouterView } from "vue-router";
 
+import { I18n, Locale } from "../../core/i18n/I18n.ts";
+
+const i18n = new I18n([
+  [Locale.EnglishGB, {
+    test: () => "EnglishGB"
+  }],
+  [Locale.German, {
+    test: () => "German"
+  }],
+]);
+
+const locale = ref(Locale.EnglishGB);
+const test = i18n.t(locale.value, "test");
+
 const menu = ref<HTMLElement | null>(null);
 const view = ref<HTMLElement | null>(null);
 const menuOpenClass = "menu-open";
@@ -58,7 +72,7 @@ function handleMenu(event: MouseEvent) {
 
     <div class="menu-nav wip">
       <button class="language-toggle nav-item btn">
-        <Language class="item-icon" /><span class="item-label">Language</span>
+        <Language class="item-icon" /><span class="item-label">{{ test }}</span>
       </button>
       <button class="theme-toggle nav-item btn">
         <Moon class="item-icon" /><span class="item-label">Theme</span>
@@ -224,3 +238,4 @@ function handleMenu(event: MouseEvent) {
   flex: 1 1 auto;
 }
 </style>
+../../core/i18n/I18n.ts

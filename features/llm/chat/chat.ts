@@ -1,6 +1,7 @@
 import type { Command } from "@/core/Command.ts";
 import type { Core } from "@/core/HellCore.ts";
-import { I18n, Locale } from "@/core/I18n.ts";
+import { Locale } from "@/core/i18n/I18n.ts";
+import { useI18n } from "@/core/i18n/useI18n.ts";
 import {
 	ActionRowBuilder,
 	type ChatInputCommandInteraction,
@@ -14,15 +15,14 @@ import { Model } from "./../Model.ts";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
 
-const i18n = new I18n([
+const { i18n, i18nSlashCommandBuilder } = useI18n([
 	[Locale.EnglishGB, en],
 	[Locale.German, de],
 ]);
 
 export default function (core: Core) {
 	return {
-		data: i18n
-			.buildSlashCommand()
+		data: i18nSlashCommandBuilder
 			.withName("name")
 			.withDescription("description"),
 		async execute(interaction: ChatInputCommandInteraction): Promise<void> {

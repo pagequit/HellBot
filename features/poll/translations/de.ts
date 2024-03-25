@@ -1,4 +1,4 @@
-import type { RawTranslation } from "@/core/I18n.ts";
+import type { RawTranslation } from "@/core/i18n/I18n.ts";
 
 export default {
 	description: () => "Erstellt eine einfache Umfrage.",
