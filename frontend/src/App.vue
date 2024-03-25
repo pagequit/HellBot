@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Popover from "@/frontend/src/components/Popover.vue";
 import Bars from "@/frontend/src/components/icons/Bars.vue";
 import Chat from "@/frontend/src/components/icons/Chat.vue";
 import CodeBracket from "@/frontend/src/components/icons/CodeBracket.vue";
@@ -78,10 +79,17 @@ function handleMenu(event: MouseEvent) {
         <Moon class="item-icon" /><span class="item-label">Theme</span>
       </button>
 
-      <div class="avatar">
-        <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar" class="avatar-img" />
-        <span class="item-label">User</span>
-      </div>
+      <Popover class="avatar">
+        <template #trigger>
+          <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar" class="avatar-img" />
+          <span class="item-label">User</span>
+        </template>
+        <template #target>
+          <button class="nav-item btn">
+            <Sun class="item-icon" /><span class="label">Logout</span>
+          </button>
+        </template>
+      </Popover>
     </div>
   </div>
 
@@ -238,4 +246,3 @@ function handleMenu(event: MouseEvent) {
   flex: 1 1 auto;
 }
 </style>
-../../core/i18n/I18n.ts
