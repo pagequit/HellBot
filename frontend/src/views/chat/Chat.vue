@@ -1,18 +1,31 @@
 <script setup lang="ts">
+import { I18n, Locale } from "@/core/i18n/I18n.ts";
 import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
 import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import de from "./translations/de.ts";
+import en from "./translations/en.ts";
+
+const i18n = ref(new I18n([
+  [Locale.EnglishGB, en],
+  [Locale.German, de],
+]));
 
 const prompt = ref("");
+const locale = ref(Locale.EnglishGB);
+
+const promptPlaceholder = computed(() => i18n.value.t(locale.value, "promptPlaceholder"));
+const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 </script>
 
 <template>
   <div class="chat">
     <DieBestie class="die-bestie" />
     <div class="prompt">
-      <textarea class="prompt-input" v-model="prompt" placeholder="Enter your prompt here..."
+      <textarea class="prompt-input" v-model="prompt" :placeholder="promptPlaceholder"
         oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';"></textarea>
-      <button type="submit" class="prompt-submit btn" @click.prevent="console.log(prompt); prompt = '';">
+      <button type="submit" class="prompt-submit btn" :title="submitTitle"
+        @click.prevent="console.log(prompt); prompt = '';">
         <PaperPlane class="submit-icon" />
       </button>
     </div>

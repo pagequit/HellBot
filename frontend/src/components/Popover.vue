@@ -1,54 +1,31 @@
 <script setup lang="ts">
+import { useOnClickOutside } from "@/frontend/src/composables/onClickOutside.ts";
 import { ref } from "vue";
 
-const _props = defineProps<{
+const props = defineProps<{
   placement?: "top" | "left" | "bottom" | "right";
 }>();
 
-const menuOpenClass = "open";
-const menu = ref<HTMLElement | null>(null);
+const targetOpenClass = "open";
+const target = ref<HTMLElement | null>(null);
 
-function closeMenu(menu: HTMLElement) {
-  menu.classList.remove(menuOpenClass);
-}
-
-function handleMenu(event: MouseEvent) {
-  console.log("handleMenu");
-  const m = menu.value as HTMLElement;
-  // const v = view.value as HTMLElement;
-
-  if (!m.classList.contains(menuOpenClass)) {
-    m.addEventListener(
-      "click",
-      () => {
-        event.stopPropagation();
-      },
-      { once: true, passive: true }
-    );
-    // v.addEventListener(
-    //   "click",
-    //   () => {
-    //     closeMenu(m);
-    //   },
-    //   { once: true, passive: true }
-    // );
-    event.stopPropagation();
-  }
-  m.classList.toggle(menuOpenClass);
-}
 </script>
 
 <template>
-  <div class="popover" @click="handleMenu">
+  <div class="popover" @click="target!.classList.toggle(targetOpenClass)">
     <slot name="trigger"></slot>
 
-    <div class="popover-target" ref="menu">
+    <div class="popover-target" ref="target">
       <slot name="target"></slot>
     </div>
   </div>
 </template>
 
 <style scoped>
+.popover {
+  cursor: pointer;
+}
+
 .popover-target {
   position: relative;
   right: 0;

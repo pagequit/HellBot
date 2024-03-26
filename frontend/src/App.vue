@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Locale } from "@/core/i18n/I18n.ts";
 import Popover from "@/frontend/src/components/Popover.vue";
 import Bars from "@/frontend/src/components/icons/Bars.vue";
 import Chat from "@/frontend/src/components/icons/Chat.vue";
@@ -6,80 +7,45 @@ import CodeBracket from "@/frontend/src/components/icons/CodeBracket.vue";
 import Language from "@/frontend/src/components/icons/Language.vue";
 import Moon from "@/frontend/src/components/icons/Moon.vue";
 import Sun from "@/frontend/src/components/icons/Sun.vue";
-import { ref } from "vue";
+import { useOnClickOutside } from "@/frontend/src/composables/onClickOutside.ts";
+import { onMounted, ref } from "vue";
 import { RouterLink, RouterView } from "vue-router";
 
-import { I18n, Locale } from "../../core/i18n/I18n.ts";
-
-const i18n = new I18n([
-  [Locale.EnglishGB, {
-    test: () => "EnglishGB"
-  }],
-  [Locale.German, {
-    test: () => "German"
-  }],
-]);
-
-const locale = ref(Locale.EnglishGB);
-const test = i18n.t(locale.value, "test");
-
 const menu = ref<HTMLElement | null>(null);
-const view = ref<HTMLElement | null>(null);
 const menuOpenClass = "menu-open";
 
-function closeMenu(menu: HTMLElement) {
-  menu.classList.remove(menuOpenClass);
-}
-
-function handleMenu(event: MouseEvent) {
-  const m = menu.value as HTMLElement;
-  const v = view.value as HTMLElement;
-
-  if (!m.classList.contains(menuOpenClass)) {
-    m.addEventListener(
-      "click",
-      () => {
-        event.stopPropagation();
-      },
-      { once: true, passive: true }
-    );
-    v.addEventListener(
-      "click",
-      () => {
-        closeMenu(m);
-      },
-      { once: true, passive: true }
-    );
-    event.stopPropagation();
-  }
-  m.classList.toggle(menuOpenClass);
-}
+onMounted(() => {
+  useOnClickOutside(menu.value as HTMLElement, () => (menu.value as HTMLElement).classList.remove(menuOpenClass));
+});
 </script>
 
 <template>
   <div class="menu" ref="menu">
-    <button ref="toggle" type="button" class="menu-toggle btn" @click="handleMenu">
+    <button ref="toggle" type="button" class="menu-toggle btn" title="Menu"
+      @click="menu!.classList.toggle(menuOpenClass)">
       <Bars class="toggle-icon" />
     </button>
 
     <nav class="menu-nav">
-      <RouterLink class="nav-item chat" to="/">
+      <RouterLink class="nav-item chat" title="Chat" to="/">
         <Chat class="item-icon" /><span class="item-label">Chat</span>
       </RouterLink>
-      <RouterLink class="nav-item commands" to="/commands">
+      <RouterLink class="nav-item commands" title="Commands" to="/commands">
         <CodeBracket class="item-icon" /><span class="item-label">Commands</span>
       </RouterLink>
     </nav>
 
-    <div class="menu-nav wip">
-      <button class="language-toggle nav-item btn">
-        <Language class="item-icon" /><span class="item-label">{{ test }}</span>
-      </button>
-      <button class="theme-toggle nav-item btn">
+    <div class="menu-gui">
+      <select class="gui-item select" title="Language">
+        <!-- <Language class="item-icon" /><span class="item-label">Language</span> -->
+        <option v-for="lang in [Locale.EnglishGB, Locale.German]" :value="lang">{{ lang }}</option>
+      </select>
+
+      <button class="gui-item select" title="Theme">
         <Moon class="item-icon" /><span class="item-label">Theme</span>
       </button>
 
-      <Popover class="avatar">
+      <Popover class="avatar" title="User wip">
         <template #trigger>
           <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar" class="avatar-img" />
           <span class="item-label">User</span>
@@ -93,7 +59,7 @@ function handleMenu(event: MouseEvent) {
     </div>
   </div>
 
-  <div ref="view" class="view">
+  <div class="view">
     <RouterView />
   </div>
 </template>
@@ -126,50 +92,12 @@ function handleMenu(event: MouseEvent) {
       overflow: hidden;
     }
 
-    .nav-item {
-      position: relative;
-
-      &::after {
-        content: "";
-        font-size: 0.75em;
-        left: calc(100% + var(--sp-4));
-        font-weight: bold;
-        position: absolute;
-        display: block;
-        border-radius: var(--sp-1);
-        color: var(--c-fg-2);
-        padding: var(--sp-1) var(--sp-2);
-        background: var(--c-bg-1);
-        visibility: hidden;
-        opacity: 0;
-        transition: all 144ms ease-in 89ms;
-      }
-
-      &:hover::after {
-        opacity: 1;
-        visibility: visible;
-        transition: all 144ms ease-out 89ms;
-      }
-
-      &.chat::after {
-        content: "Chat";
-      }
-
-      &.commands::after {
-        content: "Commands";
-      }
-    }
-
     &.menu-open {
       box-shadow: none;
       width: 16rem;
 
       .item-label {
         width: 100%;
-      }
-
-      .nav-item::after {
-        content: none;
       }
     }
   }

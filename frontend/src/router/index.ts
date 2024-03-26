@@ -1,4 +1,4 @@
-import Chat from "@/frontend/src/views/Chat.vue";
+import Chat from "@/frontend/src/views/chat/Chat.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
