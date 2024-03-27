@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Locale } from "@/core/i18n/I18n.ts";
 import Popover from "@/frontend/src/components/Popover.vue";
+import Select from "@/frontend/src/components/Select.vue";
 import Bars from "@/frontend/src/components/icons/Bars.vue";
 import Chat from "@/frontend/src/components/icons/Chat.vue";
 import CodeBracket from "@/frontend/src/components/icons/CodeBracket.vue";
@@ -13,13 +14,28 @@ import { RouterLink, RouterView } from "vue-router";
 
 const menu = ref<HTMLElement | null>(null);
 const menuOpenClass = "menu-open";
-const languages = new Map([
-  [Locale.EnglishGB, "English"],
-  [Locale.German, "Deutsch"],
+
+const themeLabelLight = "Light";
+const themeLabelDark = "Dark";
+
+const themes = new Map([
+  [themeLabelLight, "light"],
+  [themeLabelDark, "dark"],
 ])
 
+const selectedTheme = ref(localStorage.getItem("theme") || themeLabelDark);
+
+const languages = new Map([
+  ["English", Locale.EnglishGB],
+  ["Deutsch", Locale.German],
+]);
+
+const selectedLocale = ref(localStorage.getItem("locale") || Locale.EnglishGB);
+
 onMounted(() => {
-  useOnClickOutside(menu.value as HTMLElement, () => (menu.value as HTMLElement).classList.remove(menuOpenClass));
+  useOnClickOutside(menu.value as HTMLElement, () =>
+    (menu.value as HTMLElement).classList.remove(menuOpenClass)
+  );
 });
 </script>
 
@@ -40,14 +56,13 @@ onMounted(() => {
     </nav>
 
     <div class="menu-gui">
-      <select class="gui-item select" title="Language">
-        <!-- <Language class="item-icon" /><span class="item-label">Language</span> -->
-        <option v-for="[locale, lang] in languages" :value="locale">{{ lang }}</option>
-      </select>
+      <Select v-model="selectedLocale" :options="languages" class="gui-item">
+        <Language class="item-icon" />
+      </Select>
 
-      <button class="gui-item select" title="Theme">
-        <Moon class="item-icon" /><span class="item-label">Theme</span>
-      </button>
+      <Select v-model="selectedTheme" :options="themes" class="gui-item">
+        <Moon class="item-icon" />
+      </Select>
 
       <Popover class="avatar" title="User wip">
         <template #trigger>
@@ -68,7 +83,7 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped>
+<style>
 .menu {
   position: absolute;
   background: var(--c-bg-1);
@@ -122,6 +137,7 @@ onMounted(() => {
   }
 }
 
+.menu-gui,
 .menu-nav {
   display: flex;
   flex-flow: column nowrap;
@@ -139,12 +155,15 @@ onMounted(() => {
   flex-flow: row nowrap;
   gap: var(--sp-2);
 
-  &:hover,
-  &.active {
+  &:hover {
     color: var(--c-fg-1);
     background: var(--c-bg-2);
   }
 
+  &.active {
+    color: var(--c-fg-1);
+    background: var(--c-bg-3);
+  }
 }
 
 .item-icon {
@@ -154,6 +173,8 @@ onMounted(() => {
   min-height: 1.25em;
   margin: 0 0.125rem;
 }
+
+.gui-item {}
 
 .avatar {
   margin-top: var(--sp-3);
