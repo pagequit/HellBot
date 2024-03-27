@@ -14,3 +14,21 @@
     color: var(--c-fg-1);
   }
 }
+
+.select {
+  appearance: none;
+  cursor: pointer;
+  border-radius: var(--sp-2);
+  color: var(--c-fg-2);
+  padding: var(--sp-2);
+  background: var(--c-bg-1);
+  border: none;
+
+  &:hover {
+    background: var(--c-bg-2);
+  }
+
+  &:active {
+    color: var(--c-fg-1);
+  }
+}

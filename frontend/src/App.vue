@@ -13,6 +13,10 @@ import { RouterLink, RouterView } from "vue-router";
 
 const menu = ref<HTMLElement | null>(null);
 const menuOpenClass = "menu-open";
+const languages = new Map([
+  [Locale.EnglishGB, "English"],
+  [Locale.German, "Deutsch"],
+])
 
 onMounted(() => {
   useOnClickOutside(menu.value as HTMLElement, () => (menu.value as HTMLElement).classList.remove(menuOpenClass));
@@ -38,7 +42,7 @@ onMounted(() => {
     <div class="menu-gui">
       <select class="gui-item select" title="Language">
         <!-- <Language class="item-icon" /><span class="item-label">Language</span> -->
-        <option v-for="lang in [Locale.EnglishGB, Locale.German]" :value="lang">{{ lang }}</option>
+        <option v-for="[locale, lang] in languages" :value="locale">{{ lang }}</option>
       </select>
 
       <button class="gui-item select" title="Theme">
