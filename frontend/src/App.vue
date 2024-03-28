@@ -9,6 +9,7 @@ import Language from "@/frontend/src/components/icons/Language.vue";
 import Moon from "@/frontend/src/components/icons/Moon.vue";
 import Sun from "@/frontend/src/components/icons/Sun.vue";
 import { useOnClickOutside } from "@/frontend/src/composables/onClickOutside.ts";
+import { useSettings } from "@/frontend/src/stores/settings.ts";
 import { onMounted, ref } from "vue";
 import { RouterLink, RouterView } from "vue-router";
 
@@ -23,14 +24,12 @@ const themes = new Map([
   [themeLabelDark, "dark"],
 ])
 
-const selectedTheme = ref(localStorage.getItem("theme") || themeLabelDark);
+const { locale, setLocale, theme, setTheme } = useSettings();
 
 const languages = new Map([
   ["English", Locale.EnglishGB],
   ["Deutsch", Locale.German],
 ]);
-
-const selectedLocale = ref(localStorage.getItem("locale") || Locale.EnglishGB);
 
 onMounted(() => {
   useOnClickOutside(menu.value as HTMLElement, () =>
@@ -56,11 +55,11 @@ onMounted(() => {
     </nav>
 
     <div class="menu-gui">
-      <Select v-model="selectedLocale" :options="languages" class="gui-item">
+      <Select :options="languages" class="gui-item" v-model="locale" @change="setLocale(locale)">
         <Language class="item-icon" />
       </Select>
 
-      <Select v-model="selectedTheme" :options="themes" class="gui-item">
+      <Select :options="themes" class="gui-item" v-model="theme" @change="setTheme(theme)">
         <Moon class="item-icon" />
       </Select>
 
