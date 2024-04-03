@@ -66,13 +66,14 @@ onMounted(() => {
 
     <div class="menu-gui">
       <div class="gui-item">
-        <Language class="item-icon" />
         <Select :options="languages" class="gui-select" v-model="locale" @change="setLocale(locale)"></Select>
+        <Language class="item-icon" />
       </div>
 
       <div class="gui-item">
-        <Moon class="item-icon" />
         <Select :options="themes" class="gui-select" v-model="theme" @change="setTheme(theme)"></Select>
+        <Moon class="item-icon" v-if="theme === 'light'" />
+        <Sun class="item-icon" v-if="theme === 'dark'" />
       </div>
 
       <Popover class="avatar" title="User wip">
@@ -186,17 +187,27 @@ onMounted(() => {
 }
 
 .gui-item {
-  display: flex;
-  flex-flow: row nowrap;
   color: var(--c-fg-2);
-  align-items: center;
   background: var(--c-bg-2);
   border-radius: var(--sp-2);
-  width: 100%;
-  padding-left: var(--sp-2);
+  display: grid;
+  align-items: center;
+
+  .item-icon {
+    grid-column: 1;
+    grid-row: 1;
+    pointer-events: none;
+    margin-left: var(--sp-2);
+  }
 
   .gui-select {
-    flex: 1 1 auto;
+    grid-column: 1;
+    grid-row: 1;
+
+    select {
+      background: transparent;
+      padding-left: calc(1.5rem + var(--sp-3));
+    }
   }
 }
 
