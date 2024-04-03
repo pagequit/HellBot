@@ -65,13 +65,15 @@ onMounted(() => {
     </nav>
 
     <div class="menu-gui">
-      <Select :options="languages" class="gui-item" v-model="locale" @change="setLocale(locale)">
+      <div class="gui-item">
         <Language class="item-icon" />
-      </Select>
+        <Select :options="languages" class="gui-select" v-model="locale" @change="setLocale(locale)"></Select>
+      </div>
 
-      <Select :options="themes" class="gui-item" v-model="theme" @change="setTheme(theme)">
+      <div class="gui-item">
         <Moon class="item-icon" />
-      </Select>
+        <Select :options="themes" class="gui-select" v-model="theme" @change="setTheme(theme)"></Select>
+      </div>
 
       <Popover class="avatar" title="User wip">
         <template #trigger>
@@ -183,7 +185,20 @@ onMounted(() => {
   margin: 0 0.125rem;
 }
 
-.gui-item {}
+.gui-item {
+  display: flex;
+  flex-flow: row nowrap;
+  color: var(--c-fg-2);
+  align-items: center;
+  background: var(--c-bg-2);
+  border-radius: var(--sp-2);
+  width: 100%;
+  padding-left: var(--sp-2);
+
+  .gui-select {
+    flex: 1 1 auto;
+  }
+}
 
 .avatar {
   margin-top: var(--sp-3);
