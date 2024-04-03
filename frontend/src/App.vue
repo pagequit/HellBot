@@ -10,7 +10,8 @@ import Moon from "@/frontend/src/components/icons/Moon.vue";
 import Sun from "@/frontend/src/components/icons/Sun.vue";
 import { useOnClickOutside } from "@/frontend/src/composables/onClickOutside.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
-import { onMounted, ref } from "vue";
+import { storeToRefs } from "pinia";
+import { onMounted, ref, watch } from "vue";
 import { RouterLink, RouterView } from "vue-router";
 
 const menu = ref<HTMLElement | null>(null);
@@ -24,7 +25,16 @@ const themes = new Map([
   [themeLabelDark, "dark"],
 ])
 
-const { locale, setLocale, theme, setTheme } = useSettings();
+const settings = useSettings();
+const { setLocale, setTheme } = settings;
+const { locale, theme } = storeToRefs(settings);
+
+watch(theme, (newTheme: string, oldTheme: string) => {
+  document.body.classList.remove(oldTheme);
+  document.body.classList.add(newTheme);
+});
+
+document.body.classList.add(theme.value);
 
 const languages = new Map([
   ["English", Locale.EnglishGB],

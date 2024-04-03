@@ -45,6 +45,7 @@ const props = defineProps<{
 }
 
 .select-icon {
+  color: var(--c-fg-2);
   position: absolute;
   height: 1.125em;
   width: 1.125em;

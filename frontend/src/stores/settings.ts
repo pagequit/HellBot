@@ -6,6 +6,8 @@ export function canUseLocalStorage(): boolean {
 	return "localStorage" in window && navigator.cookieEnabled;
 }
 
+export type Theme = "light" | "dark";
+
 const defaultLocale = [Locale.EnglishGB, Locale.German].includes(
 	navigator.language as Locale,
 )
@@ -16,18 +18,17 @@ const initialLocale = canUseLocalStorage()
 	? (localStorage.getItem("locale") as Locale) ?? defaultLocale
 	: defaultLocale;
 
+const systemTheme = window.matchMedia("(prefers-color-scheme: light)").matches
+	? "light"
+	: "dark";
+
 const initialTheme = canUseLocalStorage()
-	? (localStorage.getItem("locale") as Locale) ??
-	  window.matchMedia("(prefers-color-scheme: light)").matches
-		? "light"
-		: "dark"
-	: window.matchMedia("(prefers-color-scheme: light)").matches
-	  ? "light"
-	  : "dark";
+	? (localStorage.getItem("theme") as Theme) ?? systemTheme
+	: systemTheme;
 
 export const useSettings = defineStore("settings", () => {
 	const locale: Ref<Locale> = ref(initialLocale);
-	const theme: Ref<"light" | "dark"> = ref(initialTheme);
+	const theme: Ref<Theme> = ref(initialTheme);
 
 	function setLocale(newLocale: Locale) {
 		locale.value = newLocale;
