@@ -112,6 +112,10 @@ onMounted(() => {
     left: 0;
     box-shadow: 8px 0 16px 0 rgba(var(--rgb-black), 0.2);
     transition: all 233ms ease-in;
+
+    .gui-select {
+      visibility: visible;
+    }
   }
 
   @media screen and (min-width: 640px) {
@@ -203,6 +207,7 @@ onMounted(() => {
   .gui-select {
     grid-column: 1;
     grid-row: 1;
+    visibility: hidden;
 
     select {
       background: transparent;
