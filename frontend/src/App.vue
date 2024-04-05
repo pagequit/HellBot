@@ -66,12 +66,13 @@ onMounted(() => {
 
     <div class="menu-gui">
       <div class="gui-item">
-        <Select :options="languages" class="gui-select" v-model="locale" @change="setLocale(locale)"></Select>
+        <Select title="Language" :options="languages" class="gui-select" v-model="locale"
+          @change="setLocale(locale)"></Select>
         <Language class="item-icon" />
       </div>
 
       <div class="gui-item">
-        <Select :options="themes" class="gui-select" v-model="theme" @change="setTheme(theme)"></Select>
+        <Select title="Theme" :options="themes" class="gui-select" v-model="theme" @change="setTheme(theme)"></Select>
         <Moon class="item-icon" v-if="theme === 'light'" />
         <Sun class="item-icon" v-if="theme === 'dark'" />
       </div>
@@ -114,7 +115,7 @@ onMounted(() => {
     transition: all 233ms ease-in;
 
     .gui-select {
-      visibility: visible;
+      opacity: 1;
     }
   }
 
@@ -196,18 +197,19 @@ onMounted(() => {
   border-radius: var(--sp-2);
   display: grid;
   align-items: center;
+  overflow: hidden;
 
   .item-icon {
     grid-column: 1;
     grid-row: 1;
     pointer-events: none;
-    margin-left: var(--sp-2);
+    margin-left: calc(1.625rem - var(--sp-3));
   }
 
   .gui-select {
     grid-column: 1;
     grid-row: 1;
-    visibility: hidden;
+    opacity: 0;
 
     select {
       background: transparent;

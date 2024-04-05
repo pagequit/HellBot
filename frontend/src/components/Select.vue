@@ -7,7 +7,7 @@ const props = defineProps<{
 
 <template>
   <div class="select-wrapper">
-    <select v-model="selected" class="select" title="Language">
+    <select v-model="selected" class="select">
       <option v-for="[key, value] in options" :value="value" class="option">
         {{ key }}
       </option>
