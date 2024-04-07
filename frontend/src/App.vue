@@ -6,6 +6,7 @@ import Bars from "@/frontend/src/components/icons/Bars.vue";
 import Chat from "@/frontend/src/components/icons/Chat.vue";
 import CodeBracket from "@/frontend/src/components/icons/CodeBracket.vue";
 import Language from "@/frontend/src/components/icons/Language.vue";
+import Logout from "@/frontend/src/components/icons/Logout.vue";
 import Moon from "@/frontend/src/components/icons/Moon.vue";
 import Sun from "@/frontend/src/components/icons/Sun.vue";
 import { useOnClickOutside } from "@/frontend/src/composables/onClickOutside.ts";
@@ -84,7 +85,7 @@ onMounted(() => {
         </template>
         <template #target>
           <button class="nav-item btn">
-            <Sun class="item-icon" /><span class="label">Logout</span>
+            <Logout class="item-icon" /><span class="label">Logout</span>
           </button>
         </template>
       </Popover>
