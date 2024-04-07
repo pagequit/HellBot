@@ -2,9 +2,14 @@
 import { I18n, Locale } from "@/core/i18n/I18n.ts";
 import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
 import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
+import { useSettings } from "@/frontend/src/stores/settings.ts";
+import { storeToRefs } from "pinia";
 import { computed, ref } from "vue";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
+
+const settings = useSettings();
+const { locale } = storeToRefs(settings);
 
 const i18n = ref(new I18n([
   [Locale.EnglishGB, en],
@@ -12,7 +17,6 @@ const i18n = ref(new I18n([
 ]));
 
 const prompt = ref("");
-const locale = ref(Locale.EnglishGB);
 
 const promptPlaceholder = computed(() => i18n.value.t(locale.value, "promptPlaceholder"));
 const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
