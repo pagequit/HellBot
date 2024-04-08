@@ -29,6 +29,87 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 <template>
   <div class="chat">
     <DieBestie class="die-bestie" />
+
+    <div class="entries">
+      <div class="entry">
+        <img
+          src="https://cdn.discordapp.com/embed/avatars/0.png"
+          alt="Avatar"
+          class="entry-avatar"
+        />
+        <div class="entry-text">
+          <p>This is just an example prompt without any real content.</p>
+          <p>This is just an example prompt without any real content.</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <img
+          src="https://cdn.discordapp.com/embed/avatars/0.png"
+          alt="Avatar"
+          class="entry-avatar"
+        />
+        <div class="entry-text">
+          <p>
+            I'm unable to help you with that, as I'm only a language model and
+            don't have the necessary information or abilities.
+          </p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <img
+          src="https://cdn.discordapp.com/embed/avatars/0.png"
+          alt="Avatar"
+          class="entry-avatar"
+        />
+        <div class="entry-text">
+          <p>This is just an example prompt without any real content.</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <img
+          src="https://cdn.discordapp.com/embed/avatars/0.png"
+          alt="Avatar"
+          class="entry-avatar"
+        />
+        <div class="entry-text">
+          <p>This is just an example prompt without any real content.</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <img
+          src="https://cdn.discordapp.com/embed/avatars/0.png"
+          alt="Avatar"
+          class="entry-avatar"
+        />
+        <div class="entry-text">
+          <p>Tell me a joke.</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <img
+          src="https://cdn.discordapp.com/embed/avatars/0.png"
+          alt="Avatar"
+          class="entry-avatar"
+        />
+        <div class="entry-text">
+          <p>
+            A man walks into a library and asks the librarian for books about
+            paranoia.
+          </p>
+          <p>The librarian whispers, "They're right behind you!"</p>
+          <p>
+            I hope this tickles your funny bone! Let me know if you'd like to
+            hear a different kind of joke.
+          </p>
+        </div>
+      </div>
+    </div>
+
     <div class="prompt">
       <textarea
         class="prompt-input"
@@ -62,16 +143,62 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
   display: flex;
   flex-flow: column nowrap;
   justify-content: end;
+  position: relative;
+}
+
+.entries {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  margin-bottom: var(--sp-3);
+  overflow-y: auto;
+  border-radius: var(--sp-2);
+}
+
+.entry {
+  border-radius: var(--sp-2);
+  display: flex;
+  flex-flow: row nowrap;
+  gap: var(--sp-2);
+
+  &:nth-child(even) {
+    flex-flow: row-reverse nowrap;
+  }
+}
+
+.entry-avatar {
+  width: 2.125rem;
+  height: 2.125rem;
+  border-radius: 100%;
+  background: var(--c-bg-2);
+}
+
+.entry-text {
+  background: var(--c-bg-1);
+  border-radius: var(--sp-2);
+  padding: var(--sp-2);
+  box-shadow: 0 2px 4px 0 rgba(var(--rgb-black), 0.1);
 }
 
 .die-bestie {
-  color: var(--c-bg-3);
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  height: auto;
+  bottom: 50%;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  color: var(--c-bg-1);
+  padding: var(--sp-3);
+  opacity: 0.666;
 }
 
 .prompt {
+  line-height: 1.5;
   display: flex;
   flex-flow: row nowrap;
-  margin: var(--sp-3) 0;
+  margin-bottom: var(--sp-3);
   background: var(--c-bg-1);
   border-radius: var(--sp-2);
 

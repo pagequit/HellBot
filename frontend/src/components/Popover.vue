@@ -29,8 +29,7 @@ const target = ref<HTMLElement | null>(null);
   position: relative;
   right: 0;
   border-radius: var(--sp-2);
-  box-shadow: 0 0 8px 0 rgba(var(--rgb-black), 0.2);
-  transition: all 233ms ease-in-out;
+  transition: all 144ms ease-in-out;
   opacity: 0;
   visibility: hidden;
 

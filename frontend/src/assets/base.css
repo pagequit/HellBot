@@ -53,7 +53,6 @@ body.light {
   --c-bg-0: rgb(227, 229, 232);
   --c-bg-1: rgb(242, 243, 245);
   --c-bg-2: rgb(255, 255, 255);
-  --c-bg-3: rgb(215, 217, 220);
   --c-bg-3: rgb(223, 225, 229);
 
   --c-fg-0: rgb(30, 31, 34);
@@ -77,14 +76,14 @@ body.light {
 html {
   font-family: var(--font-sans);
   font-size: 16px;
-  font-weight: 500;
-  color: var(--c-fg-1);
+  font-weight: 400;
   line-height: 1.15;
 }
 
 body {
   margin: 0;
   background-color: var(--c-bg-0);
+  color: var(--c-fg-1);
 }
 
 hr {

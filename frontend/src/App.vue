@@ -106,7 +106,7 @@ onMounted(() => {
           <span class="item-label">User</span>
         </template>
         <template #target>
-          <button class="nav-item btn">
+          <button class="btn logout-btn">
             <Logout class="item-icon" /><span class="label">Logout</span>
           </button>
         </template>
@@ -122,6 +122,7 @@ onMounted(() => {
 <style>
 .menu {
   position: absolute;
+  z-index: 1;
   background: var(--c-bg-1);
   height: 100%;
   width: 16rem;
@@ -140,11 +141,19 @@ onMounted(() => {
     .gui-select {
       opacity: 1;
     }
+
+    .menu-toggle {
+      box-shadow: none;
+    }
   }
 
   @media screen and (min-width: 640px) {
     position: static;
     width: 4.5rem;
+
+    .menu-toggle {
+      box-shadow: none;
+    }
 
     .item-label {
       width: 0;
@@ -170,6 +179,7 @@ onMounted(() => {
   left: var(--sp-3);
   width: 2.5rem;
   height: 2.5rem;
+  box-shadow: 0 0 0 2px var(--c-bg-0);
 
   .toggle-icon {
     width: 100%;
@@ -181,23 +191,23 @@ onMounted(() => {
 .menu-nav {
   display: flex;
   flex-flow: column nowrap;
-  gap: var(--sp-1);
+  gap: var(--sp-2);
   width: 100%;
 }
 
 .nav-item {
   padding: var(--sp-2);
   border-radius: var(--sp-2);
-  background: transparent;
+  background: var(--c-bg-2);
   color: var(--c-fg-2);
-  transition: all 233ms ease-in-out;
+  transition: all 89ms ease-in-out;
   display: flex;
   flex-flow: row nowrap;
   gap: var(--sp-2);
 
   &:hover {
     color: var(--c-fg-1);
-    background: var(--c-bg-2);
+    background: var(--c-bg-3);
   }
 
   &.active {
@@ -220,7 +230,23 @@ onMounted(() => {
   border-radius: var(--sp-2);
   display: grid;
   align-items: center;
-  overflow: hidden;
+  transition: all 89ms ease-in-out;
+
+  &:has(.select:focus) {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-color: var(--c-blurple);
+  }
+
+  &:hover {
+    color: var(--c-fg-1);
+    background: var(--c-bg-3);
+  }
+
+  &:active {
+    color: var(--c-fg-1);
+    background: var(--c-bg-3);
+  }
 
   .item-icon {
     grid-column: 1;
@@ -234,7 +260,7 @@ onMounted(() => {
     grid-row: 1;
     opacity: 0;
 
-    select {
+    .select {
       background: transparent;
       padding-left: calc(1.5rem + var(--sp-3));
     }
@@ -243,7 +269,6 @@ onMounted(() => {
 
 .avatar {
   margin-top: var(--sp-3);
-
   bottom: var(--sp-3);
   left: var(--sp-3);
   display: flex;
@@ -257,6 +282,22 @@ onMounted(() => {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
+}
+
+.logout-btn {
+  padding: var(--sp-2);
+  display: flex;
+  flex-flow: row nowrap;
+  gap: var(--sp-1);
+  margin-left: var(--sp-1);
+  color: var(--c-white);
+  background: rgba(var(--rgb-red), 1);
+
+  &:active,
+  &:hover {
+    color: var(--c-white);
+    background: rgba(var(--rgb-red), 0.95);
+  }
 }
 
 .view {
