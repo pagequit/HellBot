@@ -1,29 +1,17 @@
 {
-	"bun.runtime": "~/.bun/bin/bun",
-	"bun.debugTerminal.enabled": true,
-	"bun.debugTerminal.stopOnEntry": false,
-	"editor.formatOnSave": true,
-	"editor.codeActionsOnSave": {
-		"quickfix.biome": "explicit",
-		"source.organizeImports.biome": "explicit"
-	},
-	"editor.quickSuggestions": {
-		"strings": "on"
-	},
-	"[markdown]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
-	"[html]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
-	"[css]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
-	"[vue]": {
-		"editor.defaultFormatter": "Vue.volar"
-	},
-	"editor.defaultFormatter": "biomejs.biome",
-	"emmet.includeLanguages": {
-		"postcss": "css"
-	}
+  "bun.runtime": "~/.bun/bin/bun",
+  "bun.debugTerminal.enabled": true,
+  "bun.debugTerminal.stopOnEntry": false,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "quickfix.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "emmet.includeLanguages": {
+    "postcss": "css"
+  }
 }

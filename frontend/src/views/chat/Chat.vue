@@ -11,14 +11,18 @@ import en from "./translations/en.ts";
 const settings = useSettings();
 const { locale } = storeToRefs(settings);
 
-const i18n = ref(new I18n([
-  [Locale.EnglishGB, en],
-  [Locale.German, de],
-]));
+const i18n = ref(
+  new I18n([
+    [Locale.EnglishGB, en],
+    [Locale.German, de],
+  ]),
+);
 
 const prompt = ref("");
 
-const promptPlaceholder = computed(() => i18n.value.t(locale.value, "promptPlaceholder"));
+const promptPlaceholder = computed(() =>
+  i18n.value.t(locale.value, "promptPlaceholder"),
+);
 const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 </script>
 
@@ -26,10 +30,21 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
   <div class="chat">
     <DieBestie class="die-bestie" />
     <div class="prompt">
-      <textarea class="prompt-input" v-model="prompt" :placeholder="promptPlaceholder"
-        oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';"></textarea>
-      <button type="submit" class="prompt-submit btn" :title="submitTitle"
-        @click.prevent="console.log(prompt); prompt = '';">
+      <textarea
+        class="prompt-input"
+        v-model="prompt"
+        :placeholder="promptPlaceholder"
+        oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';"
+      ></textarea>
+      <button
+        type="submit"
+        class="prompt-submit btn"
+        :title="submitTitle"
+        @click.prevent="
+          console.log(prompt);
+          prompt = '';
+        "
+      >
         <PaperPlane class="submit-icon" />
       </button>
     </div>

@@ -4,7 +4,7 @@ import HellLog from "@/core/HellLog.ts";
 import server from "@/core/http/Server.ts";
 
 new HellCore(new HellLog(botlog)).setup().then((hellBot) => {
-	hellBot.login(discord.token);
+  hellBot.login(discord.token);
 });
 
 server.listen(8080);

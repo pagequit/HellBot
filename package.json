@@ -8,10 +8,10 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.6.1",
     "@types/bun": "latest",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vue/tsconfig": "^0.5.1",
+    "prettier": "^3.2.5",
     "vite": "^5.1.5",
     "vue-tsc": "^2.0.6"
   },

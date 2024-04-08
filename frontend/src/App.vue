@@ -24,7 +24,7 @@ const themeLabelDark = "Dark";
 const themes = new Map([
   [themeLabelLight, "light"],
   [themeLabelDark, "dark"],
-])
+]);
 
 const settings = useSettings();
 const { setLocale, setTheme } = settings;
@@ -44,15 +44,20 @@ const languages = new Map([
 
 onMounted(() => {
   useOnClickOutside(menu.value as HTMLElement, () =>
-    (menu.value as HTMLElement).classList.remove(menuOpenClass)
+    (menu.value as HTMLElement).classList.remove(menuOpenClass),
   );
 });
 </script>
 
 <template>
   <div class="menu" ref="menu">
-    <button ref="toggle" type="button" class="menu-toggle btn" title="Menu"
-      @click="menu!.classList.toggle(menuOpenClass)">
+    <button
+      ref="toggle"
+      type="button"
+      class="menu-toggle btn"
+      title="Menu"
+      @click="menu!.classList.toggle(menuOpenClass)"
+    >
       <Bars class="toggle-icon" />
     </button>
 
@@ -61,26 +66,43 @@ onMounted(() => {
         <Chat class="item-icon" /><span class="item-label">Chat</span>
       </RouterLink>
       <RouterLink class="nav-item commands" title="Commands" to="/commands">
-        <CodeBracket class="item-icon" /><span class="item-label">Commands</span>
+        <CodeBracket class="item-icon" /><span class="item-label"
+          >Commands</span
+        >
       </RouterLink>
     </nav>
 
     <div class="menu-gui">
       <div class="gui-item">
-        <Select title="Language" :options="languages" class="gui-select" v-model="locale"
-          @change="setLocale(locale)"></Select>
+        <Select
+          title="Language"
+          :options="languages"
+          class="gui-select"
+          v-model="locale"
+          @change="setLocale(locale)"
+        ></Select>
         <Language class="item-icon" />
       </div>
 
       <div class="gui-item">
-        <Select title="Theme" :options="themes" class="gui-select" v-model="theme" @change="setTheme(theme)"></Select>
+        <Select
+          title="Theme"
+          :options="themes"
+          class="gui-select"
+          v-model="theme"
+          @change="setTheme(theme)"
+        ></Select>
         <Moon class="item-icon" v-if="theme === 'light'" />
         <Sun class="item-icon" v-if="theme === 'dark'" />
       </div>
 
       <Popover class="avatar" title="User wip">
         <template #trigger>
-          <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar" class="avatar-img" />
+          <img
+            src="https://cdn.discordapp.com/embed/avatars/0.png"
+            alt="Avatar"
+            class="avatar-img"
+          />
           <span class="item-label">User</span>
         </template>
         <template #target>

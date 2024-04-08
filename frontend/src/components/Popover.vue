@@ -8,7 +8,6 @@ const props = defineProps<{
 
 const targetOpenClass = "open";
 const target = ref<HTMLElement | null>(null);
-
 </script>
 
 <template>
