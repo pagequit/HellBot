@@ -185,7 +185,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
   position: absolute;
   z-index: -1;
   width: 100%;
-  height: auto;
+  height: 100%;
   bottom: 50%;
   left: 50%;
   transform: translate(-50%, 50%);
