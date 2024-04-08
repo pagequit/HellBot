@@ -45,7 +45,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 
       <div class="entry">
         <img
-          src="https://cdn.discordapp.com/embed/avatars/0.png"
+          src="https://cdn.discordapp.com/embed/avatars/5.png"
           alt="Avatar"
           class="entry-avatar"
         />
@@ -70,7 +70,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 
       <div class="entry">
         <img
-          src="https://cdn.discordapp.com/embed/avatars/0.png"
+          src="https://cdn.discordapp.com/embed/avatars/5.png"
           alt="Avatar"
           class="entry-avatar"
         />
@@ -92,7 +92,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 
       <div class="entry">
         <img
-          src="https://cdn.discordapp.com/embed/avatars/0.png"
+          src="https://cdn.discordapp.com/embed/avatars/5.png"
           alt="Avatar"
           class="entry-avatar"
         />
@@ -157,13 +157,13 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 }
 
 .entry {
-  border-radius: var(--sp-2);
   display: flex;
   flex-flow: row nowrap;
   gap: var(--sp-2);
 
   &:nth-child(even) {
     flex-flow: row-reverse nowrap;
+    padding-bottom: var(--sp-2);
   }
 }
 
@@ -177,8 +177,13 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 .entry-text {
   background: var(--c-bg-1);
   border-radius: var(--sp-2);
-  padding: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
   box-shadow: 0 2px 4px 0 rgba(var(--rgb-black), 0.1);
+  line-height: 1.5;
+
+  p {
+    margin: 0;
+  }
 }
 
 .die-bestie {
