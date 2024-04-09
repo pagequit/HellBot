@@ -19,16 +19,26 @@ const i18n = ref(
 );
 
 const prompt = ref("");
+const promptInput = ref<HTMLTextAreaElement | null>(null);
 
 const promptPlaceholder = computed(() =>
   i18n.value.t(locale.value, "promptPlaceholder"),
 );
 const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 
-function setPromptInputHeight(event: Event) {
-  const element = event.target as HTMLTextAreaElement;
-  element.style.height = "";
+function setPromptInputHeight() {
+  const element = promptInput.value as HTMLTextAreaElement;
+  element.style.height = "unset";
   element.style.height = `${element.scrollHeight}px`;
+}
+
+function submitPrompt() {
+  const element = promptInput.value as HTMLTextAreaElement;
+
+  console.log(prompt.value);
+
+  prompt.value = "";
+  element.style.height = "unset";
 }
 </script>
 
@@ -119,6 +129,7 @@ function setPromptInputHeight(event: Event) {
     <div class="prompt">
       <textarea
         class="prompt-input"
+        ref="promptInput"
         v-model="prompt"
         :placeholder="promptPlaceholder"
         @input="setPromptInputHeight"
@@ -127,10 +138,7 @@ function setPromptInputHeight(event: Event) {
         type="submit"
         class="prompt-submit btn"
         :title="submitTitle"
-        @click.prevent="
-          console.log(prompt);
-          prompt = '';
-        "
+        @click.prevent="submitPrompt"
       >
         <PaperPlane class="submit-icon" />
       </button>
