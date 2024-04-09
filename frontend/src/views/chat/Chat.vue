@@ -24,6 +24,12 @@ const promptPlaceholder = computed(() =>
   i18n.value.t(locale.value, "promptPlaceholder"),
 );
 const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
+
+function setPromptInputHeight(event: Event) {
+  const element = event.target as HTMLTextAreaElement;
+  element.style.height = "";
+  element.style.height = `${element.scrollHeight}px`;
+}
 </script>
 
 <template>
@@ -115,7 +121,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
         class="prompt-input"
         v-model="prompt"
         :placeholder="promptPlaceholder"
-        oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';"
+        @input="setPromptInputHeight"
       ></textarea>
       <button
         type="submit"

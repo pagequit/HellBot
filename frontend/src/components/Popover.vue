@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { useOnClickOutside } from "@/frontend/src/composables/onClickOutside.ts";
 import { ref } from "vue";
 
-const props = defineProps<{
+defineProps<{
   placement?: "top" | "left" | "bottom" | "right";
 }>();
 
