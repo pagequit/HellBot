@@ -96,18 +96,20 @@ onMounted(() => {
         <Sun class="item-icon" v-if="theme === 'dark'" />
       </div>
 
-      <Popover class="avatar" title="User wip">
+      <Popover class="avatar pop-right" title="User wip">
         <template #trigger>
-          <img
-            src="https://cdn.discordapp.com/embed/avatars/0.png"
-            alt="Avatar"
-            class="avatar-img"
-          />
-          <span class="item-label">User</span>
+          <button type="button" class="avatar-btn">
+            <img
+              src="https://cdn.discordapp.com/embed/avatars/0.png"
+              alt="Avatar"
+              class="avatar-img"
+            />
+            <span class="avatar-name">User</span>
+          </button>
         </template>
         <template #target>
           <button class="btn logout-btn">
-            <Logout class="item-icon" /><span class="label">Logout</span>
+            <Logout class="item-icon" /><span class="logout-label">Logout</span>
           </button>
         </template>
       </Popover>
@@ -138,12 +140,21 @@ onMounted(() => {
     box-shadow: 8px 0 16px 0 rgba(var(--rgb-black), 0.2);
     transition: all 233ms ease-in;
 
+    .nav-item .item-label,
+    .avatar-name,
     .gui-select {
       opacity: 1;
+      transition: opacity 233ms ease-in;
     }
 
     .menu-toggle {
       box-shadow: none;
+    }
+
+    .avatar-name {
+      margin-left: var(--sp-2);
+      margin-right: var(--sp-3);
+      width: auto;
     }
   }
 
@@ -214,6 +225,10 @@ onMounted(() => {
     color: var(--c-fg-1);
     background: var(--c-bg-3);
   }
+
+  .item-label {
+    opacity: 0;
+  }
 }
 
 .item-icon {
@@ -269,13 +284,34 @@ onMounted(() => {
 
 .avatar {
   margin-top: var(--sp-3);
-  bottom: var(--sp-3);
-  left: var(--sp-3);
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
   gap: var(--sp-2);
   color: var(--c-fg-2);
+  width: fit-content;
+
+  .popover-target {
+    height: 100%;
+  }
+}
+
+.avatar-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  color: var(--c-fg-2);
+  border-radius: var(--sp-4);
+  padding: 0;
+  overflow: hidden;
+}
+
+.avatar-name {
+  opacity: 0;
+  width: 0;
 }
 
 .avatar-img {
@@ -285,19 +321,26 @@ onMounted(() => {
 }
 
 .logout-btn {
-  padding: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
   display: flex;
   flex-flow: row nowrap;
   gap: var(--sp-1);
-  margin-left: var(--sp-1);
   color: var(--c-white);
   background: rgba(var(--rgb-red), 1);
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  border-radius: var(--sp-4);
 
   &:active,
   &:hover {
     color: var(--c-white);
     background: rgba(var(--rgb-red), 0.95);
   }
+}
+
+.logout-label {
+  margin-right: var(--sp-2);
 }
 
 .view {

@@ -37,7 +37,7 @@ export const useSettings = defineStore("settings", () => {
     }
   }
 
-  function setTheme(newTheme: "light" | "dark") {
+  function setTheme(newTheme: Theme) {
     theme.value = newTheme;
     if (canUseLocalStorage()) {
       localStorage.setItem("theme", newTheme);
