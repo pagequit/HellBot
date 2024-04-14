@@ -6,6 +6,7 @@ import {
   type Interaction,
   Partials,
 } from "discord.js";
+import { Elysia, type RouteBase } from "elysia";
 import { Collection, Err, Ok, type Result } from "unwrap/mod.ts";
 import type { Command } from "./Command.ts";
 import type { HellLogger } from "./HellLog.ts";
@@ -18,6 +19,7 @@ import {
 export type Core = {
   client: HellCore["client"];
   logger: HellCore["logger"];
+  server: HellCore["server"];
   addChatInputGuildCommand: HellCore["addChatInputGuildCommand"];
   addChatInputCommand: HellCore["addChatInputCommand"];
 };
@@ -27,11 +29,13 @@ export default class HellCore {
   chatInputGuildCommands: Collection<string, Command>;
   logger: HellLogger;
   client: Client;
+  server: Elysia;
 
   constructor(logger: HellLogger) {
     this.chatInputCommands = new Collection();
     this.chatInputGuildCommands = new Collection();
     this.logger = logger;
+    this.server = new Elysia();
 
     this.client = new Client({
       intents: [
@@ -91,6 +95,7 @@ export default class HellCore {
         feature.setup({
           client: this.client,
           logger: this.logger,
+          server: this.server,
           addChatInputGuildCommand: this.addChatInputGuildCommand.bind(this),
           addChatInputCommand: this.addChatInputCommand.bind(this),
         } satisfies Core);
@@ -122,9 +127,5 @@ export default class HellCore {
     this.chatInputCommands.set(command.data.name, command);
 
     return Ok(undefined);
-  }
-
-  login(token: string): Promise<string> {
-    return this.client.login(token);
   }
 }
