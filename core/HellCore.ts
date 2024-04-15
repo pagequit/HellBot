@@ -6,10 +6,11 @@ import {
   type Interaction,
   Partials,
 } from "discord.js";
+import type { Elysia } from "elysia";
 import { Collection, Err, Ok, type Result } from "unwrap/mod.ts";
 import type { Command } from "./Command.ts";
 import type { HellLogger } from "./HellLog.ts";
-import server, { type Server } from "./http/server.ts";
+import { useServer } from "./composables/useServer.ts";
 import { deleteSlashCommands } from "./procedures/deleteSlashCommands.ts";
 import {
   registerCommands,
@@ -19,7 +20,6 @@ import {
 export type Core = {
   client: HellCore["client"];
   logger: HellCore["logger"];
-  server: HellCore["server"];
   addChatInputGuildCommand: HellCore["addChatInputGuildCommand"];
   addChatInputCommand: HellCore["addChatInputCommand"];
 };
@@ -29,13 +29,13 @@ export default class HellCore {
   chatInputGuildCommands: Collection<string, Command>;
   logger: HellLogger;
   client: Client;
-  server: Server;
+  server: Elysia;
 
   constructor(logger: HellLogger) {
     this.chatInputCommands = new Collection();
     this.chatInputGuildCommands = new Collection();
     this.logger = logger;
-    this.server = server;
+    this.server = useServer();
 
     this.client = new Client({
       intents: [
@@ -95,7 +95,6 @@ export default class HellCore {
         feature.setup({
           client: this.client,
           logger: this.logger,
-          server: this.server,
           addChatInputGuildCommand: this.addChatInputGuildCommand.bind(this),
           addChatInputCommand: this.addChatInputCommand.bind(this),
         } satisfies Core);

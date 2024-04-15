@@ -1,12 +1,9 @@
-import { useCrappyStore } from "@/core/CrappyStore.ts";
+import { useStore } from "@/core/composables/useStore.ts";
 import { jwt } from "@elysiajs/jwt";
 import { Elysia } from "elysia";
 
-const crappyStore = useCrappyStore();
-
-export type Server = Elysia;
-
-export default new Elysia()
+const store = useStore();
+const server = new Elysia()
   .use(
     jwt({
       name: "jwt",
@@ -14,7 +11,7 @@ export default new Elysia()
     }),
   )
   .get("/auth/:token", async ({ jwt, set, cookie: { auth }, params }) => {
-    const userId = crappyStore.get(params.token);
+    const userId = store.get(params.token);
 
     if (userId.isNone()) {
       set.status = 401;
@@ -29,7 +26,7 @@ export default new Elysia()
       secure: false, // FIXME for production
     });
 
-    crappyStore.delete(params.token);
+    store.delete(params.token);
 
     return `Sign in as ${userId.unwrap()}`;
   })
@@ -51,3 +48,7 @@ export default new Elysia()
 
     return `Bye ${user.id}`;
   });
+
+export function useServer(): Elysia {
+  return server;
+}
