@@ -6,10 +6,10 @@ import {
   type Interaction,
   Partials,
 } from "discord.js";
-import { Elysia, type RouteBase } from "elysia";
 import { Collection, Err, Ok, type Result } from "unwrap/mod.ts";
 import type { Command } from "./Command.ts";
 import type { HellLogger } from "./HellLog.ts";
+import server, { type Server } from "./http/server.ts";
 import { deleteSlashCommands } from "./procedures/deleteSlashCommands.ts";
 import {
   registerCommands,
@@ -29,13 +29,13 @@ export default class HellCore {
   chatInputGuildCommands: Collection<string, Command>;
   logger: HellLogger;
   client: Client;
-  server: Elysia;
+  server: Server;
 
   constructor(logger: HellLogger) {
     this.chatInputCommands = new Collection();
     this.chatInputGuildCommands = new Collection();
     this.logger = logger;
-    this.server = new Elysia();
+    this.server = server;
 
     this.client = new Client({
       intents: [
