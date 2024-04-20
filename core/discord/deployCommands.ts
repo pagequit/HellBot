@@ -10,9 +10,7 @@ export function deployApplicationCommands(
 
   return rest
     .put(Routes.applicationCommands(discord.clientId), { body })
-    .then(() =>
-      console.log("Successfully registered all application commands."),
-    )
+    .then(() => console.log("Successfully deployed all application commands."))
     .catch(console.error);
 }
 
@@ -25,6 +23,22 @@ export function deployApplicationGuildCommands(
     .put(Routes.applicationGuildCommands(discord.clientId, discord.guildId), {
       body,
     })
-    .then(() => console.log("Successfully registered all guild commands."))
+    .then(() => console.log("Successfully deployed all guild commands."))
+    .catch(console.error);
+}
+
+export async function removeAllSlashCommands() {
+  const rest = new REST({ version: "10" }).setToken(discord.token);
+
+  await rest
+    .put(Routes.applicationGuildCommands(discord.clientId, discord.guildId), {
+      body: [],
+    })
+    .then(() => console.log("Successfully removed all guild commands."))
+    .catch(console.error);
+
+  await rest
+    .put(Routes.applicationCommands(discord.clientId), { body: [] })
+    .then(() => console.log("Successfully removed all application commands."))
     .catch(console.error);
 }
