@@ -1,6 +1,4 @@
-import type { Command } from "@/core/Command.ts";
-import { Locale } from "@/core/i18n/I18n.ts";
-import { useI18n } from "@/core/i18n/useI18n.ts";
+import { type ChatInputCommand, Locale, useI18n } from "@/core/mod.ts";
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -18,7 +16,7 @@ const { i18n, i18nSlashCommandBuilder } = useI18n([
 
 const timers = new Collection<string, number>();
 
-export default {
+export const timer: ChatInputCommand = {
   data: i18nSlashCommandBuilder
     .withName("name")
     .withDescription("description")
@@ -92,4 +90,4 @@ export default {
         timers.delete(user.id);
       });
   },
-} satisfies Command;
+};

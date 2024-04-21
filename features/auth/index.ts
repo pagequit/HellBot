@@ -1,9 +1,7 @@
 import type { Feature } from "@/core/Feature.ts";
-import type { Core } from "@/core/HellCore.ts";
-import auth from "./auth.ts";
+import { registerChatInputGuildCommand } from "@/core/mod.ts";
+import { auth } from "./auth.ts";
 
-export default {
-  setup(core: Core): void {
-    core.addChatInputGuildCommand(auth(core));
-  },
-} satisfies Feature;
+export default ((): void => {
+  registerChatInputGuildCommand(auth);
+}) satisfies Feature;

@@ -1,6 +1,4 @@
-import type { Command } from "@/core/Command.ts";
-import { Locale } from "@/core/i18n/I18n.ts";
-import { useI18n } from "@/core/i18n/useI18n.ts";
+import { type ChatInputCommand, Locale, useI18n } from "@/core/mod.ts";
 import type { ChatInputCommandInteraction } from "discord.js";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
@@ -12,7 +10,7 @@ const { i18n, i18nSlashCommandBuilder } = useI18n([
 
 const emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
 
-export default {
+export const poll: ChatInputCommand = {
   data: i18nSlashCommandBuilder
     .withName("name")
     .withDescription("description")
@@ -44,4 +42,4 @@ export default {
       await responseMessage.react(emoji);
     }
   },
-} satisfies Command;
+};
