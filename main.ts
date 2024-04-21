@@ -10,8 +10,8 @@ import {
   removeAllSlashCommands,
 } from "@/core/discord/deployCommands.ts";
 import { logger } from "@/core/discord/logger.ts";
+import { http } from "@/core/http.ts";
 import { loadFeatures } from "@/core/loadFeatures";
-import { server } from "@/core/server.ts";
 import { type Client, Events, type Interaction } from "discord.js";
 
 client.once(Events.ClientReady, (client: Client<true>) => {
@@ -48,10 +48,10 @@ for (const feature of await loadFeatures(`${process.cwd()}/features`)) {
 
 // TODO: remove config.ts and use prosess.env directly
 client.login(discord.token);
-server.listen(8080);
+http.listen(8080);
 
-await removeAllSlashCommands();
-deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
-deployApplicationGuildCommands([
-  ...chatInputGuildCommands.map((c) => c.data).values(),
-]);
+// await removeAllSlashCommands();
+// deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
+// deployApplicationGuildCommands([
+//   ...chatInputGuildCommands.map((c) => c.data).values(),
+// ]);
