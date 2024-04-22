@@ -1,7 +1,14 @@
+import { discord } from "@/config.ts";
 import type { Feature } from "@/core/Feature.ts";
-import { http, registerChatInputGuildCommand } from "@/core/mod.ts";
+import {
+  http,
+  client,
+  logger,
+  registerChatInputGuildCommand,
+} from "@/core/mod.ts";
 import { store } from "@/core/store.ts";
 import { jwt } from "@elysiajs/jwt";
+import type { Guild } from "discord.js";
 import { auth } from "./auth.ts";
 
 export default ((): void => {
@@ -22,12 +29,23 @@ export default ((): void => {
         return "Unauthorized";
       }
 
+      const guild = (await client.guilds
+        .fetch(discord.guildId)
+        .catch((error) => {
+          logger.error(error.message, error);
+        })) as Guild;
+
+      const member = await guild.members.fetch(String(user.id));
+
       set.status = 200;
       set.headers["Access-Control-Allow-Origin"] = "http://localhost:5173";
       set.headers["Access-Control-Allow-Credentials"] = "true";
 
       return {
-        id: user.id,
+        data: {
+          avatarURL: member?.displayAvatarURL(),
+          displayName: member?.displayName,
+        },
       };
     })
     .get("/auth/:token", async ({ jwt, set, cookie: { auth }, params }) => {

@@ -15,6 +15,11 @@ import { storeToRefs } from "pinia";
 import { onMounted, ref, watch } from "vue";
 import { RouterLink, RouterView } from "vue-router";
 
+const { avatarURL, displayName } = defineProps<{
+  avatarURL: string;
+  displayName: string;
+}>();
+
 const menu = ref<HTMLElement | null>(null);
 const menuOpenClass = "menu-open";
 
@@ -99,12 +104,8 @@ onMounted(() => {
       <Popover class="avatar pop-right" title="User wip">
         <template #trigger>
           <button type="button" class="avatar-btn">
-            <img
-              src="https://cdn.discordapp.com/embed/avatars/0.png"
-              alt="Avatar"
-              class="avatar-img"
-            />
-            <span class="avatar-name">User</span>
+            <img :src="avatarURL" alt="Avatar" class="avatar-img" />
+            <span class="avatar-name">{{ displayName }}</span>
           </button>
         </template>
         <template #target>

@@ -10,14 +10,14 @@ fetch("http://localhost:8080/", {
   credentials: "include",
   mode: "cors",
 })
-  .then((res) => {
-    console.log(res.body);
-    return res.json();
-  })
-  .then((data) => {
+  .then((res) => res.json())
+  .then(({ data }) => {
     console.log(data);
 
-    const app = createApp(App);
+    const app = createApp(App, {
+      avatarURL: data.avatarURL,
+      displayName: data.displayName,
+    });
 
     app.use(createPinia());
     app.use(router);
