@@ -15,11 +15,6 @@ const router = createRouter({
       name: "commands",
       component: () => import("@/frontend/src/views/Commands.vue"),
     },
-    {
-      path: "/auth",
-      name: "auth",
-      component: () => import("@/frontend/src/views/Auth.vue"),
-    },
   ],
 });
 

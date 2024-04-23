@@ -37,6 +37,14 @@ export default ((): void => {
 
       const member = await guild.members.fetch(String(user.id));
 
+      auth.set({
+        value: await jwt.sign({ id: user.id }),
+        httpOnly: true,
+        maxAge: 7 * 86400,
+        path: "/",
+        secure: false, // FIXME for production
+      });
+
       set.status = 200;
       set.headers["Access-Control-Allow-Origin"] = "http://localhost:5173";
       set.headers["Access-Control-Allow-Credentials"] = "true";

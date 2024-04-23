@@ -20,6 +20,10 @@ const { avatarURL, displayName } = defineProps<{
   displayName: string;
 }>();
 
+function logout() {
+  window.location.href = "/logout";
+}
+
 const menu = ref<HTMLElement | null>(null);
 const menuOpenClass = "menu-open";
 
@@ -110,7 +114,8 @@ onMounted(() => {
         </template>
         <template #target>
           <button class="btn logout-btn">
-            <Logout class="item-icon" /><span class="logout-label">Logout</span>
+            <Logout @click="logout" class="item-icon" />
+            <span class="logout-label">Logout</span>
           </button>
         </template>
       </Popover>
