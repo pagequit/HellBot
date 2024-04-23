@@ -1,4 +1,3 @@
-import { discord } from "@/config.ts";
 import type { Feature } from "@/core/Feature.ts";
 import {
   http,
@@ -30,7 +29,7 @@ export default ((): void => {
       }
 
       const guild = (await client.guilds
-        .fetch(discord.guildId)
+        .fetch(process.env.HELLNET_ID as string)
         .catch((error) => {
           logger.error(error.message, error);
         })) as Guild;

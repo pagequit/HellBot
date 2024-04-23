@@ -48,8 +48,8 @@ for (const feature of await loadFeatures(`${process.cwd()}/features`)) {
 client.login(process.env.DISCORD_TOKEN as string);
 http.listen(process.env.PORT as string);
 
-// await removeAllSlashCommands();
-// deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
-// deployApplicationGuildCommands([
-//   ...chatInputGuildCommands.map((c) => c.data).values(),
-// ]);
+await removeAllSlashCommands();
+deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
+deployApplicationGuildCommands([
+  ...chatInputGuildCommands.map((c) => c.data).values(),
+]);
