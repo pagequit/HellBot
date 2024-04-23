@@ -74,8 +74,7 @@ export default ((): void => {
 
       store.delete(params.token);
 
-      // return `Sign in as ${userId.unwrap()}`;
-      set.redirect = "http://localhost:5173";
+      set.redirect = `http://${process.env.HOST}:${process.env.PORT}/`;
     })
     .get("/logout", async ({ jwt, set, cookie: { auth } }) => {
       const user = await jwt.verify(auth.value);

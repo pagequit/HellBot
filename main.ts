@@ -1,4 +1,3 @@
-import { discord } from "@/config.ts";
 import {
   chatInputCommands,
   chatInputGuildCommands,
@@ -46,9 +45,8 @@ for (const feature of await loadFeatures(`${process.cwd()}/features`)) {
   }
 }
 
-// TODO: remove config.ts and use prosess.env directly
-client.login(discord.token);
-http.listen(8080);
+client.login(process.env.DISCORD_TOKEN as string);
+http.listen(process.env.BACKEND_PORT as string);
 
 // await removeAllSlashCommands();
 // deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
