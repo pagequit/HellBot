@@ -46,7 +46,8 @@ export default ((): void => {
       });
 
       set.status = 200;
-      set.headers["Access-Control-Allow-Origin"] = "http://localhost:5173";
+      set.headers["Access-Control-Allow-Origin"] =
+        `http://${process.env.FRONTEND_HOSTNAME}:${process.env.FRONTEND_PORT}`;
       set.headers["Access-Control-Allow-Credentials"] = "true";
 
       return {
@@ -74,7 +75,7 @@ export default ((): void => {
 
       store.delete(params.token);
 
-      set.redirect = `http://${process.env.HOST}:${process.env.PORT}/`;
+      set.redirect = `http://${process.env.FRONTEND_HOSTNAME}:${process.env.FRONTEND_PORT}/`;
     })
     .get("/logout", async ({ jwt, set, cookie: { auth } }) => {
       const user = await jwt.verify(auth.value);

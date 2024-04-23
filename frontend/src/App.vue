@@ -21,7 +21,7 @@ const { avatarURL, displayName } = defineProps<{
 }>();
 
 function logout() {
-  window.location.href = "http://localhost:8080/logout";
+  window.location.href = `http://${import.meta.env.VITE_HOSTNAME}:${import.meta.env.VITE_PORT}/logout`;
 }
 
 const menu = ref<HTMLElement | null>(null);

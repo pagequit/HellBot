@@ -6,7 +6,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 
-fetch("http://localhost:8080/", {
+fetch(`http://${import.meta.env.VITE_HOSTNAME}:${import.meta.env.VITE_PORT}/`, {
   credentials: "include",
   mode: "cors",
 })
