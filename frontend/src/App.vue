@@ -21,7 +21,7 @@ const { avatarURL, displayName } = defineProps<{
 }>();
 
 function logout() {
-  window.location.href = "/logout";
+  window.location.href = "http://localhost:8080/logout";
 }
 
 const menu = ref<HTMLElement | null>(null);
@@ -113,8 +113,8 @@ onMounted(() => {
           </button>
         </template>
         <template #target>
-          <button class="btn logout-btn">
-            <Logout @click="logout" class="item-icon" />
+          <button @click="logout" class="btn logout-btn">
+            <Logout class="item-icon" />
             <span class="logout-label">Logout</span>
           </button>
         </template>
