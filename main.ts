@@ -11,6 +11,7 @@ import {
 import { logger } from "@/core/discord/logger.ts";
 import { http } from "@/core/http.ts";
 import { loadFeatures } from "@/core/loadFeatures";
+import { staticPlugin } from "@elysiajs/static";
 import { type Client, Events, type Interaction } from "discord.js";
 
 client.once(Events.ClientReady, (client: Client<true>) => {
@@ -46,10 +47,18 @@ for (const feature of await loadFeatures(`${process.cwd()}/features`)) {
 }
 
 client.login(process.env.DISCORD_TOKEN as string);
-http.listen(process.env.PORT as string);
 
-await removeAllSlashCommands();
-deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
-deployApplicationGuildCommands([
-  ...chatInputGuildCommands.map((c) => c.data).values(),
-]);
+http
+  .use(
+    staticPlugin({
+      assets: `${process.cwd()}/frontend/dist`,
+      prefix: "/",
+    }),
+  )
+  .listen(process.env.BACKEND_PORT as string);
+
+// await removeAllSlashCommands();
+// deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
+// deployApplicationGuildCommands([
+//   ...chatInputGuildCommands.map((c) => c.data).values(),
+// ]);

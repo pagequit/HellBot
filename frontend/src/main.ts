@@ -6,14 +6,15 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 
-fetch(`http://${import.meta.env.VITE_HOSTNAME}:${import.meta.env.VITE_PORT}/`, {
-  credentials: "include",
-  mode: "cors",
-})
+fetch(
+  `http://${import.meta.env.VITE_HOSTNAME}:${import.meta.env.VITE_PORT}/user`,
+  {
+    credentials: "include",
+    mode: "cors",
+  },
+)
   .then((res) => res.json())
   .then(({ data }) => {
-    console.log(data);
-
     const app = createApp(App, {
       avatarURL: data.avatarURL,
       displayName: data.displayName,

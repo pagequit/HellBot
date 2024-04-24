@@ -21,12 +21,13 @@
   },
   "dependencies": {
     "@elysiajs/jwt": "^0.8.0",
+    "@elysiajs/static": "^1.0.3",
     "discord.js": "^14.14.1",
     "elysia": "^0.8.17",
     "openai": "^4.28.4",
     "pinia": "^2.1.7",
+    "unwrap": "git+https://github.com/pagequit/unwrap.git",
     "vue": "^3.4.21",
-    "vue-router": "^4.3.0",
-    "unwrap": "git+https://github.com/pagequit/unwrap.git"
+    "vue-router": "^4.3.0"
   }
 }

@@ -20,7 +20,7 @@ export default ((): void => {
         secret: process.env.JWT_SECRET as string,
       }),
     )
-    .get("/", async ({ jwt, set, cookie: { auth } }) => {
+    .get("/user", async ({ jwt, set, cookie: { auth } }) => {
       const user = await jwt.verify(auth.value);
 
       if (!user) {
@@ -46,7 +46,7 @@ export default ((): void => {
 
       set.status = 200;
       set.headers["Access-Control-Allow-Origin"] =
-        `http://${process.env.FRONTEND_HOSTNAME}:${process.env.FRONTEND_PORT}`;
+        `http://${process.env.FRONTEND_HOST}`;
       set.headers["Access-Control-Allow-Credentials"] = "true";
 
       return {
@@ -74,7 +74,7 @@ export default ((): void => {
 
       store.delete(params.token);
 
-      set.redirect = `http://${process.env.FRONTEND_HOSTNAME}:${process.env.FRONTEND_PORT}/`;
+      set.redirect = `http://${process.env.FRONTEND_HOST}/`;
     })
     .get("/logout", async ({ jwt, set, cookie: { auth } }) => {
       const user = await jwt.verify(auth.value);
