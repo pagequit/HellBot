@@ -7,6 +7,9 @@ export default ({ mode }: { mode: string }) => {
 
   return defineConfig({
     plugins: [vue()],
+    server: {
+      port: 3080,
+    },
     root: "./frontend",
     resolve: {
       alias: {

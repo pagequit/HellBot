@@ -1,3 +1,4 @@
+import { frontend } from "@/config.ts";
 import type { Feature } from "@/core/Feature.ts";
 import {
   http,
@@ -45,8 +46,7 @@ export default ((): void => {
       });
 
       set.status = 200;
-      set.headers["Access-Control-Allow-Origin"] =
-        `http://${process.env.FRONTEND_HOST}`;
+      set.headers["Access-Control-Allow-Origin"] = frontend.origin;
       set.headers["Access-Control-Allow-Credentials"] = "true";
 
       return {
@@ -74,7 +74,7 @@ export default ((): void => {
 
       store.delete(params.token);
 
-      set.redirect = `http://${process.env.FRONTEND_HOST}/`;
+      set.redirect = frontend.origin;
     })
     .get("/logout", async ({ jwt, set, cookie: { auth } }) => {
       const user = await jwt.verify(auth.value);

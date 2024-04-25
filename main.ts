@@ -1,3 +1,4 @@
+import { server } from "@/config.ts";
 import {
   chatInputCommands,
   chatInputGuildCommands,
@@ -55,7 +56,7 @@ http
       prefix: "/",
     }),
   )
-  .listen(process.env.BACKEND_PORT as string);
+  .listen(server.port);
 
 // await removeAllSlashCommands();
 // deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);

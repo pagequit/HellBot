@@ -76,7 +76,7 @@ docker build --pull -t hellbot .
 ```
 
 ```sh
-docker run -it --init -p 1993:1993 hellbot
+docker run -it --init -p 3000:3000 hellbot
 ```
 
 ## Docs

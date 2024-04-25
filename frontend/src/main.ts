@@ -1,18 +1,14 @@
-import "./assets/app.css";
-
 import { createPinia } from "pinia";
 import { createApp } from "vue";
-
 import App from "./App.vue";
+import "./assets/app.css";
+import { origin } from "./composables/origin.ts";
 import router from "./router";
 
-fetch(
-  `http://${import.meta.env.VITE_HOSTNAME}:${import.meta.env.VITE_PORT}/user`,
-  {
-    credentials: "include",
-    mode: "cors",
-  },
-)
+fetch(`${origin}/user`, {
+  credentials: "include",
+  mode: "cors",
+})
   .then((res) => res.json())
   .then(({ data }) => {
     const app = createApp(App, {

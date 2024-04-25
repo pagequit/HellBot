@@ -5,5 +5,5 @@ RUN cd /usr/src/app
 RUN bun install --production
 RUN bun run build
 USER root 
-EXPOSE 8088/tcp
+EXPOSE 3000/tcp
 ENTRYPOINT [ "bun", "run", "main.ts" ]
