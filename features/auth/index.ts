@@ -9,19 +9,40 @@ import {
 import { store } from "@/core/store.ts";
 import { jwt } from "@elysiajs/jwt";
 import type { Guild } from "discord.js";
+import { Elysia } from "elysia";
 import { auth } from "./auth.ts";
 
-export default ((): void => {
-  registerChatInputGuildCommand(auth);
+// TODO: lift this to the core
+export const jwtAuth = jwt({
+  name: "jwt",
+  secret: process.env.JWT_SECRET as string,
+});
 
-  http
-    .use(
-      jwt({
-        name: "jwt",
-        secret: process.env.JWT_SECRET as string,
-      }),
-    )
-    .get("/user", async ({ jwt, set, cookie: { auth } }) => {
+function createHttpAuth({ prefix }: { prefix: string }): Elysia {
+  return new Elysia({
+    name: "auth",
+  })
+    .use(jwtAuth)
+    .get(`${prefix}/:token`, async ({ jwt, set, cookie: { auth }, params }) => {
+      const userId = store.get(params.token);
+      if (userId.isNone()) {
+        set.status = 401;
+        return "Unauthorized";
+      }
+
+      auth.set({
+        value: await jwt.sign({ id: userId.unwrap() }),
+        httpOnly: true,
+        maxAge: 7 * 86400,
+        path: "/",
+        secure: false, // FIXME for production
+      });
+
+      store.delete(params.token);
+
+      set.redirect = frontend.origin;
+    })
+    .get(`${prefix}/user`, async ({ jwt, set, cookie: { auth } }) => {
       const user = await jwt.verify(auth.value);
 
       if (!user) {
@@ -56,27 +77,7 @@ export default ((): void => {
         },
       };
     })
-    .get("/auth/:token", async ({ jwt, set, cookie: { auth }, params }) => {
-      const userId = store.get(params.token);
-
-      if (userId.isNone()) {
-        set.status = 401;
-        return "Unauthorized";
-      }
-
-      auth.set({
-        value: await jwt.sign({ id: userId.unwrap() }),
-        httpOnly: true,
-        maxAge: 7 * 86400,
-        path: "/",
-        secure: false, // FIXME for production
-      });
-
-      store.delete(params.token);
-
-      set.redirect = frontend.origin;
-    })
-    .get("/logout", async ({ jwt, set, cookie: { auth } }) => {
+    .get(`${prefix}/logout`, async ({ jwt, set, cookie: { auth } }) => {
       const user = await jwt.verify(auth.value);
 
       if (!user) {
@@ -94,4 +95,9 @@ export default ((): void => {
 
       return `Bye ${user.id}`;
     });
+}
+
+export default ((): void => {
+  registerChatInputGuildCommand(auth);
+  http.use(createHttpAuth({ prefix: "/auth" }));
 }) satisfies Feature;

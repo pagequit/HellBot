@@ -22,7 +22,7 @@ const { avatarURL, displayName } = defineProps<{
 }>();
 
 function logout() {
-  window.location.href = `${origin}/logout`;
+  window.location.href = `${origin}/auth/logout`;
 }
 
 const menu = ref<HTMLElement | null>(null);

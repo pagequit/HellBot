@@ -5,7 +5,7 @@ import "./assets/app.css";
 import { origin } from "./composables/origin.ts";
 import router from "./router";
 
-fetch(`${origin}/user`, {
+fetch(`${origin}/auth/user`, {
   credentials: "include",
   mode: "cors",
 })
