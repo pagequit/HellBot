@@ -106,7 +106,7 @@ onMounted(() => {
         <Sun class="item-icon" v-if="theme === 'dark'" />
       </div>
 
-      <Popover class="avatar pop-right" title="User wip">
+      <Popover class="avatar pop-right" :title="displayName">
         <template #trigger>
           <button type="button" class="avatar-btn">
             <img :src="avatarURL" alt="Avatar" class="avatar-img" />
@@ -327,7 +327,7 @@ onMounted(() => {
   border-radius: 50%;
 }
 
-.logout-btn {
+.logout-btn.btn {
   padding: var(--sp-2) var(--sp-3);
   display: flex;
   flex-flow: row nowrap;

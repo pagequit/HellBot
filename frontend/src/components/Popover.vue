@@ -1,8 +1,21 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onClickOutside } from "@/frontend/src/composables/onClickOutside.ts";
+import { onMounted, onUnmounted, ref } from "vue";
 
 const targetOpenClass = "open";
 const target = ref<HTMLElement | null>(null);
+
+function close() {
+  (target.value as HTMLElement).classList.remove(targetOpenClass);
+}
+
+onMounted(() => {
+  const { destroy } = onClickOutside(target.value as HTMLElement, close);
+
+  onUnmounted(() => {
+    destroy();
+  });
+});
 </script>
 
 <template>
