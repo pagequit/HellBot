@@ -1,8 +1,7 @@
+import { discord } from "@/config.ts";
 import { REST, Routes, type SlashCommandBuilder } from "discord.js";
 
-const rest = new REST({ version: "10" }).setToken(
-  process.env.DISCORD_TOKEN as string,
-);
+const rest = new REST({ version: "10" }).setToken(discord.token);
 
 export function deployApplicationCommands(
   commands: SlashCommandBuilder[],
@@ -10,7 +9,7 @@ export function deployApplicationCommands(
   const body = commands.map((c) => c.toJSON());
 
   return rest
-    .put(Routes.applicationCommands(process.env.HELLBOT_ID as string), { body })
+    .put(Routes.applicationCommands(discord.applicationId), { body })
     .then(() => console.log("Successfully deployed all application commands."))
     .catch(console.error);
 }
@@ -22,10 +21,7 @@ export function deployApplicationGuildCommands(
 
   return rest
     .put(
-      Routes.applicationGuildCommands(
-        process.env.HELLBOT_ID as string,
-        process.env.HELLNET_ID as string,
-      ),
+      Routes.applicationGuildCommands(discord.applicationId, discord.guildId),
       {
         body,
       },
@@ -37,10 +33,7 @@ export function deployApplicationGuildCommands(
 export async function removeAllSlashCommands() {
   await rest
     .put(
-      Routes.applicationGuildCommands(
-        process.env.HELLBOT_ID as string,
-        process.env.HELLNET_ID as string,
-      ),
+      Routes.applicationGuildCommands(discord.applicationId, discord.guildId),
       {
         body: [],
       },
@@ -49,7 +42,7 @@ export async function removeAllSlashCommands() {
     .catch(console.error);
 
   await rest
-    .put(Routes.applicationCommands(process.env.HELLBOT_ID as string), {
+    .put(Routes.applicationCommands(discord.applicationId), {
       body: [],
     })
     .then(() => console.log("Successfully removed all application commands."))

@@ -1,3 +1,4 @@
+import { botlog } from "@/config.ts";
 import type { Logger } from "@/core/Logger.ts";
 import {
   EmbedBuilder,
@@ -44,8 +45,8 @@ class HellLog implements Logger {
 }
 
 const logger: Logger = new HellLog({
-  id: process.env.BOTLOG_ID as string,
-  token: process.env.BOTLOG_TOKEN as string,
+  id: botlog.id,
+  token: botlog.token,
 });
 
 export { logger };

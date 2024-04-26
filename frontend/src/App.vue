@@ -9,11 +9,12 @@ import Language from "@/frontend/src/components/icons/Language.vue";
 import Logout from "@/frontend/src/components/icons/Logout.vue";
 import Moon from "@/frontend/src/components/icons/Moon.vue";
 import Sun from "@/frontend/src/components/icons/Sun.vue";
-import { useOnClickOutside } from "@/frontend/src/composables/onClickOutside.ts";
+import { onClickOutside } from "@/frontend/src/composables/onClickOutside.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
 import { storeToRefs } from "pinia";
 import { onMounted, ref, watch } from "vue";
 import { RouterLink, RouterView } from "vue-router";
+import { origin } from "./composables/origin.ts";
 
 const { avatarURL, displayName } = defineProps<{
   avatarURL: string;
@@ -21,7 +22,7 @@ const { avatarURL, displayName } = defineProps<{
 }>();
 
 function logout() {
-  window.location.href = `http://${import.meta.env.VITE_HOSTNAME}:${import.meta.env.VITE_PORT}/logout`;
+  window.location.href = `${origin}/logout`;
 }
 
 const menu = ref<HTMLElement | null>(null);
@@ -52,7 +53,7 @@ const languages = new Map([
 ]);
 
 onMounted(() => {
-  useOnClickOutside(menu.value as HTMLElement, () =>
+  onClickOutside(menu.value as HTMLElement, () =>
     (menu.value as HTMLElement).classList.remove(menuOpenClass),
   );
 });

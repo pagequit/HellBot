@@ -1,4 +1,4 @@
-export function useOnClickOutside(
+export function onClickOutside(
   element: HTMLElement,
   handler: (event: MouseEvent) => void,
 ): { destroy: () => void } {
