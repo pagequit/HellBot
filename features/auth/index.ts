@@ -5,24 +5,18 @@ import {
   client,
   logger,
   registerChatInputGuildCommand,
+  useJwt
 } from "@/core/mod.ts";
 import { store } from "@/core/store.ts";
-import { jwt } from "@elysiajs/jwt";
 import type { Guild } from "discord.js";
 import { Elysia } from "elysia";
 import { auth } from "./auth.ts";
-
-// TODO: lift this to the core
-export const jwtAuth = jwt({
-  name: "jwt",
-  secret: process.env.JWT_SECRET as string,
-});
 
 function createHttpAuth({ prefix }: { prefix: string }): Elysia {
   return new Elysia({
     name: "auth",
   })
-    .use(jwtAuth)
+    .use(useJwt())
     .get(`${prefix}/:token`, async ({ jwt, set, cookie: { auth }, params }) => {
       const userId = store.get(params.token);
       if (userId.isNone()) {

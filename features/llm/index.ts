@@ -1,9 +1,6 @@
-import type { Feature } from "@/core/Feature.ts";
-import { http } from "@/core/http.ts";
-import { client, logger, registerChatInputCommand } from "@/core/mod.ts";
+import { client, logger, registerChatInputCommand, http, useJwt } from "@/core/mod.ts";
 import { ChannelType, Events, type Message } from "discord.js";
 import { OptionType } from "unwrap/mod.ts";
-import { jwtAuth } from "../auth/index.ts"; // TODO: find a neat way for shared kernels (features)
 import { chat } from "./chat/chat.ts";
 import llmUser from "./chat/user.json";
 import type { User } from "./chat/user.schema.ts";
@@ -12,7 +9,7 @@ import { createChat, getChat } from "./chats.ts";
 export default ((): void => {
   registerChatInputCommand(chat);
 
-  http.use(jwtAuth).post("/chat", async ({ jwt, set, cookie: { auth } }) => {
+  http.use(useJwt()).post("/chat", async ({ jwt, set, cookie: { auth } }) => {
     const user = await jwt.verify(auth.value);
 
     if (!user) {

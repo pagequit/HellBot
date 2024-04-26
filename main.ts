@@ -10,7 +10,7 @@ import {
   removeAllSlashCommands,
 } from "@/core/discord/deployCommands.ts";
 import { logger } from "@/core/discord/logger.ts";
-import { http } from "@/core/http.ts";
+import { http } from "@/core/http/http";
 import { loadFeatures } from "@/core/loadFeatures";
 import { staticPlugin } from "@elysiajs/static";
 import { type Client, Events, type Interaction } from "discord.js";
