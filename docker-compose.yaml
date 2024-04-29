@@ -1,0 +1,15 @@
+networks:
+  dev:
+    driver: host
+
+services:
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d/
+    networks:
+      - dev

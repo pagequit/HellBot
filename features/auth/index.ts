@@ -5,7 +5,7 @@ import {
   client,
   logger,
   registerChatInputGuildCommand,
-  useJwt
+  useJwt,
 } from "@/core/mod.ts";
 import { store } from "@/core/store.ts";
 import type { Guild } from "discord.js";
@@ -38,7 +38,6 @@ function createHttpAuth({ prefix }: { prefix: string }): Elysia {
     })
     .get(`${prefix}/user`, async ({ jwt, set, cookie: { auth } }) => {
       const user = await jwt.verify(auth.value);
-
       if (!user) {
         set.status = 401;
         return "Unauthorized";
@@ -73,7 +72,6 @@ function createHttpAuth({ prefix }: { prefix: string }): Elysia {
     })
     .get(`${prefix}/logout`, async ({ jwt, set, cookie: { auth } }) => {
       const user = await jwt.verify(auth.value);
-
       if (!user) {
         set.status = 401;
         return "Unauthorized";

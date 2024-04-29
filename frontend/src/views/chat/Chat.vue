@@ -2,6 +2,7 @@
 import { I18n, Locale } from "@/core/i18n/I18n.ts";
 import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
 import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
+import { origin } from "@/frontend/src/composables/origin.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
 import { storeToRefs } from "pinia";
 import { computed, ref } from "vue";
@@ -36,6 +37,16 @@ function submitPrompt() {
   const element = promptInput.value as HTMLTextAreaElement;
 
   console.log(prompt.value);
+
+  fetch(`${origin}/chat`, {
+    credentials: "include",
+    mode: "cors",
+    method: "POST",
+    body: JSON.stringify({ content: prompt.value }),
+  })
+    .then((res) => res.json())
+    .then((json) => console.log(json))
+    .catch((error) => console.error(error));
 
   prompt.value = "";
   element.style.height = "unset";
