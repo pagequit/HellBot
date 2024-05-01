@@ -13,8 +13,7 @@ export default ({ mode }: { mode: string }) => {
     root: "./frontend",
     resolve: {
       alias: {
-        "@/frontend": fileURLToPath(new URL("./frontend", import.meta.url)),
-        "@/core": fileURLToPath(new URL("./core", import.meta.url)),
+        "@/": fileURLToPath(new URL("./", import.meta.url)),
       },
     },
   });

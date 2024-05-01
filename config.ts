@@ -15,3 +15,6 @@ export const server = {
 export const frontend = {
   origin: (process.env.VITE_SERVER_ORIGIN as string) ?? "http://localhost:3080",
 };
+export const llama = {
+  origin: (process.env.LLAMA_ORIGIN as string) ?? "http://localhost:8080",
+};

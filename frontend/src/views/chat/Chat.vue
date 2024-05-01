@@ -9,6 +9,70 @@ import { computed, ref } from "vue";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
 
+function createPrompt(
+  system: string,
+  content: string,
+  context: Array<{ role: string; content: string }>,
+): string {
+  return `<|start_header_id|>system<|end_header_id|>${system}<|eot_id|>${context.reduce(
+    (acc, cur, idx) => {
+      return idx % 2 === 0
+        ? `${acc}<|start_header_id|>user<|end_header_id|>${cur.content}<|eot_id|>`
+        : `${acc}<|start_header_id|>assistant<|end_header_id|>${cur.content}<|eot_id|>`;
+    },
+    "",
+  )}<|start_header_id|>user<|end_header_id|>${content}<|eot_id|><|start_header_id|>assistant<|end_header_id|>`;
+}
+
+type CompletionRequestBody = {
+  stream: boolean;
+  stop: string[];
+  n_predict: number;
+  temperature: number;
+  prompt: string;
+};
+
+function createCompletionRequestBody(
+  system: string,
+  content: string,
+  context: Array<{ role: string; content: string }>,
+): CompletionRequestBody {
+  return {
+    stream: true,
+    stop: [],
+    n_predict: 256,
+    temperature: 0.8,
+    prompt: createPrompt(system, content, context),
+  };
+}
+
+function makePrompt(body: CompletionRequestBody): Promise<Response> {
+  return fetch(`${origin}/completion`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+// const response = await makePrompt(
+//   createCompletionRequestBody(
+//     "You are a helpful assistant",
+//     "What color have you been feeling today?",
+//     [
+//       { role: "user", content: "Hello" },
+//       { role: "assistant", content: "Hi there" },
+//     ],
+//   ),
+// ).catch((error) => console.error(error));
+
+// const decoder = new TextDecoder();
+
+// // @ts-ignore
+// for await (const rawChunk of response.body) {
+//   const chunk = decoder.decode(rawChunk);
+//   console.log(JSON.parse(chunk.trim().substring(5)).content);
+// }
+
 const settings = useSettings();
 const { locale } = storeToRefs(settings);
 
@@ -51,6 +115,8 @@ function submitPrompt() {
   prompt.value = "";
   element.style.height = "unset";
 }
+
+const chat = ref(["Hello, how are you?", "Good. How about you?"]);
 </script>
 
 <template>
@@ -58,82 +124,17 @@ function submitPrompt() {
     <DieBestie class="die-bestie" />
 
     <div class="entries">
-      <div class="entry">
+      <div v-for="(entry, index) in chat" class="entry">
         <img
-          src="https://cdn.discordapp.com/embed/avatars/0.png"
+          :src="
+            index % 2 === 0
+              ? 'https://cdn.discordapp.com/embed/avatars/0.png'
+              : 'https://cdn.discordapp.com/embed/avatars/5.png'
+          "
           alt="Avatar"
           class="entry-avatar"
         />
-        <div class="entry-text">
-          <p>This is just an example prompt without any real content.</p>
-          <p>This is just an example prompt without any real content.</p>
-        </div>
-      </div>
-
-      <div class="entry">
-        <img
-          src="https://cdn.discordapp.com/embed/avatars/5.png"
-          alt="Avatar"
-          class="entry-avatar"
-        />
-        <div class="entry-text">
-          <p>
-            I'm unable to help you with that, as I'm only a language model and
-            don't have the necessary information or abilities.
-          </p>
-        </div>
-      </div>
-
-      <div class="entry">
-        <img
-          src="https://cdn.discordapp.com/embed/avatars/0.png"
-          alt="Avatar"
-          class="entry-avatar"
-        />
-        <div class="entry-text">
-          <p>This is just an example prompt without any real content.</p>
-        </div>
-      </div>
-
-      <div class="entry">
-        <img
-          src="https://cdn.discordapp.com/embed/avatars/5.png"
-          alt="Avatar"
-          class="entry-avatar"
-        />
-        <div class="entry-text">
-          <p>This is just an example prompt without any real content.</p>
-        </div>
-      </div>
-
-      <div class="entry">
-        <img
-          src="https://cdn.discordapp.com/embed/avatars/0.png"
-          alt="Avatar"
-          class="entry-avatar"
-        />
-        <div class="entry-text">
-          <p>Tell me a joke.</p>
-        </div>
-      </div>
-
-      <div class="entry">
-        <img
-          src="https://cdn.discordapp.com/embed/avatars/5.png"
-          alt="Avatar"
-          class="entry-avatar"
-        />
-        <div class="entry-text">
-          <p>
-            A man walks into a library and asks the librarian for books about
-            paranoia.
-          </p>
-          <p>The librarian whispers, "They're right behind you!"</p>
-          <p>
-            I hope this tickles your funny bone! Let me know if you'd like to
-            hear a different kind of joke.
-          </p>
-        </div>
+        <div class="entry-text">{{ entry }}</div>
       </div>
     </div>
 
@@ -144,6 +145,14 @@ function submitPrompt() {
         v-model="prompt"
         :placeholder="promptPlaceholder"
         @input="setPromptInputHeight"
+        @keydown="
+          (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              submitPrompt();
+            }
+          }
+        "
       ></textarea>
       <button
         type="submit"

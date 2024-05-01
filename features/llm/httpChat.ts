@@ -10,6 +10,13 @@ const httpChat = new Elysia({
   name: "chat",
 })
   .use(createJwt)
+  .post("/completion", async ({ jwt, set, cookie: { auth }, body }) => {
+    const user = await jwt.verify(auth.value);
+    if (!user) {
+      set.status = 401;
+      return "Unauthorized";
+    }
+  })
   .post("/chat", async ({ jwt, set, cookie: { auth }, body }) => {
     const user = await jwt.verify(auth.value);
     if (!user) {

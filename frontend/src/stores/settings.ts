@@ -1,10 +1,7 @@
 import { Locale } from "@/core/i18n/I18n.ts";
+import { canUseLocalStorage } from "@/frontend/src/composables/canUseLocalStorage.ts";
 import { defineStore } from "pinia";
 import { type Ref, ref } from "vue";
-
-export function canUseLocalStorage(): boolean {
-  return "localStorage" in window && navigator.cookieEnabled;
-}
 
 export type Theme = "light" | "dark";
 
