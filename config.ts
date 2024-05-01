@@ -1,5 +1,5 @@
 export const discord = {
-  token: process.env.DISCORD_APP_ID as string,
+  token: process.env.DISCORD_TOKEN as string,
   guildId: process.env.HELLNET_ID as string,
   applicationId: process.env.HELLBOT_ID as string,
 };

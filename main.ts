@@ -57,6 +57,7 @@ http
     }),
   )
   .listen(server.port);
+console.log(`Listening on port ${server.port}.`);
 
 // await removeAllSlashCommands();
 // deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
