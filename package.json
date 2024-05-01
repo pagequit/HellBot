@@ -20,7 +20,6 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@elysiajs/cors": "^1.0.2",
     "@elysiajs/jwt": "^0.8.0",
     "@elysiajs/static": "^1.0.3",
     "discord.js": "^14.14.1",
