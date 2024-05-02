@@ -16,6 +16,15 @@ const httpChat = new Elysia({
       set.status = 401;
       return "Unauthorized";
     }
+
+    set.headers["Access-Control-Allow-Origin"] = frontend.origin;
+    set.headers["Access-Control-Allow-Credentials"] = "true";
+
+    return fetch(`${"http://localhost:8080"}/completion`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: body as string,
+    });
   })
   .post("/chat", async ({ jwt, set, cookie: { auth }, body }) => {
     const user = await jwt.verify(auth.value);

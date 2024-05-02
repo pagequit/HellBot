@@ -10,16 +10,21 @@ import Logout from "@/frontend/src/components/icons/Logout.vue";
 import Moon from "@/frontend/src/components/icons/Moon.vue";
 import Sun from "@/frontend/src/components/icons/Sun.vue";
 import { onClickOutside } from "@/frontend/src/composables/onClickOutside.ts";
+import { origin } from "@/frontend/src/composables/origin.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
+import { useUser } from "@/frontend/src/stores/user.ts";
 import { storeToRefs } from "pinia";
 import { onMounted, ref, watch } from "vue";
 import { RouterLink, RouterView } from "vue-router";
-import { origin } from "./composables/origin.ts";
 
 const { avatarURL, displayName } = defineProps<{
   avatarURL: string;
   displayName: string;
 }>();
+
+const user = useUser();
+user.avatarURL = avatarURL;
+user.displayName = displayName;
 
 function logout() {
   window.location.href = `${origin}/auth/logout`;

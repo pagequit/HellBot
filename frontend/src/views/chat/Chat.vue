@@ -4,10 +4,13 @@ import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
 import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
 import { origin } from "@/frontend/src/composables/origin.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
+import { useUser } from "@/frontend/src/stores/user.ts";
 import { storeToRefs } from "pinia";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
+
+const user = useUser();
 
 function createPrompt(
   system: string,
@@ -48,30 +51,41 @@ function createCompletionRequestBody(
 
 function makePrompt(body: CompletionRequestBody): Promise<Response> {
   return fetch(`${origin}/completion`, {
+    credentials: "include",
+    mode: "cors",
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
 }
 
-// const response = await makePrompt(
-//   createCompletionRequestBody(
-//     "You are a helpful assistant",
-//     "What color have you been feeling today?",
-//     [
-//       { role: "user", content: "Hello" },
-//       { role: "assistant", content: "Hi there" },
-//     ],
-//   ),
-// ).catch((error) => console.error(error));
+onMounted(async () => {
+  const response = await makePrompt(
+    createCompletionRequestBody(
+      "You are a helpful assistant",
+      "What color have you been feeling today?",
+      [
+        { role: "user", content: "Hello" },
+        { role: "assistant", content: "Hi there" },
+      ],
+    ),
+  ).catch((error) => console.error(error));
 
-// const decoder = new TextDecoder();
-
-// // @ts-ignore
-// for await (const rawChunk of response.body) {
-//   const chunk = decoder.decode(rawChunk);
-//   console.log(JSON.parse(chunk.trim().substring(5)).content);
-// }
+  const decoder = new TextDecoder();
+  // @ts-ignore
+  for await (const rawChunk of response.body) {
+    const chunks = decoder.decode(rawChunk).split("\n");
+    for (const chunk of chunks) {
+      const message = chunk.trim();
+      if (message.length > 0) {
+        try {
+          console.log(JSON.parse(message.substring(5)));
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    }
+  }
+});
 
 const settings = useSettings();
 const { locale } = storeToRefs(settings);
@@ -128,8 +142,8 @@ const chat = ref(["Hello, how are you?", "Good. How about you?"]);
         <img
           :src="
             index % 2 === 0
-              ? 'https://cdn.discordapp.com/embed/avatars/0.png'
-              : 'https://cdn.discordapp.com/embed/avatars/5.png'
+              ? user.avatarURL
+              : 'https://cdn.discordapp.com/embed/avatars/0.png'
           "
           alt="Avatar"
           class="entry-avatar"
