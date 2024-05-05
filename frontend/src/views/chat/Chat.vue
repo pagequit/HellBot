@@ -6,16 +6,37 @@ import { origin } from "@/frontend/src/composables/origin.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
 import { useUser } from "@/frontend/src/stores/user.ts";
 import { storeToRefs } from "pinia";
-import { computed, onMounted, ref } from "vue";
+import { type Ref, computed, onMounted, ref } from "vue";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
 
 const user = useUser();
+const settings = useSettings();
+const { locale } = storeToRefs(settings);
+const i18n = ref(
+  new I18n([
+    [Locale.EnglishGB, en],
+    [Locale.German, de],
+  ]),
+);
+
+type CompletionRequestBody = {
+  stream: boolean;
+  stop: string[];
+  n_predict: number;
+  temperature: number;
+  prompt: string;
+};
+
+type Message = {
+  role: "user" | "assistant";
+  content: string | Ref<string>;
+};
 
 function createPrompt(
   system: string,
   content: string,
-  context: Array<{ role: string; content: string }>,
+  context: Array<Message>,
 ): string {
   return `<|start_header_id|>system<|end_header_id|>${system}<|eot_id|>${context.reduce(
     (acc, cur, idx) => {
@@ -27,23 +48,15 @@ function createPrompt(
   )}<|start_header_id|>user<|end_header_id|>${content}<|eot_id|><|start_header_id|>assistant<|end_header_id|>`;
 }
 
-type CompletionRequestBody = {
-  stream: boolean;
-  stop: string[];
-  n_predict: number;
-  temperature: number;
-  prompt: string;
-};
-
 function createCompletionRequestBody(
   system: string,
   content: string,
-  context: Array<{ role: string; content: string }>,
+  context: Array<Message>,
 ): CompletionRequestBody {
   return {
     stream: true,
     stop: [],
-    n_predict: 256,
+    n_predict: 1024,
     temperature: 0.8,
     prompt: createPrompt(system, content, context),
   };
@@ -58,19 +71,42 @@ function makePrompt(body: CompletionRequestBody): Promise<Response> {
   });
 }
 
-onMounted(async () => {
-  const response = await makePrompt(
-    createCompletionRequestBody(
-      "You are a helpful assistant",
-      "What color have you been feeling today?",
-      [
-        { role: "user", content: "Hello" },
-        { role: "assistant", content: "Hi there" },
-      ],
-    ),
-  ).catch((error) => console.error(error));
+function setPromptInputHeight() {
+  const element = promptInput.value as HTMLTextAreaElement;
+  element.style.height = "unset";
+  element.style.height = `${element.scrollHeight}px`;
+}
 
-  const decoder = new TextDecoder();
+const decoder = new TextDecoder();
+const system: Ref<string> = ref("You are a helpful assistant");
+const context: Ref<Array<Message>> = ref([]);
+const prompt: Ref<string> = ref("");
+const promptInput = ref<HTMLTextAreaElement | null>(null);
+
+async function submitPrompt() {
+  const localPrompt = prompt.value.trim();
+  if (localPrompt.length === 0) {
+    return;
+  }
+  prompt.value = "";
+  const element = promptInput.value as HTMLTextAreaElement;
+  element.style.height = "unset";
+
+  const response: Response | Error = await makePrompt(
+    createCompletionRequestBody(system.value, localPrompt, context.value),
+  ).catch((error) => {
+    console.error(error);
+    return error;
+  });
+
+  if (response instanceof Error) {
+    return;
+  }
+
+  const content = ref("");
+  context.value.push({ role: "user", content: localPrompt });
+  context.value.push({ role: "assistant", content });
+
   // @ts-ignore
   for await (const rawChunk of response.body) {
     const chunks = decoder.decode(rawChunk).split("\n");
@@ -78,59 +114,20 @@ onMounted(async () => {
       const message = chunk.trim();
       if (message.length > 0) {
         try {
-          console.log(JSON.parse(message.substring(5)));
+          content.value += JSON.parse(message.substring(5)).content;
         } catch (error) {
           console.error(error);
         }
       }
     }
   }
-});
-
-const settings = useSettings();
-const { locale } = storeToRefs(settings);
-
-const i18n = ref(
-  new I18n([
-    [Locale.EnglishGB, en],
-    [Locale.German, de],
-  ]),
-);
-
-const prompt = ref("");
-const promptInput = ref<HTMLTextAreaElement | null>(null);
+}
 
 const promptPlaceholder = computed(() =>
   i18n.value.t(locale.value, "promptPlaceholder"),
 );
 const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
-
-function setPromptInputHeight() {
-  const element = promptInput.value as HTMLTextAreaElement;
-  element.style.height = "unset";
-  element.style.height = `${element.scrollHeight}px`;
-}
-
-function submitPrompt() {
-  const element = promptInput.value as HTMLTextAreaElement;
-
-  console.log(prompt.value);
-
-  fetch(`${origin}/chat`, {
-    credentials: "include",
-    mode: "cors",
-    method: "POST",
-    body: JSON.stringify({ content: prompt.value }),
-  })
-    .then((res) => res.json())
-    .then((json) => console.log(json))
-    .catch((error) => console.error(error));
-
-  prompt.value = "";
-  element.style.height = "unset";
-}
-
-const chat = ref(["Hello, how are you?", "Good. How about you?"]);
+const chat = computed(() => context.value.map((message) => message.content));
 </script>
 
 <template>
