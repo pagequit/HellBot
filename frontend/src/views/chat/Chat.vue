@@ -6,7 +6,7 @@ import { origin } from "@/frontend/src/composables/origin.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
 import { useUser } from "@/frontend/src/stores/user.ts";
 import { storeToRefs } from "pinia";
-import { type Ref, computed, onMounted, ref } from "vue";
+import { type Ref, computed, ref } from "vue";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
 
@@ -82,6 +82,7 @@ const system: Ref<string> = ref("You are a helpful assistant");
 const context: Ref<Array<Message>> = ref([]);
 const prompt: Ref<string> = ref("");
 const promptInput = ref<HTMLTextAreaElement | null>(null);
+const entries = ref<HTMLElement | null>(null);
 
 async function submitPrompt() {
   const localPrompt = prompt.value.trim();
@@ -118,6 +119,7 @@ async function submitPrompt() {
         } catch (error) {
           console.error(error);
         }
+        entries.value?.scrollTo(0, entries.value.scrollHeight);
       }
     }
   }
@@ -134,8 +136,8 @@ const chat = computed(() => context.value.map((message) => message.content));
   <div class="chat">
     <DieBestie class="die-bestie" />
 
-    <div class="entries">
-      <div v-for="(entry, index) in chat" class="entry">
+    <div class="entries" ref="entries">
+      <div v-for="(entry, index) in chat" :key="index" class="entry">
         <img
           :src="
             index % 2 === 0
