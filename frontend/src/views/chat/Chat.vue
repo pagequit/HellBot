@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { I18n, Locale } from "@/core/i18n/I18n.ts";
+import Adjustments from "@/frontend/src/components/icons/Adjustments.vue";
 import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
 import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
+import Plus from "@/frontend/src/components/icons/Plus.vue";
+// import { canUseLocalStorage } from "@/frontend/src/composables/canUseLocalStorage.ts";
 import { origin } from "@/frontend/src/composables/origin.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
 import { useUser } from "@/frontend/src/stores/user.ts";
@@ -112,10 +115,21 @@ async function submitPrompt() {
   for await (const rawChunk of response.body) {
     const chunks = decoder.decode(rawChunk).split("\n");
     for (const chunk of chunks) {
+      // FIXME
+      // trim will also remove newlines
       const message = chunk.trim();
       if (message.length > 0) {
         try {
-          content.value += JSON.parse(message.substring(5)).content;
+          const data = JSON.parse(message.substring(5));
+          if (data.stop) {
+            console.log(data);
+            /*
+             * data.tokens_cached: 1246
+             * data.tokens_evaluated: 704
+             * data.tokens_predicted: 543
+             */
+          }
+          content.value += data.content;
         } catch (error) {
           console.error(error);
         }
@@ -133,64 +147,133 @@ const chat = computed(() => context.value.map((message) => message.content));
 </script>
 
 <template>
-  <div class="chat">
-    <DieBestie class="die-bestie" />
+  <main class="main">
+    <header class="header">
+      <div class="tabs">
+        <button class="tab-add btn">
+          <Plus class="add-icon" />
+        </button>
+        <div class="tab btn tab-active">Chat 1</div>
+        <div class="tab btn">Chat 2</div>
+        <div class="tab btn">Chat 3</div>
+      </div>
 
-    <div class="entries" ref="entries">
-      <div v-for="(entry, index) in chat" :key="index" class="entry">
-        <img
-          :src="
-            index % 2 === 0
-              ? user.avatarURL
-              : 'https://cdn.discordapp.com/embed/avatars/0.png'
+      <button class="settings btn">
+        <Adjustments class="settings-icon" />
+      </button>
+    </header>
+    <div class="chat">
+      <DieBestie class="die-bestie" />
+
+      <div class="entries" ref="entries">
+        <div v-for="(entry, index) in chat" :key="index" class="entry">
+          <img
+            :src="
+              index % 2 === 0
+                ? user.avatarURL
+                : 'https://cdn.discordapp.com/embed/avatars/0.png'
+            "
+            alt="Avatar"
+            class="entry-avatar"
+          />
+          <div class="entry-text">{{ entry }}</div>
+        </div>
+      </div>
+
+      <div class="prompt">
+        <textarea
+          class="prompt-input"
+          ref="promptInput"
+          v-model="prompt"
+          :placeholder="promptPlaceholder"
+          @input="setPromptInputHeight"
+          @keydown="
+            (e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submitPrompt();
+              }
+            }
           "
-          alt="Avatar"
-          class="entry-avatar"
-        />
-        <div class="entry-text">{{ entry }}</div>
+        ></textarea>
+        <button
+          type="submit"
+          class="prompt-submit btn"
+          :title="submitTitle"
+          @click.prevent="submitPrompt"
+        >
+          <PaperPlane class="submit-icon" />
+        </button>
       </div>
     </div>
-
-    <div class="prompt">
-      <textarea
-        class="prompt-input"
-        ref="promptInput"
-        v-model="prompt"
-        :placeholder="promptPlaceholder"
-        @input="setPromptInputHeight"
-        @keydown="
-          (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              submitPrompt();
-            }
-          }
-        "
-      ></textarea>
-      <button
-        type="submit"
-        class="prompt-submit btn"
-        :title="submitTitle"
-        @click.prevent="submitPrompt"
-      >
-        <PaperPlane class="submit-icon" />
-      </button>
-    </div>
-  </div>
+  </main>
 </template>
 
 <style scoped>
-.chat {
+.main {
+  height: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.header {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--c-bg-1);
+  border-radius: var(--sp-2) 0 0 var(--sp-2);
+  margin-top: var(--sp-3);
+  align-self: flex-end;
+  height: 2.5rem;
+  margin-left: calc(var(--sp-4) + var(--sp-6));
+
+  @media screen and (min-width: 640px) {
+    margin-left: var(--sp-3);
+  }
+}
+
+.tabs {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: var(--sp-1);
+  height: 100%;
+}
+
+.tab {
+  flex: 1 0 auto;
+  background: var(--c-bg-2);
+  border-radius: var(--sp-2);
+  padding: var(--sp-2);
+  text-align: center;
+}
+
+.tab-active {
+  background: var(--c-bg-3);
+}
+
+.settings {
+  margin: 0 var(--sp-3);
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.settings-icon {
   width: 100%;
   height: 100%;
+}
+
+.chat {
+  width: 100%;
   max-width: 1024px;
-  max-height: 100%;
   margin: 0 auto;
   padding: 0 var(--sp-3);
   display: flex;
   flex-flow: column nowrap;
   justify-content: end;
   position: relative;
+  flex: 0 1 auto;
+  height: calc(100% - 2.5rem - var(--sp-3));
 }
 
 .entries {
@@ -208,7 +291,7 @@ const chat = computed(() => context.value.map((message) => message.content));
   flex-flow: row nowrap;
   gap: var(--sp-2);
 
-  &:nth-child(even) {
+  &:nth-child(odd) {
     flex-flow: row-reverse nowrap;
     padding-bottom: var(--sp-2);
   }
