@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { I18n, Locale } from "@/core/i18n/I18n.ts";
 import Adjustments from "@/frontend/src/components/icons/Adjustments.vue";
+import Close from "@/frontend/src/components/icons/Close.vue";
 import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
 import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
 import Plus from "@/frontend/src/components/icons/Plus.vue";
@@ -144,18 +145,25 @@ const promptPlaceholder = computed(() =>
 );
 const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 const chat = computed(() => context.value.map((message) => message.content));
+
+const chats = ref(["Chat 1", "Chat 2", "Chat 3"]);
 </script>
 
 <template>
   <main class="main">
     <header class="header">
+      <button class="tab-add btn">
+        <Plus class="add-icon" />
+      </button>
       <div class="tabs">
-        <button class="tab-add btn">
-          <Plus class="add-icon" />
-        </button>
-        <div class="tab btn tab-active">Chat 1</div>
-        <div class="tab btn">Chat 2</div>
-        <div class="tab btn">Chat 3</div>
+        <div
+          v-for="(chat, index) in chats"
+          class="tab btn"
+          :class="{ 'tab-active': index === 0 }"
+        >
+          {{ chat }}
+          <Close class="close-icon" />
+        </div>
       </div>
 
       <button class="settings btn">
@@ -233,6 +241,12 @@ const chat = computed(() => context.value.map((message) => message.content));
   }
 }
 
+.tab-add {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-right: var(--sp-1);
+}
+
 .tabs {
   display: flex;
   flex-flow: row nowrap;
@@ -246,10 +260,23 @@ const chat = computed(() => context.value.map((message) => message.content));
   border-radius: var(--sp-2);
   padding: var(--sp-2);
   text-align: center;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
 }
 
+.tab:hover,
 .tab-active {
   background: var(--c-bg-3);
+}
+
+.close-icon {
+  width: 1em;
+  height: 1em;
+
+  &:hover {
+    color: var(--c-fg-1);
+  }
 }
 
 .settings {
