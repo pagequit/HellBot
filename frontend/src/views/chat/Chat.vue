@@ -6,11 +6,17 @@ import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
 import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
 import Plus from "@/frontend/src/components/icons/Plus.vue";
 // import { canUseLocalStorage } from "@/frontend/src/composables/canUseLocalStorage.ts";
-import { origin } from "@/frontend/src/composables/origin.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
 import { useUser } from "@/frontend/src/stores/user.ts";
+import DOMPurify from "dompurify";
+import { marked } from "marked";
 import { storeToRefs } from "pinia";
 import { type Ref, computed, ref } from "vue";
+import type { Message } from "./Message.ts";
+import {
+  createCompletionRequestBody,
+  makePrompt,
+} from "./llama.cpp/completion.ts";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
 
@@ -24,57 +30,6 @@ const i18n = ref(
   ]),
 );
 
-type CompletionRequestBody = {
-  stream: boolean;
-  stop: string[];
-  n_predict: number;
-  temperature: number;
-  prompt: string;
-};
-
-type Message = {
-  role: "user" | "assistant";
-  content: string | Ref<string>;
-};
-
-function createPrompt(
-  system: string,
-  content: string,
-  context: Array<Message>,
-): string {
-  return `<|start_header_id|>system<|end_header_id|>${system}<|eot_id|>${context.reduce(
-    (acc, cur, idx) => {
-      return idx % 2 === 0
-        ? `${acc}<|start_header_id|>user<|end_header_id|>${cur.content}<|eot_id|>`
-        : `${acc}<|start_header_id|>assistant<|end_header_id|>${cur.content}<|eot_id|>`;
-    },
-    "",
-  )}<|start_header_id|>user<|end_header_id|>${content}<|eot_id|><|start_header_id|>assistant<|end_header_id|>`;
-}
-
-function createCompletionRequestBody(
-  system: string,
-  content: string,
-  context: Array<Message>,
-): CompletionRequestBody {
-  return {
-    stream: true,
-    stop: [],
-    n_predict: 1024,
-    temperature: 0.8,
-    prompt: createPrompt(system, content, context),
-  };
-}
-
-function makePrompt(body: CompletionRequestBody): Promise<Response> {
-  return fetch(`${origin}/completion`, {
-    credentials: "include",
-    mode: "cors",
-    method: "POST",
-    body: JSON.stringify(body),
-  });
-}
-
 function setPromptInputHeight() {
   const element = promptInput.value as HTMLTextAreaElement;
   element.style.height = "unset";
@@ -82,7 +37,9 @@ function setPromptInputHeight() {
 }
 
 const decoder = new TextDecoder();
-const system: Ref<string> = ref("You are a helpful assistant");
+const system: Ref<string> = ref(
+  "I'm Schluffe. You are HellBot. You are a friendly assistant.",
+);
 const context: Ref<Array<Message>> = ref([]);
 const prompt: Ref<string> = ref("");
 const promptInput = ref<HTMLTextAreaElement | null>(null);
@@ -108,16 +65,25 @@ async function submitPrompt() {
     return;
   }
 
+  let userContent = localPrompt;
+  try {
+    userContent = DOMPurify.sanitize(await marked.parse(localPrompt));
+  } catch (error) {
+    console.error(error);
+  }
+
+  let rawContent = "";
   const content = ref("");
-  context.value.push({ role: "user", content: localPrompt });
+  context.value.push({
+    role: "user",
+    content: userContent,
+  });
   context.value.push({ role: "assistant", content });
 
   // @ts-ignore
   for await (const rawChunk of response.body) {
     const chunks = decoder.decode(rawChunk).split("\n");
     for (const chunk of chunks) {
-      // FIXME
-      // trim will also remove newlines
       const message = chunk.trim();
       if (message.length > 0) {
         try {
@@ -130,7 +96,8 @@ async function submitPrompt() {
              * data.tokens_predicted: 543
              */
           }
-          content.value += data.content;
+          rawContent += data.content;
+          content.value = DOMPurify.sanitize(await marked.parse(rawContent));
         } catch (error) {
           console.error(error);
         }
@@ -184,7 +151,7 @@ const chats = ref(["Chat 1", "Chat 2", "Chat 3"]);
             alt="Avatar"
             class="entry-avatar"
           />
-          <div class="entry-text">{{ entry }}</div>
+          <div class="entry-text"><span v-html="entry"></span></div>
         </div>
       </div>
 
@@ -227,7 +194,6 @@ const chats = ref(["Chat 1", "Chat 2", "Chat 3"]);
 .header {
   display: flex;
   flex-flow: row nowrap;
-  justify-content: space-between;
   align-items: center;
   background: var(--c-bg-1);
   border-radius: var(--sp-2) 0 0 var(--sp-2);
@@ -235,6 +201,7 @@ const chats = ref(["Chat 1", "Chat 2", "Chat 3"]);
   align-self: flex-end;
   height: 2.5rem;
   margin-left: calc(var(--sp-4) + var(--sp-6));
+  max-width: calc(100vw - var(--sp-4) - var(--sp-6));
 
   @media screen and (min-width: 640px) {
     margin-left: var(--sp-3);
@@ -252,6 +219,9 @@ const chats = ref(["Chat 1", "Chat 2", "Chat 3"]);
   flex-flow: row nowrap;
   gap: var(--sp-1);
   height: 100%;
+  border-radius: var(--sp-2);
+  overflow-x: auto;
+  flex: 0 1 auto;
 }
 
 .tab {
