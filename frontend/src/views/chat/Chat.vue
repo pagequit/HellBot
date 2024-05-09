@@ -5,11 +5,10 @@ import Close from "@/frontend/src/components/icons/Close.vue";
 import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
 import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
 import Plus from "@/frontend/src/components/icons/Plus.vue";
+import { useMarkdown } from "@/frontend/src/composables/useMarkdown.ts";
 // import { canUseLocalStorage } from "@/frontend/src/composables/canUseLocalStorage.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
 import { useUser } from "@/frontend/src/stores/user.ts";
-import DOMPurify from "dompurify";
-import { marked } from "marked";
 import { storeToRefs } from "pinia";
 import { type Ref, computed, ref } from "vue";
 import type { Message } from "./Message.ts";
@@ -29,6 +28,8 @@ const i18n = ref(
     [Locale.German, de],
   ]),
 );
+
+const markdown = useMarkdown();
 
 function setPromptInputHeight() {
   const element = promptInput.value as HTMLTextAreaElement;
@@ -67,7 +68,7 @@ async function submitPrompt() {
 
   let userContent = localPrompt;
   try {
-    userContent = DOMPurify.sanitize(await marked.parse(localPrompt));
+    userContent = markdown.parse(localPrompt);
   } catch (error) {
     console.error(error);
   }
@@ -97,7 +98,7 @@ async function submitPrompt() {
              */
           }
           rawContent += data.content;
-          content.value = DOMPurify.sanitize(await marked.parse(rawContent));
+          content.value = markdown.parse(rawContent);
         } catch (error) {
           console.error(error);
         }
