@@ -5,12 +5,13 @@ import Close from "@/frontend/src/components/icons/Close.vue";
 import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
 import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
 import Plus from "@/frontend/src/components/icons/Plus.vue";
+import { canUseLocalStorage } from "@/frontend/src/composables/canUseLocalStorage.ts";
 import { useMarkdown } from "@/frontend/src/composables/useMarkdown.ts";
-// import { canUseLocalStorage } from "@/frontend/src/composables/canUseLocalStorage.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
 import { useUser } from "@/frontend/src/stores/user.ts";
 import { storeToRefs } from "pinia";
 import { type Ref, computed, ref } from "vue";
+import type { Chat } from "./Chat.ts";
 import type { Message } from "./Message.ts";
 import {
   createCompletionRequestBody,
@@ -31,32 +32,65 @@ const i18n = ref(
 
 const markdown = useMarkdown();
 
+const decoder = new TextDecoder();
+
+const entries = ref<HTMLElement | null>(null);
+const promptInput = ref<HTMLTextAreaElement | null>(null);
+
 function setPromptInputHeight() {
   const element = promptInput.value as HTMLTextAreaElement;
   element.style.height = "unset";
   element.style.height = `${element.scrollHeight}px`;
 }
 
-const decoder = new TextDecoder();
-const system: Ref<string> = ref(
-  "I'm Schluffe. You are HellBot. You are a friendly assistant.",
+const prompt = ref<string>("");
+
+const chat = computed(() =>
+  chats.value[0].context.map((message) => message.content),
 );
-const context: Ref<Array<Message>> = ref([]);
-const prompt: Ref<string> = ref("");
-const promptInput = ref<HTMLTextAreaElement | null>(null);
-const entries = ref<HTMLElement | null>(null);
+
+let localChats: Array<Chat> = [
+  {
+    title: "Chat 1",
+    system: "I'm Schluffe. You are HellBot. You are a helpful assistant.",
+    context: [],
+    settings: {
+      temperature: 0.8,
+      top_k: 40,
+      top_p: 0.95,
+      min_p: 0.05,
+      n_predict: -1,
+      stop: [],
+      repeat_penalty: 1.1,
+      presence_penalty: 0.0,
+      frequency_penalty: 0.0,
+    },
+  },
+];
+
+if (canUseLocalStorage()) {
+  const lSLC = localStorage.getItem("chats");
+  localChats = lSLC ? JSON.parse(lSLC) : localChats;
+  localStorage.setItem("chats", JSON.stringify(localChats));
+}
+
+const chats = ref<Array<Chat>>(localChats);
 
 async function submitPrompt() {
+  const system: string = chats.value[0].system;
+  const context: Array<Message> = chats.value[0].context;
+
   const localPrompt = prompt.value.trim();
   if (localPrompt.length === 0) {
     return;
   }
+
   prompt.value = "";
   const element = promptInput.value as HTMLTextAreaElement;
   element.style.height = "unset";
 
   const response: Response | Error = await makePrompt(
-    createCompletionRequestBody(system.value, localPrompt, context.value),
+    createCompletionRequestBody(system, localPrompt, context),
   ).catch((error) => {
     console.error(error);
     return error;
@@ -74,12 +108,12 @@ async function submitPrompt() {
   }
 
   let rawContent = "";
-  const content = ref("");
-  context.value.push({
+  const content = ref<string>("");
+  context.push({
     role: "user",
     content: userContent,
   });
-  context.value.push({ role: "assistant", content });
+  context.push({ role: "assistant", content });
 
   // @ts-ignore
   for await (const rawChunk of response.body) {
@@ -106,15 +140,16 @@ async function submitPrompt() {
       }
     }
   }
+
+  if (canUseLocalStorage()) {
+    localStorage.setItem("chats", JSON.stringify(chats.value));
+  }
 }
 
 const promptPlaceholder = computed(() =>
   i18n.value.t(locale.value, "promptPlaceholder"),
 );
 const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
-const chat = computed(() => context.value.map((message) => message.content));
-
-const chats = ref(["Chat 1", "Chat 2", "Chat 3"]);
 </script>
 
 <template>
@@ -129,7 +164,7 @@ const chats = ref(["Chat 1", "Chat 2", "Chat 3"]);
           class="tab btn"
           :class="{ 'tab-active': index === 0 }"
         >
-          {{ chat }}
+          {{ chat.title }}
           <Close class="close-icon" />
         </div>
       </div>
