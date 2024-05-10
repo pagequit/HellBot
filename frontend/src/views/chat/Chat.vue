@@ -10,7 +10,7 @@ import { useMarkdown } from "@/frontend/src/composables/useMarkdown.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
 import { useUser } from "@/frontend/src/stores/user.ts";
 import { storeToRefs } from "pinia";
-import { type Ref, computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import type { Chat } from "./Chat.ts";
 import type { Message } from "./Message.ts";
 import {
@@ -43,8 +43,13 @@ function setPromptInputHeight() {
   element.style.height = `${element.scrollHeight}px`;
 }
 
+onMounted(() => {
+  entries.value?.scrollTo(0, entries.value.scrollHeight);
+});
+
 const prompt = ref<string>("");
 
+// FIXME: I need access the indices
 const chat = computed(() =>
   chats.value[0].context.map((message) => message.content),
 );
@@ -52,7 +57,7 @@ const chat = computed(() =>
 let localChats: Array<Chat> = [
   {
     title: "Chat 1",
-    system: "I'm Schluffe. You are HellBot. You are a helpful assistant.",
+    system: `I'm ${user.displayName}. You are HellBot. You are a helpful assistant.`,
     context: [],
     settings: {
       temperature: 0.8,
