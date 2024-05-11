@@ -348,6 +348,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
   padding: var(--sp-2) var(--sp-3);
   box-shadow: 0 2px 4px 0 rgba(var(--rgb-black), 0.1);
   line-height: 1.5;
+  overflow-x: auto;
 
   p {
     margin: 0;

@@ -358,5 +358,17 @@ onMounted(() => {
 .view {
   height: 100%;
   flex: 1 1 auto;
+  transition: width 233ms ease-out;
+
+  @media screen and (min-width: 640px) {
+    width: calc(100% - 4.5rem);
+  }
+}
+
+.menu-open + .view {
+  transition: width 233ms ease-in;
+  @media screen and (min-width: 640px) {
+    width: calc(100% - 16rem);
+  }
 }
 </style>
