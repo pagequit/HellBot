@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { I18n, Locale } from "@/core/i18n/I18n.ts";
+import Popover from "@/frontend/src/components/Popover.vue";
 import Adjustments from "@/frontend/src/components/icons/Adjustments.vue";
-import Close from "@/frontend/src/components/icons/Close.vue";
 import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
+import More from "@/frontend/src/components/icons/More.vue";
 import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
+import Pencil from "@/frontend/src/components/icons/Pencil.vue";
 import Plus from "@/frontend/src/components/icons/Plus.vue";
+import Trash from "@/frontend/src/components/icons/Trash.vue";
 import { canUseLocalStorage } from "@/frontend/src/composables/canUseLocalStorage.ts";
 import { useMarkdown } from "@/frontend/src/composables/useMarkdown.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
@@ -170,7 +173,17 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           :class="{ 'tab-active': index === 0 }"
         >
           {{ chat.title }}
-          <Close class="close-icon" />
+          <Popover title="More">
+            <template #trigger>
+              <More class="more-icon" />
+            </template>
+            <template #target>
+              <div class="more-options">
+                <button class="more-option btn"><Pencil /></button>
+                <button class="more-option btn"><Trash /></button>
+              </div>
+            </template>
+          </Popover>
         </div>
       </div>
 
@@ -269,7 +282,6 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     background: var(--c-bg-2);
     border-radius: var(--sp-2);
     padding: var(--sp-2);
-    text-align: center;
     display: flex;
     align-items: center;
     gap: var(--sp-1);
@@ -280,13 +292,20 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     background: var(--c-bg-3);
   }
 
-  .close-icon {
+  .more-icon {
     width: 1em;
     height: 1em;
 
     &:hover {
       color: var(--c-fg-1);
     }
+  }
+
+  .more-options {
+    display: flex;
+    flex-flow: row nowrap;
+    background: var(--c-bg-1);
+    border-radius: var(--sp-2);
   }
 
   .settings {
