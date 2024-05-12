@@ -1,4 +1,4 @@
-import { frontend } from "@/config.ts";
+import { frontend, llama } from "@/config.ts";
 import { createJwt } from "@/core/mod.ts";
 import { Elysia } from "elysia";
 
@@ -16,7 +16,7 @@ const httpChat = new Elysia({
     set.headers["Access-Control-Allow-Origin"] = frontend.origin;
     set.headers["Access-Control-Allow-Credentials"] = "true";
 
-    return fetch(`${"http://localhost:8080"}/completion`, {
+    return fetch(`${llama.origin}/completion`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: body as string,
