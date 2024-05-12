@@ -158,7 +158,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 </script>
 
 <template>
-  <main class="main">
+  <main class="chats">
     <header class="header">
       <button class="tab-add btn">
         <Plus class="add-icon" />
@@ -192,7 +192,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
             alt="Avatar"
             class="entry-avatar"
           />
-          <div class="entry-text"><span v-html="entry"></span></div>
+          <div class="entry-content" v-html="entry"></div>
         </div>
       </div>
 
@@ -225,188 +225,189 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
   </main>
 </template>
 
-<style scoped>
-.main {
+<style>
+.chats {
   height: 100%;
   display: flex;
   flex-flow: column nowrap;
-}
 
-.header {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  background: var(--c-bg-1);
-  border-radius: var(--sp-2) 0 0 var(--sp-2);
-  margin-top: var(--sp-3);
-  align-self: flex-end;
-  height: 2.5rem;
-  margin-left: calc(var(--sp-4) + var(--sp-6));
-  max-width: calc(100vw - var(--sp-4) - var(--sp-6));
+  .header {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    background: var(--c-bg-1);
+    border-radius: var(--sp-2) 0 0 var(--sp-2);
+    margin-top: var(--sp-3);
+    align-self: flex-end;
+    height: 2.5rem;
+    margin-left: calc(var(--sp-4) + var(--sp-6));
+    max-width: calc(100vw - var(--sp-4) - var(--sp-6));
 
-  @media screen and (min-width: 640px) {
-    margin-left: var(--sp-3);
+    @media screen and (min-width: 640px) {
+      margin-left: var(--sp-3);
+    }
   }
-}
 
-.tab-add {
-  width: 2.5rem;
-  height: 2.5rem;
-  margin-right: var(--sp-1);
-}
+  .tab-add {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-right: var(--sp-1);
+  }
 
-.tabs {
-  display: flex;
-  flex-flow: row nowrap;
-  gap: var(--sp-1);
-  height: 100%;
-  border-radius: var(--sp-2);
-  overflow-x: auto;
-  flex: 0 1 auto;
-}
+  .tabs {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: var(--sp-1);
+    height: 100%;
+    border-radius: var(--sp-2);
+    overflow-x: auto;
+    flex: 0 1 auto;
+  }
 
-.tab {
-  flex: 1 0 auto;
-  background: var(--c-bg-2);
-  border-radius: var(--sp-2);
-  padding: var(--sp-2);
-  text-align: center;
-  display: flex;
-  align-items: center;
-  gap: var(--sp-1);
-}
+  .tab {
+    flex: 1 0 auto;
+    background: var(--c-bg-2);
+    border-radius: var(--sp-2);
+    padding: var(--sp-2);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: var(--sp-1);
+  }
 
-.tab:hover,
-.tab-active {
-  background: var(--c-bg-3);
-}
+  .tab:hover,
+  .tab-active {
+    background: var(--c-bg-3);
+  }
 
-.close-icon {
-  width: 1em;
-  height: 1em;
+  .close-icon {
+    width: 1em;
+    height: 1em;
 
-  &:hover {
+    &:hover {
+      color: var(--c-fg-1);
+    }
+  }
+
+  .settings {
+    margin: 0 var(--sp-3);
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .settings-icon {
+    width: 100%;
+    height: 100%;
+  }
+
+  .chat {
+    width: 100%;
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 0 var(--sp-3);
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: end;
+    position: relative;
+    flex: 0 1 auto;
+    height: calc(100% - 2.5rem - var(--sp-3));
+  }
+
+  .entries {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: var(--sp-2);
+    margin-top: var(--sp-3);
+    margin-bottom: var(--sp-3);
+    overflow-y: auto;
+    border-radius: var(--sp-2);
+  }
+
+  .entry {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: var(--sp-2);
+
+    &:nth-child(odd) {
+      flex-flow: row-reverse nowrap;
+      padding-bottom: var(--sp-2);
+    }
+  }
+
+  .entry-avatar {
+    width: 2.125rem;
+    height: 2.125rem;
+    border-radius: 100%;
+    background: var(--c-bg-2);
+  }
+
+  .entry-content {
+    background: var(--c-bg-1);
+    border-radius: var(--sp-2);
+    padding: var(--sp-2) var(--sp-3);
+    box-shadow: 0 2px 4px 0 rgba(var(--rgb-black), 0.1);
+    line-height: 1.5;
+    overflow-x: auto;
+  }
+
+  .entry-content p {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .die-bestie {
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    bottom: 50%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    color: var(--c-bg-1);
+    padding: var(--sp-3);
+    opacity: 0.666;
+  }
+
+  .prompt {
+    line-height: 1.5;
+    display: flex;
+    flex-flow: row nowrap;
+    margin-bottom: var(--sp-3);
+    background: var(--c-bg-1);
+    border-radius: var(--sp-2);
+
+    &:has(.prompt__input:focus) {
+      outline-width: 2px;
+      outline-style: solid;
+      outline-color: var(--c-blurple);
+    }
+  }
+
+  .prompt-input {
     color: var(--c-fg-1);
+    border-radius: var(--sp-2);
+    padding: var(--sp-2) var(--sp-3);
+    background: transparent;
+    border: none;
+    flex: 1 0 auto;
+    resize: none;
+
+    &:focus {
+      outline: none;
+    }
   }
-}
 
-.settings {
-  margin: 0 var(--sp-3);
-  width: 2.5rem;
-  height: 2.5rem;
-}
-
-.settings-icon {
-  width: 100%;
-  height: 100%;
-}
-
-.chat {
-  width: 100%;
-  max-width: 1024px;
-  margin: 0 auto;
-  padding: 0 var(--sp-3);
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: end;
-  position: relative;
-  flex: 0 1 auto;
-  height: calc(100% - 2.5rem - var(--sp-3));
-}
-
-.entries {
-  display: flex;
-  flex-flow: column nowrap;
-  gap: var(--sp-2);
-  margin-top: var(--sp-3);
-  margin-bottom: var(--sp-3);
-  overflow-y: auto;
-  border-radius: var(--sp-2);
-}
-
-.entry {
-  display: flex;
-  flex-flow: row nowrap;
-  gap: var(--sp-2);
-
-  &:nth-child(odd) {
-    flex-flow: row-reverse nowrap;
-    padding-bottom: var(--sp-2);
+  .prompt-submit {
+    flex: 0 1 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--sp-2) var(--sp-3);
+    width: fit-content;
   }
-}
 
-.entry-avatar {
-  width: 2.125rem;
-  height: 2.125rem;
-  border-radius: 100%;
-  background: var(--c-bg-2);
-}
-
-.entry-text {
-  background: var(--c-bg-1);
-  border-radius: var(--sp-2);
-  padding: var(--sp-2) var(--sp-3);
-  box-shadow: 0 2px 4px 0 rgba(var(--rgb-black), 0.1);
-  line-height: 1.5;
-  overflow-x: auto;
-
-  p {
-    margin: 0;
+  .submit-icon {
+    transform: rotate(90deg);
   }
-}
-
-.die-bestie {
-  position: absolute;
-  z-index: -1;
-  width: 100%;
-  height: 100%;
-  bottom: 50%;
-  left: 50%;
-  transform: translate(-50%, 50%);
-  color: var(--c-bg-1);
-  padding: var(--sp-3);
-  opacity: 0.666;
-}
-
-.prompt {
-  line-height: 1.5;
-  display: flex;
-  flex-flow: row nowrap;
-  margin-bottom: var(--sp-3);
-  background: var(--c-bg-1);
-  border-radius: var(--sp-2);
-
-  &:has(.prompt__input:focus) {
-    outline-width: 2px;
-    outline-style: solid;
-    outline-color: var(--c-blurple);
-  }
-}
-
-.prompt-input {
-  color: var(--c-fg-1);
-  border-radius: var(--sp-2);
-  padding: var(--sp-2) var(--sp-3);
-  background: transparent;
-  border: none;
-  flex: 1 0 auto;
-  resize: none;
-
-  &:focus {
-    outline: none;
-  }
-}
-
-.prompt-submit {
-  flex: 0 1 auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: var(--sp-2) var(--sp-3);
-  width: fit-content;
-}
-
-.submit-icon {
-  transform: rotate(90deg);
 }
 </style>

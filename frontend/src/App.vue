@@ -77,8 +77,8 @@ onMounted(() => {
     </button>
 
     <nav class="menu-nav">
-      <RouterLink class="nav-item chat" title="Chat" to="/">
-        <Chat class="item-icon" /><span class="item-label">Chat</span>
+      <RouterLink class="nav-item chat" title="Chats" to="/">
+        <Chat class="item-icon" /><span class="item-label">Chats</span>
       </RouterLink>
       <RouterLink class="nav-item commands" title="Commands" to="/commands">
         <CodeBracket class="item-icon" /><span class="item-label"
