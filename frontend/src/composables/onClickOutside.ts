@@ -1,9 +1,15 @@
 export function onClickOutside(
-  element: HTMLElement,
+  elements: Array<HTMLElement>,
   handler: (event: MouseEvent) => void,
 ): { destroy: () => void } {
   function listener(event: MouseEvent) {
-    if (!element.contains(event.target as Node)) {
+    if (
+      elements.reduce(
+        (isOutside, element) =>
+          isOutside && !element.contains(event.target as Node),
+        true,
+      )
+    ) {
       handler(event);
     }
   }

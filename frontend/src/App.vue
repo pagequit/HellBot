@@ -58,7 +58,7 @@ const languages = new Map([
 ]);
 
 onMounted(() => {
-  onClickOutside(menu.value as HTMLElement, () =>
+  onClickOutside([menu.value as HTMLElement], () =>
     (menu.value as HTMLElement).classList.remove(menuOpenClass),
   );
 });

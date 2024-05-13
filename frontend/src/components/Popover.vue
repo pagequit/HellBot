@@ -3,14 +3,23 @@ import { onClickOutside } from "@/frontend/src/composables/onClickOutside.ts";
 import { onMounted, onUnmounted, ref } from "vue";
 
 const targetOpenClass = "open";
+
+const trigger = ref<HTMLElement | null>(null);
 const target = ref<HTMLElement | null>(null);
+
+function toggle() {
+  (target.value as HTMLElement).classList.toggle(targetOpenClass);
+}
 
 function close() {
   (target.value as HTMLElement).classList.remove(targetOpenClass);
 }
 
 onMounted(() => {
-  const { destroy } = onClickOutside(target.value as HTMLElement, close);
+  const { destroy } = onClickOutside(
+    [trigger.value as HTMLElement, target.value as HTMLElement],
+    close,
+  );
 
   onUnmounted(() => {
     destroy();
@@ -19,10 +28,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="popover" @click="target!.classList.toggle(targetOpenClass)">
-    <slot name="trigger"></slot>
-
-    <div class="popover-target" ref="target">
+  <div class="popover">
+    <div ref="trigger" class="popover-trigger" @click="toggle">
+      <slot name="trigger"></slot>
+    </div>
+    <div ref="target" class="popover-target">
       <slot name="target"></slot>
     </div>
   </div>
@@ -30,7 +40,6 @@ onMounted(() => {
 
 <style>
 .popover {
-  cursor: pointer;
   position: relative;
 
   &.pop-top {
@@ -72,6 +81,10 @@ onMounted(() => {
       right: auto;
     }
   }
+}
+
+.popover-trigger {
+  cursor: pointer;
 }
 
 .popover-target {

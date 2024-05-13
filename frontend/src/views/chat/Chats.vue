@@ -173,7 +173,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           :class="{ 'tab-active': index === 0 }"
         >
           {{ chat.title }}
-          <Popover title="More">
+          <Popover class="pop-left" title="More">
             <template #trigger>
               <More class="more-icon" />
             </template>
