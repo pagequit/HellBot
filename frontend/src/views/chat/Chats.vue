@@ -13,7 +13,7 @@ import { useMarkdown } from "@/frontend/src/composables/useMarkdown.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
 import { useUser } from "@/frontend/src/stores/user.ts";
 import { storeToRefs } from "pinia";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import type { Chat } from "./Chat.ts";
 import type { Message } from "./Message.ts";
 import {
@@ -40,7 +40,7 @@ const decoder = new TextDecoder();
 const entries = ref<HTMLElement | null>(null);
 const promptInput = ref<HTMLTextAreaElement | null>(null);
 
-function setPromptInputHeight() {
+function setPromptInputHeight(): void {
   const element = promptInput.value as HTMLTextAreaElement;
   element.style.height = "unset";
   element.style.height = `${element.scrollHeight}px`;
@@ -51,14 +51,14 @@ onMounted(() => {
 });
 
 const prompt = ref<string>("");
+const activeChatIndex = ref<number>(0);
 
-// FIXME: I need access the indices
-const chat = computed(() =>
-  chats.value[0].context.map((message) => message.content),
+const activeChat = computed(() =>
+  chats[activeChatIndex.value].context.map((message) => message.content),
 );
 
-let localChats: Array<Chat> = [
-  {
+function createChat(): Chat {
+  return structuredClone({
     title: "Chat 1",
     system: `I'm ${user.displayName}. You are HellBot. You are a helpful assistant.`,
     context: [],
@@ -73,8 +73,10 @@ let localChats: Array<Chat> = [
       presence_penalty: 0.0,
       frequency_penalty: 0.0,
     },
-  },
-];
+  } satisfies Chat);
+}
+
+let localChats: Array<Chat> = [createChat()];
 
 if (canUseLocalStorage()) {
   const lSLC = localStorage.getItem("chats");
@@ -82,11 +84,11 @@ if (canUseLocalStorage()) {
   localStorage.setItem("chats", JSON.stringify(localChats));
 }
 
-const chats = ref<Array<Chat>>(localChats);
+const chats: Array<Chat> = reactive<Array<Chat>>(localChats);
 
-async function submitPrompt() {
-  const system: string = chats.value[0].system;
-  const context: Array<Message> = chats.value[0].context;
+async function submitPrompt(): Promise<void> {
+  const system: string = chats[0].system;
+  const context: Array<Message> = chats[0].context;
 
   const localPrompt = prompt.value.trim();
   if (localPrompt.length === 0) {
@@ -150,7 +152,7 @@ async function submitPrompt() {
   }
 
   if (canUseLocalStorage()) {
-    localStorage.setItem("chats", JSON.stringify(chats.value));
+    localStorage.setItem("chats", JSON.stringify(chats));
   }
 }
 
@@ -163,16 +165,17 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 <template>
   <main class="chats">
     <header class="header">
-      <button class="tab-add btn">
+      <button class="tab-add btn" @click="chats.push(createChat())">
         <Plus class="add-icon" />
       </button>
       <div class="tabs">
         <div
           v-for="(chat, index) in chats"
           class="tab btn"
-          :class="{ 'tab-active': index === 0 }"
+          :class="{ 'tab-active': index === activeChatIndex }"
+          @click="activeChatIndex = index"
         >
-          {{ chat.title }}
+          <input type="text" class="tab-title" v-model="chat.title" />
           <Popover class="pop-left" title="More">
             <template #trigger>
               <More class="more-icon" />
@@ -195,7 +198,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
       <DieBestie class="die-bestie" />
 
       <div class="entries" ref="entries">
-        <div v-for="(entry, index) in chat" :key="index" class="entry">
+        <div v-for="(entry, index) in activeChat" :key="index" class="entry">
           <img
             :src="
               index % 2 === 0
@@ -285,6 +288,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     display: flex;
     align-items: center;
     gap: var(--sp-1);
+    min-width: var(--sp-6);
   }
 
   .tab:hover,
@@ -292,9 +296,17 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     background: var(--c-bg-3);
   }
 
+  .tab-title {
+    background: transparent;
+    border: none;
+    color: var(--c-fg-2);
+    outline: none;
+  }
+
   .more-icon {
-    width: 1em;
-    height: 1em;
+    width: 1rem;
+    height: 1rem;
+    display: block;
 
     &:hover {
       color: var(--c-fg-1);
@@ -302,10 +314,20 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
   }
 
   .more-options {
+    height: 2rem;
     display: flex;
     flex-flow: row nowrap;
     background: var(--c-bg-1);
     border-radius: var(--sp-2);
+
+    .btn {
+      width: 2rem;
+    }
+
+    svg {
+      height: 100%;
+      width: auto;
+    }
   }
 
   .settings {
@@ -315,8 +337,8 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
   }
 
   .settings-icon {
-    width: 100%;
     height: 100%;
+    width: auto;
   }
 
   .chat {
@@ -349,6 +371,9 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 
     &:nth-child(odd) {
       flex-flow: row-reverse nowrap;
+    }
+
+    &:nth-child(even) {
       padding-bottom: var(--sp-2);
     }
   }
@@ -371,7 +396,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 
   .entry-content p {
     margin-top: 0;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--sp-2);
   }
 
   .die-bestie {
