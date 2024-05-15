@@ -52,14 +52,11 @@ onMounted(() => {
 
 const prompt = ref<string>("");
 const activeChatIndex = ref<number>(0);
+const activeChat = computed<Chat>(() => chats[activeChatIndex.value]);
 
-const activeChat = computed(() =>
-  chats[activeChatIndex.value].context.map((message) => message.content),
-);
-
-function createChat(): Chat {
+function createChat(title: string): Chat {
   return structuredClone({
-    title: "Chat 1",
+    title,
     system: `I'm ${user.displayName}. You are HellBot. You are a helpful assistant.`,
     context: [],
     settings: {
@@ -76,7 +73,7 @@ function createChat(): Chat {
   } satisfies Chat);
 }
 
-let localChats: Array<Chat> = [createChat()];
+let localChats: Array<Chat> = [createChat("Chat")];
 
 if (canUseLocalStorage()) {
   const lSLC = localStorage.getItem("chats");
@@ -87,8 +84,8 @@ if (canUseLocalStorage()) {
 const chats: Array<Chat> = reactive<Array<Chat>>(localChats);
 
 async function submitPrompt(): Promise<void> {
-  const system: string = chats[0].system;
-  const context: Array<Message> = chats[0].context;
+  const system: string = activeChat.value.system;
+  const context: Array<Message> = activeChat.value.context;
 
   const localPrompt = prompt.value.trim();
   if (localPrompt.length === 0) {
@@ -165,7 +162,10 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 <template>
   <main class="chats">
     <header class="header">
-      <button class="tab-add btn" @click="chats.push(createChat())">
+      <button
+        class="tab-add btn"
+        @click="chats.push(createChat(`Chat ${chats.length + 1}`))"
+      >
         <Plus class="add-icon" />
       </button>
       <div class="tabs">
@@ -198,7 +198,11 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
       <DieBestie class="die-bestie" />
 
       <div class="entries" ref="entries">
-        <div v-for="(entry, index) in activeChat" :key="index" class="entry">
+        <div
+          v-for="({ content }, index) in activeChat.context"
+          :key="index"
+          class="entry"
+        >
           <img
             :src="
               index % 2 === 0
@@ -208,7 +212,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
             alt="Avatar"
             class="entry-avatar"
           />
-          <div class="entry-content" v-html="entry"></div>
+          <div class="entry-content" v-html="content"></div>
         </div>
       </div>
 
