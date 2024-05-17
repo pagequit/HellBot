@@ -1,13 +1,9 @@
 <script setup lang="ts">
 import { I18n, Locale } from "@/core/i18n/I18n.ts";
-import Popover from "@/frontend/src/components/Popover.vue";
 import Adjustments from "@/frontend/src/components/icons/Adjustments.vue";
 import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
-import More from "@/frontend/src/components/icons/More.vue";
 import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
-import Pencil from "@/frontend/src/components/icons/Pencil.vue";
 import Plus from "@/frontend/src/components/icons/Plus.vue";
-import Trash from "@/frontend/src/components/icons/Trash.vue";
 import { canUseLocalStorage } from "@/frontend/src/composables/canUseLocalStorage.ts";
 import { useMarkdown } from "@/frontend/src/composables/useMarkdown.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
@@ -169,25 +165,14 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
         <Plus class="add-icon" />
       </button>
       <div class="tabs">
-        <div
+        <button
           v-for="(chat, index) in chats"
           class="tab btn"
           :class="{ 'tab-active': index === activeChatIndex }"
           @click="activeChatIndex = index"
         >
-          <input type="text" class="tab-title" v-model="chat.title" />
-          <Popover class="pop-left" title="More">
-            <template #trigger>
-              <More class="more-icon" />
-            </template>
-            <template #target>
-              <div class="more-options">
-                <button class="more-option btn"><Pencil /></button>
-                <button class="more-option btn"><Trash /></button>
-              </div>
-            </template>
-          </Popover>
-        </div>
+          {{ chat.title }}
+        </button>
       </div>
 
       <button class="settings btn">
@@ -278,10 +263,13 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     display: flex;
     flex-flow: row nowrap;
     gap: var(--sp-1);
-    height: 100%;
+    height: calc(100% + var(--sp-2));
     border-radius: var(--sp-2);
     overflow-x: auto;
     flex: 0 1 auto;
+    padding: var(--sp-1);
+    margin-top: calc(var(--sp-1) * -1);
+    margin-bottom: calc(var(--sp-1) * -1);
   }
 
   .tab {
