@@ -179,6 +179,12 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
         <Adjustments class="settings-icon" />
       </button>
     </header>
+    <div class="settings-menu">
+      <div class="settings-item">
+        <label class="settings-label">Setting</label>
+        <input type="text" class="input settings-input" />
+      </div>
+    </div>
     <div class="chat">
       <DieBestie class="die-bestie" />
 
@@ -331,6 +337,15 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
   .settings-icon {
     height: 100%;
     width: auto;
+  }
+
+  .settings-menu {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: var(--sp-2);
+    background: var(--c-bg-1);
+    border-radius: var(--sp-2);
   }
 
   .chat {

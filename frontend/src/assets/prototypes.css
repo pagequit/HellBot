@@ -14,3 +14,11 @@
     color: var(--c-fg-1);
   }
 }
+
+.input[type="text"] {
+  border-radius: var(--sp-2);
+  color: var(--c-fg-2);
+  padding: var(--sp-2);
+  background: var(--c-bg-2);
+  border: none;
+}
