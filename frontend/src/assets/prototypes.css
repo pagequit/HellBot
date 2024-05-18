@@ -15,6 +15,7 @@
   }
 }
 
+textarea.input,
 .input[type="number"],
 .input[type="text"] {
   border-radius: var(--sp-2);

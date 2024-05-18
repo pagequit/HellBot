@@ -183,8 +183,15 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     <div class="settings-menu">
       <div class="settings-item">
         <div class="input-group">
+          <label class="settings-label">Title</label>
+          <input type="text" class="input" value="Chat" />
+        </div>
+
+        <div class="input-group">
           <label class="settings-label">System</label>
-          <input type="text" class="input" />
+          <textarea class="input">
+            You are a helpful assistant.
+          </textarea>
         </div>
 
         <div class="input-group">
@@ -357,8 +364,9 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
   }
 
   .settings-menu {
+    z-index: 1; /* FIXME */
     position: absolute;
-    top: 0;
+    top: 4.5rem;
     right: 0;
     padding: var(--sp-2);
     background: var(--c-bg-1);
