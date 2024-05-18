@@ -179,12 +179,29 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
         <Adjustments class="settings-icon" />
       </button>
     </header>
+
     <div class="settings-menu">
       <div class="settings-item">
-        <label class="settings-label">Setting</label>
-        <input type="text" class="input settings-input" />
+        <div class="input-group">
+          <label class="settings-label">System</label>
+          <input type="text" class="input" />
+        </div>
+
+        <div class="input-group">
+          <label class="settings-label">Temperature</label>
+          <input class="input" type="number" min="0.1" max="2.0" value="0.8" />
+          <input
+            class="input"
+            type="range"
+            min="0.1"
+            max="2.0"
+            value="0.8"
+            step="0.1"
+          />
+        </div>
       </div>
     </div>
+
     <div class="chat">
       <DieBestie class="die-bestie" />
 
@@ -427,7 +444,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     background: var(--c-bg-1);
     border-radius: var(--sp-2);
 
-    &:has(.prompt__input:focus) {
+    &:has(.prompt-input:focus) {
       outline-width: 2px;
       outline-style: solid;
       outline-color: var(--c-blurple);
