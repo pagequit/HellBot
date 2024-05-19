@@ -9,6 +9,7 @@ export * from "@/core/i18n/useI18n.ts";
 
 export * from "@/core/http/http.ts";
 export * from "@/core/http/createJwt.ts";
+export * from "@/core/http/createCors.ts";
 
 export * from "@/core/store.ts";
 export * from "@/core/Feature.ts";
