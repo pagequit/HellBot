@@ -2,17 +2,17 @@ import { Collection, Some } from "unwrap/mod.ts";
 
 type Translate = (...args: string[]) => string;
 type Translation = Collection<string, Translate>;
-type Translations = Collection<LocaleString, Translation>;
+type Translations = Collection<Locale, Translation>;
 
 export type RawTranslation = {
   [key: string]: Translate;
 };
 
 export class I18n {
-  source: LocaleString;
+  source: Locale;
   translations: Translations;
 
-  constructor(translations: [LocaleString, RawTranslation][]) {
+  constructor(translations: [Locale, RawTranslation][]) {
     this.source = translations[0][0];
     this.translations = Collection.from(
       translations.map(([locale, raw]) => {
@@ -24,7 +24,7 @@ export class I18n {
     );
   }
 
-  t(locale: LocaleString, key: string, ...args: string[]): string {
+  t(locale: Locale, key: string, ...args: string[]): string {
     return this.translations
       .get(locale)
       .or(this.translations.get(this.source))
@@ -65,11 +65,10 @@ export enum Locale {
   Romanian = "ro",
   Russian = "ru",
   SpanishES = "es-ES",
+  SpanishLATAM = "es-419",
   Swedish = "sv-SE",
   Thai = "th",
   Turkish = "tr",
   Ukrainian = "uk",
   Vietnamese = "vi",
 }
-
-export type LocaleString = `${Locale}`;
