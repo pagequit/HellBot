@@ -2,7 +2,7 @@ import { frontend, llama } from "@/config.ts";
 import { createJwt } from "@/core/mod.ts";
 import { Elysia, t } from "elysia";
 
-const sampling = t.Object({
+const samplingParams = t.Object({
   temperature: t.Number({
     minimum: 0.1,
     maximum: 2.0,
@@ -33,15 +33,17 @@ const sampling = t.Object({
   }),
 });
 
-const completion = t.Object({
+const completionPartial = t.Object({
   prompt: t.String(),
   stream: t.Boolean(),
-  stop: t.Array(t.String()),
+  stop: t.String(),
   n_predict: t.Number({
     minimum: 1, // -1 = infinite, but I don't want to allow that
     maximum: 1024,
   }),
 });
+
+const completionBody = t.Composite([completionPartial, samplingParams]);
 
 const httpChat = new Elysia({
   name: "chat",
