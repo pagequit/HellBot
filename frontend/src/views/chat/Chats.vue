@@ -251,13 +251,13 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 
         <div class="input-group range-group">
           <label class="input-label">N Predict</label>
-          <input class="input" type="number" min="-1" max="1024" value="-1" />
+          <input class="input" type="number" min="1" max="1024" value="1024" />
           <input
             class="input"
             type="range"
-            min="-1"
+            min="1"
             max="1024"
-            value="-1"
+            value="1024"
             step="1"
           />
         </div>
@@ -271,7 +271,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
             min="0.1"
             max="2.0"
             value="1.1"
-            step="0.1"
+            step="0.05"
           />
         </div>
 
@@ -284,7 +284,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
             min="0.0"
             max="1.0"
             value="0.0"
-            step="0.1"
+            step="0.05"
           />
         </div>
 
@@ -297,7 +297,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
             min="0.0"
             max="1.0"
             value="0.0"
-            step="0.1"
+            step="0.05"
           />
         </div>
       </div>
