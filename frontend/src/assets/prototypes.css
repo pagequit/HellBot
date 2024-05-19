@@ -40,6 +40,7 @@ textarea.input,
   appearance: none;
   background: transparent;
   border-radius: var(--sp-2);
+  height: 1rem;
 
   &:focus {
     outline: 0;
@@ -130,6 +131,6 @@ textarea.input,
   .input[type="range"] {
     grid-column: span 2;
     grid-row: 2;
-    padding: 0;
+    padding: var(--sp-2) 0 0 0;
   }
 }

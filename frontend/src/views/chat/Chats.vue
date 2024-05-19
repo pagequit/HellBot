@@ -194,7 +194,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 
         <div class="input-group">
           <label class="input-label">Stop</label>
-          <textarea class="input">User:</textarea>
+          <input type="text" class="input" value="" />
         </div>
 
         <div class="input-group range-group">
