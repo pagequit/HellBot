@@ -7,14 +7,12 @@ export const botlog = {
   token: process.env.BOTLOG_TOKEN as string,
   id: process.env.BOTLOG_ID as string,
 };
-export const server = {
-  port: (process.env.SERVER_PORT as string) ?? "3000",
-  hostname: (process.env.SERVER_HOSTNAME as string) ?? "localhost",
-  origin: (process.env.VITE_SERVER_ORIGIN as string) ?? "http://localhost:3000",
-};
-export const frontend = {
-  origin: (process.env.VITE_SERVER_ORIGIN as string) ?? "http://localhost:3080",
-};
-export const llama = {
-  origin: (process.env.LLAMA_ORIGIN as string) ?? "http://localhost:8080",
-};
+export const serverURL = new URL(
+  (process.env.VITE_SERVER_ORIGIN as string) ?? "http://localhost:3000",
+);
+export const frontendURL = new URL(
+  (process.env.VITE_SERVER_ORIGIN as string) ?? "http://localhost:3080",
+);
+export const llamaURL = new URL(
+  (process.env.LLAMA_ORIGIN as string) ?? "http://localhost:8080",
+);

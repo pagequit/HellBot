@@ -1,4 +1,4 @@
-import { frontend } from "@/config.ts";
+import { frontendURL } from "@/config.ts";
 import { client, createJwt, logger } from "@/core/mod.ts";
 import { store } from "@/core/store.ts";
 import type { Guild } from "discord.js";
@@ -20,12 +20,12 @@ const httpAuth = new Elysia({
       httpOnly: true,
       maxAge: 7 * 86400,
       path: "/",
-      secure: false, // FIXME for production
+      secure: false, // FIXME: for production
     });
 
     store.delete(params.token);
 
-    set.redirect = frontend.origin;
+    set.redirect = frontendURL.origin;
   })
   .get("auth/user", async ({ jwt, set, cookie: { auth } }) => {
     const user = await jwt.verify(auth.value);
@@ -54,12 +54,8 @@ const httpAuth = new Elysia({
       httpOnly: true,
       maxAge: 7 * 86400,
       path: "/",
-      secure: false, // FIXME for production
+      secure: false, // FIXME: for production
     });
-
-    set.status = 200;
-    set.headers["Access-Control-Allow-Origin"] = frontend.origin;
-    set.headers["Access-Control-Allow-Credentials"] = "true";
 
     return {
       data: {
@@ -80,7 +76,7 @@ const httpAuth = new Elysia({
       httpOnly: true,
       maxAge: 0,
       path: "/",
-      secure: false, // FIXME for production
+      secure: false, // FIXME: for production
     });
 
     return `Bye ${user.id}`;

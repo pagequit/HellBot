@@ -1,4 +1,4 @@
-import { llama } from "@/config.ts";
+import { llamaURL } from "@/config.ts";
 import type Chat from "../Chat.ts";
 import type { Message } from "../Message.ts";
 
@@ -11,7 +11,7 @@ function prompt(context: Array<Message>, content: string): string {
 }
 
 export function mistralCall(messages: Array<Message>): Promise<string> {
-  return fetch(`${llama.origin}/completion`, {
+  return fetch(`${llamaURL.origin}/completion`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

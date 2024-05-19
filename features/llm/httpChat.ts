@@ -1,4 +1,4 @@
-import { llama } from "@/config.ts";
+import { llamaURL } from "@/config.ts";
 import { createJwt } from "@/core/mod.ts";
 import { Elysia, t } from "elysia";
 
@@ -56,7 +56,7 @@ const httpChat = new Elysia({
         return "Unauthorized";
       }
 
-      return fetch(`${llama.origin}/completion`, {
+      return fetch(`${llamaURL.origin}/completion`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
