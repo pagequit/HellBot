@@ -183,19 +183,22 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     <div class="settings-menu">
       <div class="settings-item">
         <div class="input-group">
-          <label class="settings-label">Title</label>
+          <label class="input-label">Title</label>
           <input type="text" class="input" value="Chat" />
         </div>
 
         <div class="input-group">
-          <label class="settings-label">System</label>
-          <textarea class="input">
-            You are a helpful assistant.
-          </textarea>
+          <label class="input-label">System</label>
+          <textarea class="input">You are a helpful assistant.</textarea>
         </div>
 
         <div class="input-group">
-          <label class="settings-label">Temperature</label>
+          <label class="input-label">Stop</label>
+          <textarea class="input">User:</textarea>
+        </div>
+
+        <div class="input-group range-group">
+          <label class="input-label">Temperature</label>
           <input class="input" type="number" min="0.1" max="2.0" value="0.8" />
           <input
             class="input"
@@ -203,6 +206,97 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
             min="0.1"
             max="2.0"
             value="0.8"
+            step="0.1"
+          />
+        </div>
+
+        <div class="input-group range-group">
+          <label class="input-label">Top K</label>
+          <input class="input" type="number" min="1" max="100" value="40" />
+          <input
+            class="input"
+            type="range"
+            min="1"
+            max="100"
+            value="40"
+            step="1"
+          />
+        </div>
+
+        <div class="input-group range-group">
+          <label class="input-label">Top P</label>
+          <input class="input" type="number" min="0.05" max="1" value="0.95" />
+          <input
+            class="input"
+            type="range"
+            min="0.05"
+            max="1"
+            value="0.95"
+            step="0.05"
+          />
+        </div>
+
+        <div class="input-group range-group">
+          <label class="input-label">Min P</label>
+          <input class="input" type="number" min="0.5" max="1" value="0.05" />
+          <input
+            class="input"
+            type="range"
+            min="0.05"
+            max="1"
+            value="0.05"
+            step="0.05"
+          />
+        </div>
+
+        <div class="input-group range-group">
+          <label class="input-label">N Predict</label>
+          <input class="input" type="number" min="-1" max="1024" value="-1" />
+          <input
+            class="input"
+            type="range"
+            min="-1"
+            max="1024"
+            value="-1"
+            step="1"
+          />
+        </div>
+
+        <div class="input-group range-group">
+          <label class="input-label">Repeat Penalty</label>
+          <input class="input" type="number" min="0.1" max="2.0" value="1.1" />
+          <input
+            class="input"
+            type="range"
+            min="0.1"
+            max="2.0"
+            value="1.1"
+            step="0.1"
+          />
+        </div>
+
+        <div class="input-group range-group">
+          <label class="input-label">Presence Penalty</label>
+          <input class="input" type="number" min="0.0" max="1.0" value="0.0" />
+          <input
+            class="input"
+            type="range"
+            min="0.0"
+            max="1.0"
+            value="0.0"
+            step="0.1"
+          />
+        </div>
+
+        <div class="input-group range-group">
+          <label class="input-label">Frequency Penalty</label>
+          <input class="input" type="number" min="0.0" max="1.0" value="0.0" />
+          <input
+            class="input"
+            type="range"
+            min="0.0"
+            max="1.0"
+            value="0.0"
             step="0.1"
           />
         </div>
@@ -368,7 +462,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     position: absolute;
     top: 4.5rem;
     right: 0;
-    padding: var(--sp-2);
+    padding: var(--sp-2) var(--sp-3);
     background: var(--c-bg-1);
     border-radius: var(--sp-2);
   }

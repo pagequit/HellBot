@@ -91,5 +91,45 @@ textarea.input,
   }
 }
 
-.input-switch {
+.input-group {
+  display: flex;
+  flex-flow: column nowrap;
+  margin-bottom: var(--sp-3);
+
+  .input-label {
+    display: inline-flex;
+    width: 100%;
+    color: var(--c-fg-1);
+    margin-left: var(--sp-2);
+    margin-bottom: var(--sp-1);
+  }
+  .input {
+    width: 100%;
+    padding: var(--sp-2);
+  }
+}
+
+.range-group {
+  display: grid;
+
+  .input-label {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: flex-end;
+    margin-bottom: var(--sp-2);
+    margin-right: var(--sp-2);
+  }
+
+  .input[type="number"] {
+    grid-column: 2;
+    grid-row: 1;
+    width: 4.5rem;
+    justify-self: end;
+  }
+
+  .input[type="range"] {
+    grid-column: span 2;
+    grid-row: 2;
+    padding: 0;
+  }
 }
