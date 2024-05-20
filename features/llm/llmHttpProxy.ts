@@ -3,7 +3,6 @@ import { createJwt } from "@/core/mod.ts";
 import { Elysia } from "elysia";
 import { completionRequestBody } from "./completionRequestBody";
 
-
 const llmHttpProxy = new Elysia({
   name: "llmHttpProxy",
 })

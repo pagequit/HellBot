@@ -25,7 +25,7 @@ export function createCompletionRequestBody(
     prompt: createPrompt(system, content, context),
     stream: true,
     stop: "",
-    n_predict: 1025,
+    n_predict: 1024,
     temperature: 0.8,
     top_k: 40,
     top_p: 0.95,

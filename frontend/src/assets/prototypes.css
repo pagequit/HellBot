@@ -109,28 +109,3 @@ textarea.input,
     padding: var(--sp-2);
   }
 }
-
-.range-group {
-  display: grid;
-
-  .input-label {
-    grid-column: 1;
-    grid-row: 1;
-    align-self: flex-end;
-    margin-bottom: var(--sp-2);
-    margin-right: var(--sp-2);
-  }
-
-  .input[type="number"] {
-    grid-column: 2;
-    grid-row: 1;
-    width: 4.5rem;
-    justify-self: end;
-  }
-
-  .input[type="range"] {
-    grid-column: span 2;
-    grid-row: 2;
-    padding: var(--sp-2) 0 0 0;
-  }
-}

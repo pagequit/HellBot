@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { I18n, Locale } from "@/core/i18n/I18n.ts";
 import { completionRequestBody } from "@/features/llm/completionRequestBody.ts";
+import RangeGroup from "@/frontend/src/components/RangeGroup.vue";
 import Adjustments from "@/frontend/src/components/icons/Adjustments.vue";
 import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
 import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
@@ -9,7 +10,6 @@ import { canUseLocalStorage } from "@/frontend/src/composables/canUseLocalStorag
 import { useMarkdown } from "@/frontend/src/composables/useMarkdown.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
 import { useUser } from "@/frontend/src/stores/user.ts";
-import { TypeCompiler } from "@sinclair/typebox/compiler";
 import { storeToRefs } from "pinia";
 import { computed, onMounted, reactive, ref } from "vue";
 import type { Chat } from "./Chat.ts";
@@ -81,8 +81,6 @@ if (canUseLocalStorage()) {
 
 const chats: Array<Chat> = reactive<Array<Chat>>(localChats);
 
-const C = TypeCompiler.Compile(completionRequestBody);
-
 async function submitPrompt(): Promise<void> {
   const system: string = activeChat.value.system;
   const context: Array<Message> = activeChat.value.context;
@@ -96,13 +94,9 @@ async function submitPrompt(): Promise<void> {
   const element = promptInput.value as HTMLTextAreaElement;
   element.style.height = "unset";
 
-  const rb = createCompletionRequestBody(system, localPrompt, context);
-
-  if (!C.Check(rb)) {
-    console.log([...C.Errors(rb)]);
-  }
-
-  const response: Response | Error = await makePrompt(rb).catch((error) => {
+  const response: Response | Error = await makePrompt(
+    createCompletionRequestBody(system, localPrompt, context),
+  ).catch((error) => {
     console.error(error);
     return error;
   });
@@ -205,57 +199,61 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           <input type="text" class="input" value="" />
         </div>
 
-        <div class="input-group range-group">
-          <label class="input-label">Temperature</label>
-          <input class="input" type="number" min="0.1" max="2.0" value="0.8" />
-          <input
-            class="input"
-            type="range"
-            min="0.1"
-            max="2.0"
-            value="0.8"
-            step="0.1"
-          />
-        </div>
+        <RangeGroup
+          :label="'Temperature'"
+          :min="0.1"
+          :max="2.0"
+          :step="0.1"
+          v-model="activeChat.settings.temperature"
+        />
 
-        <div class="input-group range-group">
-          <label class="input-label">Top K</label>
-          <input class="input" type="number" min="1" max="100" value="40" />
-          <input
-            class="input"
-            type="range"
-            min="1"
-            max="100"
-            value="40"
-            step="1"
-          />
-        </div>
+        <RangeGroup
+          :label="'Top K'"
+          :min="1"
+          :max="100"
+          :step="1"
+          v-model="activeChat.settings.top_k"
+        />
 
-        <div class="input-group range-group">
-          <label class="input-label">Top P</label>
-          <input class="input" type="number" min="0.05" max="1" value="0.95" />
-          <input
-            class="input"
-            type="range"
-            min="0.05"
-            max="1"
-            value="0.95"
-            step="0.05"
-          />
-        </div>
+        <RangeGroup
+          :label="'Top P'"
+          :min="0.05"
+          :max="1"
+          :step="0.05"
+          v-model="activeChat.settings.top_p"
+        />
 
-        <div class="input-group range-group">
-          <label class="input-label">Min P</label>
-          <input class="input" type="number" min="0.5" max="1" value="0.05" />
-          <input
-            class="input"
-            type="range"
-            min="0.05"
-            max="1"
-            value="0.05"
-            step="0.05"
-          />
-        </div>
+        <RangeGroup
+          :label="'Min P'"
+          :min="0"
+          :max="1"
+          :step="0.05"
+          v-model="activeChat.settings.min_p"
+        />
+
+        <RangeGroup
+          :label="'Repeat Penalty'"
+          :min="0.1"
+          :max="2"
+          :step="0.05"
+          v-model="activeChat.settings.repeat_penalty"
+        />
+
+        <RangeGroup
+          :label="'Presence Penalty'"
+          :min="0"
+          :max="1"
+          :step="0.05"
+          v-model="activeChat.settings.presence_penalty"
+        />
+
+        <RangeGroup
+          :label="'Frequency Penalty'"
+          :min="0"
+          :max="1"
+          :step="0.05"
+          v-model="activeChat.settings.presence_penalty"
+        />
 
         <div class="input-group range-group">
           <label class="input-label">N Predict</label>
@@ -267,45 +265,6 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
             max="1024"
             value="1024"
             step="1"
-          />
-        </div>
-
-        <div class="input-group range-group">
-          <label class="input-label">Repeat Penalty</label>
-          <input class="input" type="number" min="0.1" max="2.0" value="1.1" />
-          <input
-            class="input"
-            type="range"
-            min="0.1"
-            max="2.0"
-            value="1.1"
-            step="0.05"
-          />
-        </div>
-
-        <div class="input-group range-group">
-          <label class="input-label">Presence Penalty</label>
-          <input class="input" type="number" min="0.0" max="1.0" value="0.0" />
-          <input
-            class="input"
-            type="range"
-            min="0.0"
-            max="1.0"
-            value="0.0"
-            step="0.05"
-          />
-        </div>
-
-        <div class="input-group range-group">
-          <label class="input-label">Frequency Penalty</label>
-          <input class="input" type="number" min="0.0" max="1.0" value="0.0" />
-          <input
-            class="input"
-            type="range"
-            min="0.0"
-            max="1.0"
-            value="0.0"
-            step="0.05"
           />
         </div>
       </div>
