@@ -11,11 +11,11 @@ import { chat } from "./chat/chat.ts";
 import llmUsers from "./chat/user.json";
 import type { User } from "./chat/user.schema.ts";
 import { createChat, getChat } from "./chats.ts";
-import { httpChat } from "./httpChat.ts";
+import { llmHttpProxy } from "./llmHttpProxy.ts";
 
 export default ((): void => {
   registerChatInputCommand(chat);
-  http.use(httpChat);
+  http.use(llmHttpProxy);
 
   client.on(Events.MessageCreate, async (message: Message) => {
     if (message.author.bot || message.channel.type !== ChannelType.DM) {

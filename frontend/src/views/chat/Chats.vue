@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { I18n, Locale } from "@/core/i18n/I18n.ts";
-import { completion } from "@/features/llm/httpChat.ts";
+import { completionRequestBody } from "@/features/llm/completionRequestBody.ts";
 import Adjustments from "@/frontend/src/components/icons/Adjustments.vue";
 import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
 import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
@@ -9,6 +9,7 @@ import { canUseLocalStorage } from "@/frontend/src/composables/canUseLocalStorag
 import { useMarkdown } from "@/frontend/src/composables/useMarkdown.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
 import { useUser } from "@/frontend/src/stores/user.ts";
+import { TypeCompiler } from "@sinclair/typebox/compiler";
 import { storeToRefs } from "pinia";
 import { computed, onMounted, reactive, ref } from "vue";
 import type { Chat } from "./Chat.ts";
@@ -80,6 +81,8 @@ if (canUseLocalStorage()) {
 
 const chats: Array<Chat> = reactive<Array<Chat>>(localChats);
 
+const C = TypeCompiler.Compile(completionRequestBody);
+
 async function submitPrompt(): Promise<void> {
   const system: string = activeChat.value.system;
   const context: Array<Message> = activeChat.value.context;
@@ -93,9 +96,13 @@ async function submitPrompt(): Promise<void> {
   const element = promptInput.value as HTMLTextAreaElement;
   element.style.height = "unset";
 
-  const response: Response | Error = await makePrompt(
-    createCompletionRequestBody(system, localPrompt, context),
-  ).catch((error) => {
+  const rb = createCompletionRequestBody(system, localPrompt, context);
+
+  if (!C.Check(rb)) {
+    console.log([...C.Errors(rb)]);
+  }
+
+  const response: Response | Error = await makePrompt(rb).catch((error) => {
     console.error(error);
     return error;
   });

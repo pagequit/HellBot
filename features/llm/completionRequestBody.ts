@@ -1,6 +1,4 @@
-import { llamaURL } from "@/config.ts";
-import { createJwt } from "@/core/mod.ts";
-import { Elysia, t } from "elysia";
+import { t } from "elysia";
 
 const samplingParams = t.Object({
   temperature: t.Number({
@@ -33,7 +31,7 @@ const samplingParams = t.Object({
   }),
 });
 
-const completionPartial = t.Object({
+const completionRequestPartial = t.Object({
   prompt: t.String(),
   stream: t.Boolean(),
   stop: t.String(),
@@ -43,30 +41,7 @@ const completionPartial = t.Object({
   }),
 });
 
-export const completion = t.Composite([completionPartial, samplingParams]);
-
-const httpChat = new Elysia({
-  name: "chat",
-})
-  .use(createJwt)
-  .post(
-    "/completion",
-    async ({ jwt, set, cookie: { auth }, body }) => {
-      const user = await jwt.verify(auth.value);
-      if (!user) {
-        set.status = 401;
-        return "Unauthorized";
-      }
-
-      return fetch(`${llamaURL.origin}/completion`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-    },
-    {
-      body: completion,
-    },
-  );
-
-export { httpChat };
+export const completionRequestBody = t.Composite([
+  completionRequestPartial,
+  samplingParams,
+]);
