@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { I18n, Locale } from "@/core/i18n/I18n.ts";
+import { completion } from "@/features/llm/httpChat.ts";
 import Adjustments from "@/frontend/src/components/icons/Adjustments.vue";
 import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
 import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
@@ -61,7 +62,7 @@ function createChat(title: string): Chat {
       top_p: 0.95,
       min_p: 0.05,
       n_predict: -1,
-      stop: [],
+      stop: "",
       repeat_penalty: 1.1,
       presence_penalty: 0.0,
       frequency_penalty: 0.0,

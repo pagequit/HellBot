@@ -43,6 +43,8 @@ const completionPartial = t.Object({
   }),
 });
 
+export const completion = t.Composite([completionPartial, samplingParams]);
+
 const httpChat = new Elysia({
   name: "chat",
 })
@@ -63,7 +65,7 @@ const httpChat = new Elysia({
       });
     },
     {
-      body: t.Composite([completionPartial, samplingParams]),
+      body: completion,
     },
   );
 
