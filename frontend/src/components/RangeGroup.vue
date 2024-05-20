@@ -6,12 +6,25 @@ const { min, max, step } = defineProps<{
   max: number;
   step: number;
 }>();
+
+function updateValue(event: Event): void {
+  const target = event.target as HTMLInputElement;
+  model.value = Math.max(min, Math.min(max, Number(target.value)));
+  target.value = model.value.toString();
+}
 </script>
 
 <template>
   <div class="range-group input-group">
     <label class="input-label">{{ label }}</label>
-    <input class="input" type="number" :min="min" :max="max" v-model="model" />
+    <input
+      class="input"
+      type="number"
+      :min="min"
+      :max="max"
+      :value="model"
+      @change="updateValue"
+    />
     <input
       class="input"
       type="range"
@@ -19,7 +32,7 @@ const { min, max, step } = defineProps<{
       :max="max"
       :step="step"
       :value="model"
-      @input="model = Number(($event.target as HTMLInputElement).value)"
+      @input="updateValue"
     />
   </div>
 </template>
