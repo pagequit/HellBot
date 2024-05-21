@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { I18n, Locale } from "@/core/i18n/I18n.ts";
-import { completionRequestBody } from "@/features/llm/completionRequestBody.ts";
 import RangeGroup from "@/frontend/src/components/RangeGroup.vue";
 import Adjustments from "@/frontend/src/components/icons/Adjustments.vue";
 import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
@@ -14,10 +13,8 @@ import { storeToRefs } from "pinia";
 import { computed, onMounted, reactive, ref } from "vue";
 import type { Chat } from "./Chat.ts";
 import type { Message } from "./Message.ts";
-import {
-  createCompletionRequestBody,
-  makePrompt,
-} from "./llama.cpp/completion.ts";
+import { makePrompt } from "./llama.cpp/completion.ts";
+import { createPrompt } from "./llama.cpp/llama3/createPrompt.ts";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
 
@@ -31,9 +28,8 @@ const i18n = ref(
   ]),
 );
 
-const markdown = useMarkdown();
-
 const decoder = new TextDecoder();
+const markdown = useMarkdown();
 
 const entries = ref<HTMLElement | null>(null);
 const promptInput = ref<HTMLTextAreaElement | null>(null);
@@ -54,20 +50,17 @@ const activeChat = computed<Chat>(() => chats[activeChatIndex.value]);
 
 function createChat(title: string): Chat {
   return structuredClone({
+    context: [],
     title,
     system: `I'm ${user.displayName}. You are HellBot. You are a helpful assistant.`,
-    context: [],
-    settings: {
-      temperature: 0.8,
-      top_k: 40,
-      top_p: 0.95,
-      min_p: 0.05,
-      n_predict: -1,
-      stop: "",
-      repeat_penalty: 1.1,
-      presence_penalty: 0.0,
-      frequency_penalty: 0.0,
-    },
+    stop: "",
+    temperature: 0.8,
+    top_k: 40,
+    top_p: 0.95,
+    min_p: 0.05,
+    repeat_penalty: 1.1,
+    presence_penalty: 0.0,
+    frequency_penalty: 0.0,
   } satisfies Chat);
 }
 
@@ -94,9 +87,17 @@ async function submitPrompt(): Promise<void> {
   const element = promptInput.value as HTMLTextAreaElement;
   element.style.height = "unset";
 
-  const response: Response | Error = await makePrompt(
-    createCompletionRequestBody(system, localPrompt, context),
-  ).catch((error) => {
+  const response: Response | Error = await makePrompt({
+    prompt: createPrompt(system, localPrompt, context),
+    stop: activeChat.value.stop,
+    temperature: activeChat.value.temperature,
+    top_k: activeChat.value.top_k,
+    top_p: activeChat.value.top_p,
+    min_p: activeChat.value.min_p,
+    repeat_penalty: activeChat.value.repeat_penalty,
+    presence_penalty: activeChat.value.presence_penalty,
+    frequency_penalty: activeChat.value.frequency_penalty,
+  }).catch((error) => {
     console.error(error);
     return error;
   });
@@ -201,10 +202,10 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 
         <RangeGroup
           :label="'Temperature'"
-          :min="0.1"
+          :min="0"
           :max="2.0"
           :step="0.1"
-          v-model="activeChat.settings.temperature"
+          v-model="activeChat.temperature"
         />
 
         <RangeGroup
@@ -212,7 +213,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           :min="1"
           :max="100"
           :step="1"
-          v-model="activeChat.settings.top_k"
+          v-model="activeChat.top_k"
         />
 
         <RangeGroup
@@ -220,7 +221,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           :min="0.05"
           :max="1"
           :step="0.05"
-          v-model="activeChat.settings.top_p"
+          v-model="activeChat.top_p"
         />
 
         <RangeGroup
@@ -228,7 +229,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           :min="0"
           :max="1"
           :step="0.05"
-          v-model="activeChat.settings.min_p"
+          v-model="activeChat.min_p"
         />
 
         <RangeGroup
@@ -236,7 +237,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           :min="0.1"
           :max="2"
           :step="0.05"
-          v-model="activeChat.settings.repeat_penalty"
+          v-model="activeChat.repeat_penalty"
         />
 
         <RangeGroup
@@ -244,7 +245,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           :min="0"
           :max="1"
           :step="0.05"
-          v-model="activeChat.settings.presence_penalty"
+          v-model="activeChat.presence_penalty"
         />
 
         <RangeGroup
@@ -252,20 +253,12 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           :min="0"
           :max="1"
           :step="0.05"
-          v-model="activeChat.settings.presence_penalty"
+          v-model="activeChat.presence_penalty"
         />
 
-        <div class="input-group range-group">
-          <label class="input-label">N Predict</label>
-          <input class="input" type="number" min="1" max="1024" value="1024" />
-          <input
-            class="input"
-            type="range"
-            min="1"
-            max="1024"
-            value="1024"
-            step="1"
-          />
+        <div class="input-group">
+          <label class="input-label">Prompt</label>
+          <textarea class="input">{{}}</textarea>
         </div>
       </div>
     </div>

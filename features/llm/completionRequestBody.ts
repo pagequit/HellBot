@@ -2,7 +2,7 @@ import { t } from "elysia";
 
 const samplingParams = t.Object({
   temperature: t.Number({
-    minimum: 0.1,
+    minimum: 0.0, // don't know what exactly it means
     maximum: 2.0,
   }),
   top_k: t.Number({
@@ -33,15 +33,12 @@ const samplingParams = t.Object({
 
 const completionRequestPartial = t.Object({
   prompt: t.String(),
-  stream: t.Boolean(),
   stop: t.String(),
-  n_predict: t.Number({
-    minimum: 1, // -1 = infinite, but I don't want to allow that
-    maximum: 1024,
-  }),
 });
 
 export const completionRequestBody = t.Composite([
   completionRequestPartial,
   samplingParams,
 ]);
+
+export const CompletionRequestBody = t.Transform(completionRequestBody);
