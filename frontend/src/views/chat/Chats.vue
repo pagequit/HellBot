@@ -131,11 +131,6 @@ async function submitPrompt(): Promise<void> {
           const data = JSON.parse(message.substring(5));
           if (data.stop) {
             console.log(data);
-            /*
-             * data.tokens_cached: 1246
-             * data.tokens_evaluated: 704
-             * data.tokens_predicted: 543
-             */
           }
           rawContent += data.content;
           content.value = markdown.parse(rawContent);
@@ -192,17 +187,17 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
       <div class="settings-item">
         <div class="input-group">
           <label class="input-label">Title</label>
-          <input type="text" class="input" value="Chat" />
+          <input type="text" class="input" v-model="activeChat.title" />
         </div>
 
         <div class="input-group">
           <label class="input-label">System</label>
-          <textarea class="input">You are a helpful assistant.</textarea>
+          <textarea class="input" v-model="activeChat.system"></textarea>
         </div>
 
         <div class="input-group">
           <label class="input-label">Stop</label>
-          <input type="text" class="input" value="" />
+          <input type="text" class="input" v-model="activeChat.stop" />
         </div>
 
         <RangeGroup
@@ -260,11 +255,6 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           :step="0.05"
           v-model="activeChat.presence_penalty"
         />
-
-        <div class="input-group">
-          <label class="input-label">Prompt</label>
-          <textarea class="input">{{}}</textarea>
-        </div>
       </div>
     </div>
 
