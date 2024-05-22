@@ -28,6 +28,13 @@ const httpAuth = new Elysia({
     set.redirect = frontendURL.origin;
   })
   .get("auth/user", async ({ jwt, set, cookie: { auth } }) => {
+    // dev
+    return {
+      data: {
+        avatarURL: 'https://cdn.discordapp.com/embed/avatars/1.png',
+        displayName: 'User',
+      },
+    };
     const user = await jwt.verify(auth.value);
     if (!user) {
       set.status = 401;

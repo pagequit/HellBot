@@ -152,6 +152,8 @@ async function submitPrompt(): Promise<void> {
   }
 }
 
+const settingsMenu = ref<HTMLElement | null>(null);
+
 const promptPlaceholder = computed(() =>
   i18n.value.t(locale.value, "promptPlaceholder"),
 );
@@ -178,12 +180,15 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
         </button>
       </div>
 
-      <button class="settings btn">
+      <button
+        class="settings btn"
+        @click="settingsMenu!.classList.toggle('open')"
+      >
         <Adjustments class="settings-icon" />
       </button>
     </header>
 
-    <div class="settings-menu">
+    <div ref="settingsMenu" class="settings-menu">
       <div class="settings-item">
         <div class="input-group">
           <label class="input-label">Title</label>
@@ -421,10 +426,17 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     z-index: 1; /* FIXME */
     position: absolute;
     top: 4.5rem;
-    right: 0;
+    right: -16rem;
     padding: var(--sp-2) var(--sp-3);
     background: var(--c-bg-1);
     border-radius: var(--sp-2);
+    width: 16rem;
+    transition: right 89ms ease-out;
+
+    &.open {
+      right: 0;
+      transition: right 89ms ease-in;
+    }
   }
 
   .chat {
