@@ -160,7 +160,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     <header class="header">
       <button
         class="tab-add btn"
-        @click="chats.push(createChat(`Chat ${chats.length + 1}`))"
+        @click="chats.unshift(createChat(`Chat ${chats.length + 1}`))"
       >
         <Plus class="add-icon" />
       </button>
@@ -176,134 +176,136 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
       </div>
 
       <button
-        class="settings btn"
+        class="settings-btn btn"
         @click="settingsMenu!.classList.toggle('open')"
       >
         <Adjustments class="settings-icon" />
       </button>
     </header>
 
-    <div ref="settingsMenu" class="settings-menu">
-      <div class="settings-item">
-        <div class="input-group">
-          <label class="input-label">Title</label>
-          <input type="text" class="input" v-model="activeChat.title" />
+    <div class="chat-wrapper">
+      <div class="chat">
+        <DieBestie class="die-bestie" />
+
+        <div class="entries" ref="entries">
+          <div
+            v-for="({ content }, index) in activeChat.context"
+            :key="index"
+            class="entry"
+          >
+            <img
+              :src="
+                index % 2 === 0
+                  ? user.avatarURL
+                  : 'https://cdn.discordapp.com/embed/avatars/0.png'
+              "
+              alt="Avatar"
+              class="entry-avatar"
+            />
+            <div class="entry-content" v-html="content"></div>
+          </div>
         </div>
 
-        <div class="input-group">
-          <label class="input-label">System</label>
-          <textarea class="input" v-model="activeChat.system"></textarea>
-        </div>
-
-        <div class="input-group">
-          <label class="input-label">Stop</label>
-          <input type="text" class="input" v-model="activeChat.stop" />
-        </div>
-
-        <RangeGroup
-          :label="'Temperature'"
-          :min="0"
-          :max="2.0"
-          :step="0.1"
-          v-model="activeChat.temperature"
-        />
-
-        <RangeGroup
-          :label="'Top K'"
-          :min="1"
-          :max="100"
-          :step="1"
-          v-model="activeChat.top_k"
-        />
-
-        <RangeGroup
-          :label="'Top P'"
-          :min="0.05"
-          :max="1"
-          :step="0.05"
-          v-model="activeChat.top_p"
-        />
-
-        <RangeGroup
-          :label="'Min P'"
-          :min="0"
-          :max="1"
-          :step="0.05"
-          v-model="activeChat.min_p"
-        />
-
-        <RangeGroup
-          :label="'Repeat Penalty'"
-          :min="0.1"
-          :max="2"
-          :step="0.05"
-          v-model="activeChat.repeat_penalty"
-        />
-
-        <RangeGroup
-          :label="'Presence Penalty'"
-          :min="0"
-          :max="1"
-          :step="0.05"
-          v-model="activeChat.presence_penalty"
-        />
-
-        <RangeGroup
-          :label="'Frequency Penalty'"
-          :min="0"
-          :max="1"
-          :step="0.05"
-          v-model="activeChat.presence_penalty"
-        />
-      </div>
-    </div>
-
-    <div class="chat">
-      <DieBestie class="die-bestie" />
-
-      <div class="entries" ref="entries">
-        <div
-          v-for="({ content }, index) in activeChat.context"
-          :key="index"
-          class="entry"
-        >
-          <img
-            :src="
-              index % 2 === 0
-                ? user.avatarURL
-                : 'https://cdn.discordapp.com/embed/avatars/0.png'
-            "
-            alt="Avatar"
-            class="entry-avatar"
-          />
-          <div class="entry-content" v-html="content"></div>
-        </div>
-      </div>
-
-      <div class="prompt">
-        <textarea
-          class="prompt-input"
-          ref="promptInput"
-          v-model="prompt"
-          :placeholder="promptPlaceholder"
-          @input="setPromptInputHeight"
-          @keydown="
-            (e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                submitPrompt();
+        <div class="prompt">
+          <textarea
+            class="prompt-input"
+            ref="promptInput"
+            v-model="prompt"
+            :placeholder="promptPlaceholder"
+            @input="setPromptInputHeight"
+            @keydown="
+              (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  submitPrompt();
+                }
               }
-            }
-          "
-        ></textarea>
-        <button
-          type="submit"
-          class="prompt-submit btn"
-          :title="submitTitle"
-          @click.prevent="submitPrompt"
-        >
-          <PaperPlane class="submit-icon" />
-        </button>
+            "
+          ></textarea>
+          <button
+            type="submit"
+            class="prompt-submit btn"
+            :title="submitTitle"
+            @click.prevent="submitPrompt"
+          >
+            <PaperPlane class="submit-icon" />
+          </button>
+        </div>
+      </div>
+
+      <div ref="settingsMenu" class="settings-menu">
+        <div class="settings-item">
+          <div class="input-group">
+            <label class="input-label">Title</label>
+            <input type="text" class="input" v-model="activeChat.title" />
+          </div>
+
+          <div class="input-group">
+            <label class="input-label">System</label>
+            <textarea class="input" v-model="activeChat.system"></textarea>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label">Stop</label>
+            <input type="text" class="input" v-model="activeChat.stop" />
+          </div>
+
+          <RangeGroup
+            :label="'Temperature'"
+            :min="0"
+            :max="2.0"
+            :step="0.1"
+            v-model="activeChat.temperature"
+          />
+
+          <RangeGroup
+            :label="'Top K'"
+            :min="1"
+            :max="100"
+            :step="1"
+            v-model="activeChat.top_k"
+          />
+
+          <RangeGroup
+            :label="'Top P'"
+            :min="0.05"
+            :max="1"
+            :step="0.05"
+            v-model="activeChat.top_p"
+          />
+
+          <RangeGroup
+            :label="'Min P'"
+            :min="0"
+            :max="1"
+            :step="0.05"
+            v-model="activeChat.min_p"
+          />
+
+          <RangeGroup
+            :label="'Repeat Penalty'"
+            :min="0.1"
+            :max="2"
+            :step="0.05"
+            v-model="activeChat.repeat_penalty"
+          />
+
+          <RangeGroup
+            :label="'Presence Penalty'"
+            :min="0"
+            :max="1"
+            :step="0.05"
+            v-model="activeChat.presence_penalty"
+          />
+
+          <RangeGroup
+            :label="'Frequency Penalty'"
+            :min="0"
+            :max="1"
+            :step="0.05"
+            v-model="activeChat.presence_penalty"
+          />
+        </div>
       </div>
     </div>
   </main>
@@ -401,7 +403,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     }
   }
 
-  .settings {
+  .settings-btn {
     margin: 0 var(--sp-3);
     width: 2.5rem;
     height: 2.5rem;
@@ -412,20 +414,30 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     width: auto;
   }
 
+  .chat-wrapper {
+    height: calc(100% - 2.5rem - var(--sp-5));
+    margin-top: var(--sp-3);
+    flex: 1 0 auto;
+    display: flex;
+    flex-flow: row nowrap;
+  }
+
   .settings-menu {
-    z-index: 1; /* FIXME */
-    position: absolute;
-    top: 4.5rem;
-    right: -16rem;
-    padding: var(--sp-2) var(--sp-3);
     background: var(--c-bg-1);
-    border-radius: var(--sp-2);
-    width: 16rem;
-    transition: right 89ms ease-out;
+    border-radius: var(--sp-2) 0 0 0;
+    width: 0;
+    height: 100%;
+    transition: width 89ms ease-out;
+    overflow: hidden;
 
     &.open {
-      right: 0;
-      transition: right 89ms ease-in;
+      width: 16rem;
+      transition: width 89ms ease-in;
+      overflow-y: auto;
+    }
+
+    .input-group {
+      margin: var(--sp-3);
     }
   }
 
@@ -439,7 +451,6 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     justify-content: end;
     position: relative;
     flex: 0 1 auto;
-    height: calc(100% - 2.5rem - var(--sp-3));
   }
 
   .entries {

@@ -1,9 +1,7 @@
 import type { CompletionRequestBody } from "@/features/llm/completionRequestBody.ts";
 import { origin } from "@/frontend/src/composables/origin.ts";
 
-export function makePrompt(
-  body: typeof CompletionRequestBody,
-): Promise<Response> {
+export function makePrompt(body: CompletionRequestBody): Promise<Response> {
   return fetch(`${origin}/completion`, {
     credentials: "include",
     mode: "cors",

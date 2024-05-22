@@ -41,4 +41,6 @@ export const completionRequestBody = t.Composite([
   samplingParams,
 ]);
 
-export const CompletionRequestBody = t.Transform(completionRequestBody);
+const T = t.Transform(completionRequestBody);
+
+export type CompletionRequestBody = typeof T;
