@@ -89,7 +89,7 @@ async function submitPrompt(): Promise<void> {
 
   const response: Response | Error = await makePrompt({
     prompt: createPrompt(system, localPrompt, context),
-    stop: activeChat.value.stop,
+    stop: activeChat.value.stop.split(/\s/),
     temperature: activeChat.value.temperature,
     top_k: activeChat.value.top_k,
     top_p: activeChat.value.top_p,
@@ -427,12 +427,12 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     border-radius: var(--sp-2) 0 0 0;
     width: 0;
     height: 100%;
-    transition: width 89ms ease-out;
+    transition: width 144ms ease-out;
     overflow: hidden;
 
     &.open {
       width: 16rem;
-      transition: width 89ms ease-in;
+      transition: width 144ms ease-in;
       overflow-y: auto;
     }
 
@@ -457,7 +457,6 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     display: flex;
     flex-flow: column nowrap;
     gap: var(--sp-2);
-    margin-top: var(--sp-3);
     margin-bottom: var(--sp-3);
     overflow-y: auto;
     border-radius: var(--sp-2);

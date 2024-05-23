@@ -1,4 +1,4 @@
-import { type Static, Type as t } from '@sinclair/typebox'
+import { type Static, Type as t } from "@sinclair/typebox";
 
 const samplingParams = t.Object({
   temperature: t.Number({
@@ -33,7 +33,7 @@ const samplingParams = t.Object({
 
 const completionRequestPartial = t.Object({
   prompt: t.String(),
-  stop: t.String(),
+  stop: t.Array(t.String()),
 });
 
 export const completionRequestBody = t.Composite([
