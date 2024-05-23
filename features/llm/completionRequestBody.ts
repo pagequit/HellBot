@@ -1,4 +1,4 @@
-import { t } from "elysia";
+import { type Static, Type as t } from '@sinclair/typebox'
 
 const samplingParams = t.Object({
   temperature: t.Number({
@@ -41,6 +41,4 @@ export const completionRequestBody = t.Composite([
   samplingParams,
 ]);
 
-const T = t.Transform(completionRequestBody);
-
-export type CompletionRequestBody = typeof T;
+export type CompletionRequestBody = Static<typeof completionRequestBody>;
