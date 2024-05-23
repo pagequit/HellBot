@@ -91,21 +91,3 @@ textarea.input,
     outline-color: var(--c-blurple);
   }
 }
-
-.input-group {
-  display: flex;
-  flex-flow: column nowrap;
-  margin-bottom: var(--sp-3);
-
-  .input-label {
-    display: inline-flex;
-    width: 100%;
-    color: var(--c-fg-1);
-    margin-left: var(--sp-2);
-    margin-bottom: var(--sp-1);
-  }
-  .input {
-    width: 100%;
-    padding: var(--sp-2);
-  }
-}

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { I18n, Locale } from "@/core/i18n/I18n.ts";
+import InputGroup from "@/frontend/src/components/InputGroup.vue";
 import RangeGroup from "@/frontend/src/components/RangeGroup.vue";
+import TextareaGroup from "@/frontend/src/components/TextareaGroup.vue";
 import Adjustments from "@/frontend/src/components/icons/Adjustments.vue";
 import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
 import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
@@ -235,20 +237,11 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 
       <div ref="settingsMenu" class="settings-menu">
         <div class="settings-item">
-          <div class="input-group">
-            <label class="input-label">Title</label>
-            <input type="text" class="input" v-model="activeChat.title" />
-          </div>
+          <InputGroup :label="'Title'" type="text" v-model="activeChat.title" />
 
-          <div class="input-group">
-            <label class="input-label">System</label>
-            <textarea class="input" v-model="activeChat.system"></textarea>
-          </div>
+          <TextareaGroup :label="'System'" v-model="activeChat.system" />
 
-          <div class="input-group">
-            <label class="input-label">Stop</label>
-            <input type="text" class="input" v-model="activeChat.stop" />
-          </div>
+          <InputGroup :label="'Stop'" type="text" v-model="activeChat.stop" />
 
           <RangeGroup
             :label="'Temperature'"
@@ -436,6 +429,8 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
       overflow-y: auto;
     }
 
+    .textarea-group,
+    .range-group,
     .input-group {
       margin: var(--sp-3);
     }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const model = defineModel<number>();
-const { min, max, step } = defineProps<{
+const { label, min, max, step } = defineProps<{
   label: string;
   min: number;
   max: number;
@@ -15,7 +15,7 @@ function updateValue(event: Event): void {
 </script>
 
 <template>
-  <div class="range-group input-group">
+  <div class="range-group">
     <label class="input-label">{{ label }}</label>
     <input
       class="input"
