@@ -185,120 +185,118 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
       </button>
     </header>
 
-    <div class="chat-wrapper">
-      <div class="chat">
-        <DieBestie class="die-bestie" />
+    <div class="chat">
+      <DieBestie class="die-bestie" />
 
-        <div class="entries" ref="entries">
-          <div
-            v-for="({ content }, index) in activeChat.context"
-            :key="index"
-            class="entry"
-          >
-            <img
-              :src="
-                index % 2 === 0
-                  ? user.avatarURL
-                  : 'https://cdn.discordapp.com/embed/avatars/0.png'
-              "
-              alt="Avatar"
-              class="entry-avatar"
-            />
-            <div class="entry-content" v-html="content"></div>
-          </div>
-        </div>
-
-        <div class="prompt">
-          <textarea
-            class="prompt-input"
-            ref="promptInput"
-            v-model="prompt"
-            :placeholder="promptPlaceholder"
-            @input="setPromptInputHeight"
-            @keydown="
-              (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  submitPrompt();
-                }
-              }
+      <div class="entries" ref="entries">
+        <div
+          v-for="({ content }, index) in activeChat.context"
+          :key="index"
+          class="entry"
+        >
+          <img
+            :src="
+              index % 2 === 0
+                ? user.avatarURL
+                : 'https://cdn.discordapp.com/embed/avatars/0.png'
             "
-          ></textarea>
-          <button
-            type="submit"
-            class="prompt-submit btn"
-            :title="submitTitle"
-            @click.prevent="submitPrompt"
-          >
-            <PaperPlane class="submit-icon" />
-          </button>
+            alt="Avatar"
+            class="entry-avatar"
+          />
+          <div class="entry-content" v-html="content"></div>
         </div>
       </div>
 
-      <div ref="settingsMenu" class="settings-menu">
-        <div class="settings-item">
-          <InputGroup :label="'Title'" type="text" v-model="activeChat.title" />
+      <div class="prompt">
+        <textarea
+          class="prompt-input"
+          ref="promptInput"
+          v-model="prompt"
+          :placeholder="promptPlaceholder"
+          @input="setPromptInputHeight"
+          @keydown="
+            (e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submitPrompt();
+              }
+            }
+          "
+        ></textarea>
+        <button
+          type="submit"
+          class="prompt-submit btn"
+          :title="submitTitle"
+          @click.prevent="submitPrompt"
+        >
+          <PaperPlane class="submit-icon" />
+        </button>
+      </div>
+    </div>
 
-          <TextareaGroup :label="'System'" v-model="activeChat.system" />
+    <div ref="settingsMenu" class="settings-menu">
+      <div class="settings-item">
+        <InputGroup :label="'Title'" type="text" v-model="activeChat.title" />
 
-          <InputGroup :label="'Stop'" type="text" v-model="activeChat.stop" />
+        <TextareaGroup :label="'System'" v-model="activeChat.system" />
 
-          <RangeGroup
-            :label="'Temperature'"
-            :min="0"
-            :max="2.0"
-            :step="0.1"
-            v-model="activeChat.temperature"
-          />
+        <InputGroup :label="'Stop'" type="text" v-model="activeChat.stop" />
 
-          <RangeGroup
-            :label="'Top K'"
-            :min="1"
-            :max="100"
-            :step="1"
-            v-model="activeChat.top_k"
-          />
+        <RangeGroup
+          :label="'Temperature'"
+          :min="0"
+          :max="2.0"
+          :step="0.1"
+          v-model="activeChat.temperature"
+        />
 
-          <RangeGroup
-            :label="'Top P'"
-            :min="0.05"
-            :max="1"
-            :step="0.05"
-            v-model="activeChat.top_p"
-          />
+        <RangeGroup
+          :label="'Top K'"
+          :min="1"
+          :max="100"
+          :step="1"
+          v-model="activeChat.top_k"
+        />
 
-          <RangeGroup
-            :label="'Min P'"
-            :min="0"
-            :max="1"
-            :step="0.05"
-            v-model="activeChat.min_p"
-          />
+        <RangeGroup
+          :label="'Top P'"
+          :min="0.05"
+          :max="1"
+          :step="0.05"
+          v-model="activeChat.top_p"
+        />
 
-          <RangeGroup
-            :label="'Repeat Penalty'"
-            :min="0.1"
-            :max="2"
-            :step="0.05"
-            v-model="activeChat.repeat_penalty"
-          />
+        <RangeGroup
+          :label="'Min P'"
+          :min="0"
+          :max="1"
+          :step="0.05"
+          v-model="activeChat.min_p"
+        />
 
-          <RangeGroup
-            :label="'Presence Penalty'"
-            :min="0"
-            :max="1"
-            :step="0.05"
-            v-model="activeChat.presence_penalty"
-          />
+        <RangeGroup
+          :label="'Repeat Penalty'"
+          :min="0.1"
+          :max="2"
+          :step="0.05"
+          v-model="activeChat.repeat_penalty"
+        />
 
-          <RangeGroup
-            :label="'Frequency Penalty'"
-            :min="0"
-            :max="1"
-            :step="0.05"
-            v-model="activeChat.presence_penalty"
-          />
-        </div>
+        <RangeGroup
+          :label="'Presence Penalty'"
+          :min="0"
+          :max="1"
+          :step="0.05"
+          v-model="activeChat.presence_penalty"
+        />
+
+        <RangeGroup
+          :label="'Frequency Penalty'"
+          :min="0"
+          :max="1"
+          :step="0.05"
+          v-model="activeChat.presence_penalty"
+        />
       </div>
     </div>
   </main>
@@ -407,24 +405,20 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     width: auto;
   }
 
-  .chat-wrapper {
-    height: calc(100% - 2.5rem - var(--sp-5));
-    margin-top: var(--sp-3);
-    flex: 1 0 auto;
-    display: flex;
-    flex-flow: row nowrap;
-  }
-
   .settings-menu {
+    position: absolute;
+    right: 0;
+    top: calc(2.5rem + var(--sp-5));
+    height: calc(100% - 2.5rem - var(--sp-5));
     background: var(--c-bg-1);
-    border-radius: var(--sp-2) 0 0 0;
+    border-radius: var(--sp-2) 0 0 var(--sp-2);
     width: 0;
-    height: 100%;
     transition: width 144ms ease-out;
     overflow: hidden;
 
     &.open {
       width: 16rem;
+      box-shadow: 8px 0 16px 0 rgba(var(--rgb-black), 0.2);
       transition: width 144ms ease-in;
       overflow-y: auto;
     }
@@ -437,9 +431,10 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
   }
 
   .chat {
+    height: calc(100% - 2.5rem - var(--sp-5));
     width: 100%;
     max-width: 1024px;
-    margin: 0 auto;
+    margin: var(--sp-3) auto 0;
     padding: 0 var(--sp-3);
     display: flex;
     flex-flow: column nowrap;
