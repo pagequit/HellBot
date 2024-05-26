@@ -172,6 +172,10 @@ async function submitPrompt(): Promise<void> {
     }
   }
 
+  saveChats();
+}
+
+function saveChats(): void {
   if (canUseLocalStorage()) {
     localStorage.setItem("chats", JSON.stringify(chats));
   }
@@ -182,6 +186,17 @@ function reduceChatSettings(chat: ChatComponent): string {
     (acc, cur) => `${acc}${cur}`,
     "",
   );
+}
+
+function addChat(): void {
+  chats.unshift(createChat(`Chat ${chats.length + 1}`));
+  saveChats();
+}
+
+function deleteChat(index: number): void {
+  activeChatIndex.value = index === chats.length - 1 ? index - 1 : index;
+  chats.splice(index, 1);
+  saveChats();
 }
 
 const { generate } = useIdenticon();
@@ -201,10 +216,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 <template>
   <main class="chats">
     <header class="header">
-      <button
-        class="tab-add btn"
-        @click="chats.unshift(createChat(`Chat ${chats.length + 1}`))"
-      >
+      <button class="tab-add btn" @click="addChat">
         <Plus class="add-icon" />
       </button>
       <div class="tabs">
@@ -355,11 +367,12 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
         <hr class="divider" />
 
         <button
+          :disabled="chats.length === 1"
           class="delete-btn btn"
-          @click="chats.splice(activeChatIndex, 1)"
+          @click="deleteChat(activeChatIndex)"
         >
-          <span>Delete</span>
           <Trash class="delete-icon" />
+          <span class="delete-label">Delete</span>
         </button>
       </div>
     </div>
@@ -471,11 +484,15 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     font-weight: 600;
     margin: var(--sp-3);
 
-    & > span {
+    &[disabled] {
+      pointer-events: none;
+    }
+
+    .delete-label {
       margin-right: var(--sp-1);
     }
 
-    & > svg {
+    .delete-icon {
       width: 1.25rem;
       height: 1.25rem;
     }
