@@ -20,6 +20,9 @@
   --rgb-red: 218, 55, 60;
   --c-red: rgb(var(--rgb-red));
 
+  --rgb-gray: 117, 126, 138;
+  --c-gray: rgb(var(--rgb-gray));
+
   --rgb-white: 255, 255, 255;
   --c-white: rgb(var(--rgb-white));
 

@@ -1,3 +1,22 @@
+.c-blurple {
+  color: var(--c-blurple);
+}
+.c-fuchsia {
+  color: var(--c-fuchsia);
+}
+.c-green {
+  color: var(--c-green);
+}
+.c-yellow {
+  color: var(--c-yellow);
+}
+.c-red {
+  color: var(--c-red);
+}
+.c-gray {
+  color: var(--c-gray);
+}
+
 .btn {
   cursor: pointer;
   border-radius: var(--sp-2);

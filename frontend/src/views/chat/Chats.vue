@@ -4,10 +4,14 @@ import InputGroup from "@/frontend/src/components/InputGroup.vue";
 import RangeGroup from "@/frontend/src/components/RangeGroup.vue";
 import TextareaGroup from "@/frontend/src/components/TextareaGroup.vue";
 import Adjustments from "@/frontend/src/components/icons/Adjustments.vue";
+import Check from "@/frontend/src/components/icons/Check.vue";
+import Close from "@/frontend/src/components/icons/Close.vue";
 import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
 import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
 import Plus from "@/frontend/src/components/icons/Plus.vue";
+import Trash from "@/frontend/src/components/icons/Trash.vue";
 import { canUseLocalStorage } from "@/frontend/src/composables/canUseLocalStorage.ts";
+import { useIdenticon } from "@/frontend/src/composables/useIdenticon.ts";
 import { useMarkdown } from "@/frontend/src/composables/useMarkdown.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
 import { useUser } from "@/frontend/src/stores/user.ts";
@@ -19,6 +23,10 @@ import { makePrompt } from "./llama.cpp/completion.ts";
 import { createPrompt } from "./llama.cpp/llama3/createPrompt.ts";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
+
+type ChatComponent = {
+  color: string;
+} & Chat;
 
 const user = useUser();
 const settings = useSettings();
@@ -48,25 +56,42 @@ onMounted(() => {
 
 const prompt = ref<string>("");
 const activeChatIndex = ref<number>(0);
-const activeChat = computed<Chat>(() => chats[activeChatIndex.value]);
+const activeChat = computed<ChatComponent>(() => chats[activeChatIndex.value]);
 
-function createChat(title: string): Chat {
+function* createColorClassGenerator(): Generator<string, void, unknown> {
+  let i = 0;
+  while (true) {
+    yield ["c-blurple", "c-fuchsia", "c-green", "c-red", "c-yellow", "c-gray"][
+      i
+    ];
+    i = (i + 1) % 6;
+  }
+}
+
+const cCGen = createColorClassGenerator();
+
+function createChat(title: string): ChatComponent {
+  const color = cCGen.next().value as string;
+
   return structuredClone({
     context: [],
     title,
-    system: `I'm ${user.displayName}. You are HellBot. You are a helpful assistant.`,
-    stop: "",
-    temperature: 0.8,
-    top_k: 40,
-    top_p: 0.95,
-    min_p: 0.05,
-    repeat_penalty: 1.1,
-    presence_penalty: 0.0,
-    frequency_penalty: 0.0,
-  } satisfies Chat);
+    color,
+    settings: {
+      system: `I'm ${user.displayName}. You are HellBot. You are a helpful assistant.`,
+      stop: "",
+      temperature: 0.8,
+      top_k: 40,
+      top_p: 0.95,
+      min_p: 0.05,
+      repeat_penalty: 1.1,
+      presence_penalty: 0.0,
+      frequency_penalty: 0.0,
+    },
+  });
 }
 
-let localChats: Array<Chat> = [createChat("Chat")];
+let localChats: Array<ChatComponent> = [createChat("Chat")];
 
 if (canUseLocalStorage()) {
   const lSLC = localStorage.getItem("chats");
@@ -74,10 +99,10 @@ if (canUseLocalStorage()) {
   localStorage.setItem("chats", JSON.stringify(localChats));
 }
 
-const chats: Array<Chat> = reactive<Array<Chat>>(localChats);
+const chats: Array<ChatComponent> = reactive<Array<ChatComponent>>(localChats);
 
 async function submitPrompt(): Promise<void> {
-  const system: string = activeChat.value.system;
+  const system: string = activeChat.value.settings.system;
   const context: Array<Message> = activeChat.value.context;
 
   const localPrompt = prompt.value.trim();
@@ -91,14 +116,17 @@ async function submitPrompt(): Promise<void> {
 
   const response: Response | Error = await makePrompt({
     prompt: createPrompt(system, localPrompt, context),
-    stop: activeChat.value.stop.split(/\s/),
-    temperature: activeChat.value.temperature,
-    top_k: activeChat.value.top_k,
-    top_p: activeChat.value.top_p,
-    min_p: activeChat.value.min_p,
-    repeat_penalty: activeChat.value.repeat_penalty,
-    presence_penalty: activeChat.value.presence_penalty,
-    frequency_penalty: activeChat.value.frequency_penalty,
+    stop:
+      activeChat.value.settings.stop.trim().length > 0
+        ? activeChat.value.settings.stop.trim().split(/\s/)
+        : [],
+    temperature: activeChat.value.settings.temperature,
+    top_k: activeChat.value.settings.top_k,
+    top_p: activeChat.value.settings.top_p,
+    min_p: activeChat.value.settings.min_p,
+    repeat_penalty: activeChat.value.settings.repeat_penalty,
+    presence_penalty: activeChat.value.settings.presence_penalty,
+    frequency_penalty: activeChat.value.settings.frequency_penalty,
   }).catch((error) => {
     console.error(error);
     return error;
@@ -149,6 +177,19 @@ async function submitPrompt(): Promise<void> {
   }
 }
 
+function reduceChatSettings(chat: ChatComponent): string {
+  return Object.values(chat.settings).reduce<string>(
+    (acc, cur) => `${acc}${cur}`,
+    "",
+  );
+}
+
+const { generate } = useIdenticon();
+
+const identicon = computed(() =>
+  generate(reduceChatSettings(activeChat.value)),
+);
+
 const settingsMenu = ref<HTMLElement | null>(null);
 
 const promptPlaceholder = computed(() =>
@@ -173,7 +214,12 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           :class="{ 'tab-active': index === activeChatIndex }"
           @click="activeChatIndex = index"
         >
-          {{ chat.title }}
+          <div
+            class="tab-avatar"
+            :class="chat.color"
+            v-html="generate(reduceChatSettings(chat))"
+          ></div>
+          <span class="tab-title">{{ chat.title }}</span>
         </button>
       </div>
 
@@ -195,14 +241,18 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           class="entry"
         >
           <img
-            :src="
-              index % 2 === 0
-                ? user.avatarURL
-                : 'https://cdn.discordapp.com/embed/avatars/0.png'
-            "
+            v-if="index % 2 === 0"
+            :src="user.avatarURL"
             alt="Avatar"
             class="entry-avatar"
           />
+          <div
+            v-else
+            class="entry-avatar"
+            :class="activeChat.color"
+            v-html="identicon"
+          ></div>
+
           <div class="entry-content" v-html="content"></div>
         </div>
       </div>
@@ -238,16 +288,20 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
       <div class="settings-item">
         <InputGroup :label="'Title'" type="text" v-model="activeChat.title" />
 
-        <TextareaGroup :label="'System'" v-model="activeChat.system" />
+        <TextareaGroup :label="'System'" v-model="activeChat.settings.system" />
 
-        <InputGroup :label="'Stop'" type="text" v-model="activeChat.stop" />
+        <InputGroup
+          :label="'Stop'"
+          type="text"
+          v-model="activeChat.settings.stop"
+        />
 
         <RangeGroup
           :label="'Temperature'"
           :min="0"
           :max="2.0"
           :step="0.1"
-          v-model="activeChat.temperature"
+          v-model="activeChat.settings.temperature"
         />
 
         <RangeGroup
@@ -255,7 +309,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           :min="1"
           :max="100"
           :step="1"
-          v-model="activeChat.top_k"
+          v-model="activeChat.settings.top_k"
         />
 
         <RangeGroup
@@ -263,7 +317,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           :min="0.05"
           :max="1"
           :step="0.05"
-          v-model="activeChat.top_p"
+          v-model="activeChat.settings.top_p"
         />
 
         <RangeGroup
@@ -271,7 +325,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           :min="0"
           :max="1"
           :step="0.05"
-          v-model="activeChat.min_p"
+          v-model="activeChat.settings.min_p"
         />
 
         <RangeGroup
@@ -279,7 +333,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           :min="0.1"
           :max="2"
           :step="0.05"
-          v-model="activeChat.repeat_penalty"
+          v-model="activeChat.settings.repeat_penalty"
         />
 
         <RangeGroup
@@ -287,7 +341,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           :min="0"
           :max="1"
           :step="0.05"
-          v-model="activeChat.presence_penalty"
+          v-model="activeChat.settings.presence_penalty"
         />
 
         <RangeGroup
@@ -295,8 +349,18 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
           :min="0"
           :max="1"
           :step="0.05"
-          v-model="activeChat.presence_penalty"
+          v-model="activeChat.settings.presence_penalty"
         />
+
+        <hr class="divider" />
+
+        <button
+          class="delete-btn btn"
+          @click="chats.splice(activeChatIndex, 1)"
+        >
+          <span>Delete</span>
+          <Trash class="delete-icon" />
+        </button>
       </div>
     </div>
   </main>
@@ -355,6 +419,11 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     min-width: var(--sp-6);
   }
 
+  .tab-avatar > svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
   .tab:hover,
   .tab-active {
     background: var(--c-bg-3);
@@ -362,9 +431,8 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
 
   .tab-title {
     background: transparent;
-    border: none;
     color: var(--c-fg-2);
-    outline: none;
+    margin: 0 2px 2px 0;
   }
 
   .more-icon {
@@ -391,6 +459,25 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     svg {
       height: 100%;
       width: auto;
+    }
+  }
+
+  .delete-btn {
+    color: var(--c-white);
+    background: var(--c-red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin: var(--sp-3);
+
+    & > span {
+      margin-right: var(--sp-1);
+    }
+
+    & > svg {
+      width: 1.25rem;
+      height: 1.25rem;
     }
   }
 
@@ -427,6 +514,12 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     .range-group,
     .input-group {
       margin: var(--sp-3);
+    }
+
+    .divider {
+      margin: var(--sp-3);
+      border-color: var(--c-fg-3);
+      border-bottom: none;
     }
   }
 
@@ -466,6 +559,7 @@ const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
     }
   }
 
+  .entry-avatar > svg,
   .entry-avatar {
     width: 2.125rem;
     height: 2.125rem;
