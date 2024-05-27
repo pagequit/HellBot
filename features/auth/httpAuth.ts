@@ -4,6 +4,10 @@ import { store } from "@/core/store.ts";
 import type { Guild } from "discord.js";
 import { Elysia } from "elysia";
 
+const maxAge = 7 * 86400;
+const rootPath = "/";
+const isSecure = process.env.JWT_SECURE === "true";
+
 const httpAuth = new Elysia({
   name: "auth",
 })
@@ -18,9 +22,9 @@ const httpAuth = new Elysia({
     auth.set({
       value: await jwt.sign({ id: userId.unwrap() }),
       httpOnly: true,
-      maxAge: 7 * 86400,
-      path: "/",
-      secure: false, // FIXME: for production
+      maxAge: maxAge,
+      path: rootPath,
+      secure: isSecure,
     });
 
     store.delete(params.token);
@@ -52,9 +56,9 @@ const httpAuth = new Elysia({
     auth.set({
       value: await jwt.sign({ id: user.id }),
       httpOnly: true,
-      maxAge: 7 * 86400,
-      path: "/",
-      secure: false, // FIXME: for production
+      maxAge: maxAge,
+      path: rootPath,
+      secure: isSecure,
     });
 
     return {
@@ -75,8 +79,8 @@ const httpAuth = new Elysia({
       value: await jwt.sign({ id: user.id }),
       httpOnly: true,
       maxAge: 0,
-      path: "/",
-      secure: false, // FIXME: for production
+      path: rootPath,
+      secure: isSecure,
     });
 
     return `Bye ${user.id}`;

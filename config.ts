@@ -11,6 +11,8 @@ export const serverURL = new URL(
   (process.env.VITE_SERVER_ORIGIN as string) ?? "http://localhost:3000",
 );
 export const frontendURL = new URL(
+  // Port 3080 isn't a typo, it's for the vite dev server.
+  // Unset the VITE_SERVER_ORIGIN in .env while developing.
   (process.env.VITE_SERVER_ORIGIN as string) ?? "http://localhost:3080",
 );
 export const llamaURL = new URL(

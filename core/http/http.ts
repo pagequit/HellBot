@@ -6,8 +6,7 @@ const http = new Elysia({
   name: "http",
 }).use(
   cors({
-    // https://github.com/elysiajs/elysia-cors/issues/41
-    origin: frontendURL.host,
+    origin: frontendURL.host, // https://github.com/elysiajs/elysia-cors/issues/41
     allowedHeaders: ["Content-Type"],
     credentials: true,
     preflight: true,
