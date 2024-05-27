@@ -56,8 +56,8 @@ http
       prefix: "/",
     }),
   )
-  .listen(serverURL.port);
-console.log(`Listening on port ${serverURL.port}.`);
+  .listen(process.env.SERVER_PORT);
+console.log(`Listening on port ${process.env.SERVER_PORT}.`);
 
 await removeAllSlashCommands();
 deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
