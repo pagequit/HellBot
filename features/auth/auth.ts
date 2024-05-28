@@ -1,5 +1,5 @@
 import { serverURL } from "@/config.ts";
-import { type ChatInputCommand, store } from "@/core/mod.ts";
+import { type ChatInputCommand, logger, store } from "@/core/mod.ts";
 import {
   type ChatInputCommandInteraction,
   SlashCommandBuilder,
@@ -12,6 +12,7 @@ export const auth: ChatInputCommand = {
     const inviteLink = `${serverURL.origin}/auth/${token}`;
 
     store.set(token, interaction.user.id);
+    logger.log(token, store); // DELTEME
 
     interaction.reply({
       content: inviteLink,
