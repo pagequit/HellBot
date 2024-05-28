@@ -1,6 +1,5 @@
 import { frontendURL } from "@/config.ts";
-import { client, createJwt, logger } from "@/core/mod.ts";
-import { store } from "@/core/store.ts";
+import { client, createJwt, logger, store } from "@/core/mod.ts";
 import type { Guild } from "discord.js";
 import { Elysia } from "elysia";
 
