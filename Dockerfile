@@ -1,6 +1,8 @@
 FROM oven/bun:1 as base
+ARG VITE_SERVER_ORIGIN
+ENV VITE_SERVER_ORIGIN=${VITE_SERVER_ORIGIN}
 WORKDIR /usr/src/app
-ADD . .
+COPY . .
 RUN cd /usr/src/app
 RUN bun install
 RUN bun run build
