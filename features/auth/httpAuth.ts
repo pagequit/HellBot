@@ -13,7 +13,6 @@ const httpAuth = new Elysia({
   .use(createJwt())
   .get("auth/:token", async ({ jwt, set, cookie: { auth }, params }) => {
     const userId = store.get(params.token);
-    logger.log(params.token, store); // DELETEME
     if (userId.isNone()) {
       set.status = 401;
       return "Unauthorized";
