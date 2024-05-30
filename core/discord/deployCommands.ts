@@ -1,4 +1,5 @@
 import { discord } from "@/config.ts";
+import { logger } from "@/core/mod.ts";
 import { REST, Routes, type SlashCommandBuilder } from "discord.js";
 
 const rest = new REST({ version: "10" }).setToken(discord.token);
@@ -10,8 +11,10 @@ export function deployApplicationCommands(
 
   return rest
     .put(Routes.applicationCommands(discord.applicationId), { body })
-    .then(() => console.log("Successfully deployed all application commands."))
-    .catch(console.error);
+    .then(() => logger.log("Successfully deployed all application commands."))
+    .catch((error) => {
+      logger.error(error.message, error);
+    });
 }
 
 export function deployApplicationGuildCommands(
@@ -26,8 +29,10 @@ export function deployApplicationGuildCommands(
         body,
       },
     )
-    .then(() => console.log("Successfully deployed all guild commands."))
-    .catch(console.error);
+    .then(() => logger.log("Successfully deployed all guild commands."))
+    .catch((error) => {
+      logger.error(error.message, error);
+    });
 }
 
 export async function removeAllSlashCommands() {
@@ -38,13 +43,17 @@ export async function removeAllSlashCommands() {
         body: [],
       },
     )
-    .then(() => console.log("Successfully removed all guild commands."))
-    .catch(console.error);
+    .then(() => logger.log("Successfully removed all guild commands."))
+    .catch((error) => {
+      logger.error(error.message, error);
+    });
 
   await rest
     .put(Routes.applicationCommands(discord.applicationId), {
       body: [],
     })
-    .then(() => console.log("Successfully removed all application commands."))
-    .catch(console.error);
+    .then(() => logger.log("Successfully removed all application commands."))
+    .catch((error) => {
+      logger.error(error.message, error);
+    });
 }
