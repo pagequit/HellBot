@@ -10,8 +10,6 @@ const llmHttpProxy = new Elysia({
   .post(
     "/completion",
     async ({ jwt, set, cookie: { auth }, body }) => {
-      logger.log("/completion", body); // TODO: remove
-
       const user = await jwt.verify(auth.value);
       if (!user) {
         set.status = 401;
