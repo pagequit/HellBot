@@ -12,6 +12,8 @@ const httpAuth = new Elysia({
 })
   .use(createJwt())
   .get("auth/:token", async ({ jwt, set, cookie: { auth }, params }) => {
+    logger.log(`/auth/${params.token}`, params); // TODO: remove
+
     const userId = store.get(params.token);
     if (userId.isNone()) {
       set.status = 401;
@@ -31,6 +33,8 @@ const httpAuth = new Elysia({
     set.redirect = frontendURL.origin;
   })
   .get("auth/user", async ({ jwt, set, cookie: { auth } }) => {
+    logger.log("/auth/user", auth.value); // TODO: remove
+
     const user = await jwt.verify(auth.value);
     if (!user) {
       set.status = 401;
@@ -68,6 +72,8 @@ const httpAuth = new Elysia({
     };
   })
   .get("auth/logout", async ({ jwt, set, cookie: { auth } }) => {
+    logger.log("/auth/logout", auth.value); // TODO: remove
+
     const user = await jwt.verify(auth.value);
     if (!user) {
       set.status = 401;

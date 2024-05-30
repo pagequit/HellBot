@@ -1,10 +1,4 @@
-import {
-  type ChatInputCommand,
-  Locale,
-  logger,
-  store,
-  useI18n,
-} from "@/core/mod.ts";
+import { type ChatInputCommand, Locale, useI18n } from "@/core/mod.ts";
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -28,7 +22,6 @@ export const timer: ChatInputCommand = {
     .withDescription("description")
     .withIntegerOption("minutes", "minutesDescription", true),
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
-    logger.log("timer", store); // DELTEME
     const { user, locale, options } = interaction;
     const minutes = options.getInteger("minutes", true);
     const ms = minutes * 60 * 1000;

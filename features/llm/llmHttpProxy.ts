@@ -1,5 +1,5 @@
 import { llamaURL } from "@/config.ts";
-import { createJwt } from "@/core/mod.ts";
+import { createJwt, logger } from "@/core/mod.ts";
 import { Elysia } from "elysia";
 import { completionRequestBody } from "./completionRequestBody";
 
@@ -10,6 +10,8 @@ const llmHttpProxy = new Elysia({
   .post(
     "/completion",
     async ({ jwt, set, cookie: { auth }, body }) => {
+      logger.log("/completion", body); // TODO: remove
+
       const user = await jwt.verify(auth.value);
       if (!user) {
         set.status = 401;
