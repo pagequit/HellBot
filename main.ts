@@ -33,6 +33,7 @@ client.on(Events.InteractionCreate, (interaction: Interaction) => {
   }
 
   try {
+    logger.log(interaction.commandName, interaction);
     command.unwrap().execute(interaction);
   } catch (error) {
     logger.error((error as Error).message, error);
@@ -59,8 +60,8 @@ http
   .listen(process.env.SERVER_PORT);
 console.log(`Listening on port ${process.env.SERVER_PORT}.`);
 
-await removeAllSlashCommands();
-deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
-deployApplicationGuildCommands([
-  ...chatInputGuildCommands.map((c) => c.data).values(),
-]);
+// await removeAllSlashCommands();
+// deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
+// deployApplicationGuildCommands([
+//   ...chatInputGuildCommands.map((c) => c.data).values(),
+// ]);
