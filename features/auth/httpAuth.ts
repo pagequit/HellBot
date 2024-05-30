@@ -13,8 +13,8 @@ const httpAuth = new Elysia({
   .use(createJwt())
   .get(
     "auth/:token",
-    async ({ jwt, set, cookie: { auth }, params, request, body, headers }) => {
-      logger.log(`/auth/${params.token}`, request, body, headers); // TODO: remove
+    async ({ jwt, set, cookie: { auth }, params, request }) => {
+      logger.log(`/auth/${params.token}`, request); // TODO: remove
 
       const userId = store.get(params.token);
       if (userId.isNone()) {

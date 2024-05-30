@@ -9,10 +9,13 @@ export const auth: ChatInputCommand = {
   data: new SlashCommandBuilder().setName("auth").setDescription("WIP"),
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
     const token = Math.random().toString(16).substring(2);
-    const inviteLink = `${serverURL.origin}/auth/${token}`;
+    const inviteLink = `${serverURL.origin}/auth/`;
 
     store.set(token, interaction.user.id);
 
     interaction.user.send(inviteLink);
+    interaction.user.send(token);
+
+    interaction.deleteReply();
   },
 };
