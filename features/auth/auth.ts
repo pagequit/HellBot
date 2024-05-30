@@ -13,9 +13,6 @@ export const auth: ChatInputCommand = {
 
     store.set(token, interaction.user.id);
 
-    interaction.reply({
-      content: inviteLink,
-      ephemeral: true,
-    });
+    interaction.user.send(inviteLink);
   },
 };
