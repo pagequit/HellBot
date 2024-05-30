@@ -33,7 +33,7 @@ client.on(Events.InteractionCreate, (interaction: Interaction) => {
   }
 
   try {
-    logger.log(interaction.commandName, interaction);
+    logger.log(`main: ${interaction.commandName}`, interaction.commandName); // DELETEME
     command.unwrap().execute(interaction);
   } catch (error) {
     logger.error((error as Error).message, error);

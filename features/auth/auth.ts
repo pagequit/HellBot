@@ -12,7 +12,7 @@ export const auth: ChatInputCommand = {
     const inviteLink = `${serverURL.origin}/auth/${token}`;
 
     store.set(token, interaction.user.id);
-    logger.log(token, store); // DELTEME
+    logger.log("auth", store); // DELTEME
 
     interaction.reply({
       content: inviteLink,
