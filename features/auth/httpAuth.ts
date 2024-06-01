@@ -1,4 +1,3 @@
-import { frontendURL } from "@/config.ts";
 import { client, createJwt, logger, store } from "@/core/mod.ts";
 import type { Guild } from "discord.js";
 import { Elysia } from "elysia";
@@ -11,33 +10,24 @@ const httpAuth = new Elysia({
   name: "auth",
 })
   .use(createJwt())
-  .get(
-    "auth/:token",
-    async ({ jwt, set, cookie: { auth }, params, request }) => {
-      logger.log(`/auth/${params.token}`, request); // TODO: remove
+  .get("auth/:token", async ({ jwt, set, cookie: { auth }, params }) => {
+    const userId = store.get(params.token);
+    if (userId.isNone()) {
+      set.status = 401;
+      return "Unauthorized";
+    }
 
-      const userId = store.get(params.token);
-      if (userId.isNone()) {
-        set.status = 401;
-        return "Unauthorized";
-      }
+    auth.set({
+      value: await jwt.sign({ id: userId.unwrap() }),
+      httpOnly: true,
+      maxAge: maxAge,
+      path: rootPath,
+      secure: isSecure,
+    });
 
-      auth.set({
-        value: await jwt.sign({ id: userId.unwrap() }),
-        httpOnly: true,
-        maxAge: maxAge,
-        path: rootPath,
-        secure: isSecure,
-      });
-
-      store.delete(params.token);
-
-      set.redirect = frontendURL.origin;
-    },
-  )
+    store.delete(params.token);
+  })
   .get("auth/user", async ({ jwt, set, cookie: { auth } }) => {
-    logger.log("/auth/user", auth.value); // TODO: remove
-
     const user = await jwt.verify(auth.value);
     if (!user) {
       set.status = 401;
@@ -75,8 +65,6 @@ const httpAuth = new Elysia({
     };
   })
   .get("auth/logout", async ({ jwt, set, cookie: { auth } }) => {
-    logger.log("/auth/logout", auth.value); // TODO: remove
-
     const user = await jwt.verify(auth.value);
     if (!user) {
       set.status = 401;

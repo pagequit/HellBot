@@ -1,7 +1,7 @@
-import { I18n, type LocaleString, type RawTranslation } from "./I18n";
+import { I18n, type Locale, type RawTranslation } from "./I18n";
 import I18nSlashCommandBuilder from "./I18nSlashCommandBuilder.ts";
 
-export function useI18n(translations: [LocaleString, RawTranslation][]): {
+export function useI18n(translations: [Locale, RawTranslation][]): {
   i18n: I18n;
   i18nSlashCommandBuilder: I18nSlashCommandBuilder;
 } {

@@ -1,5 +1,5 @@
 import { llamaURL } from "@/config.ts";
-import { createJwt, logger } from "@/core/mod.ts";
+import { createJwt } from "@/core/mod.ts";
 import { Elysia } from "elysia";
 import { completionRequestBody } from "./completionRequestBody";
 

@@ -1,21 +1,18 @@
 <script setup lang="ts">
-import { I18n, Locale } from "@/core/i18n/I18n.ts";
+import { Locale } from "@/core/mod.ts";
 import InputGroup from "@/frontend/src/components/InputGroup.vue";
 import RangeGroup from "@/frontend/src/components/RangeGroup.vue";
 import TextareaGroup from "@/frontend/src/components/TextareaGroup.vue";
 import Adjustments from "@/frontend/src/components/icons/Adjustments.vue";
-import Check from "@/frontend/src/components/icons/Check.vue";
-import Close from "@/frontend/src/components/icons/Close.vue";
 import DieBestie from "@/frontend/src/components/icons/DieBestie.vue";
 import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
 import Plus from "@/frontend/src/components/icons/Plus.vue";
 import Trash from "@/frontend/src/components/icons/Trash.vue";
 import { canUseLocalStorage } from "@/frontend/src/composables/canUseLocalStorage.ts";
+import { useI18n } from "@/frontend/src/composables/useI18n.ts";
 import { useIdenticon } from "@/frontend/src/composables/useIdenticon.ts";
 import { useMarkdown } from "@/frontend/src/composables/useMarkdown.ts";
-import { useSettings } from "@/frontend/src/stores/settings.ts";
 import { useUser } from "@/frontend/src/stores/user.ts";
-import { storeToRefs } from "pinia";
 import { computed, onMounted, reactive, ref } from "vue";
 import type { Chat } from "./Chat.ts";
 import type { Message } from "./Message.ts";
@@ -29,14 +26,11 @@ type ChatComponent = {
 } & Chat;
 
 const user = useUser();
-const settings = useSettings();
-const { locale } = storeToRefs(settings);
-const i18n = ref(
-  new I18n([
-    [Locale.EnglishGB, en],
-    [Locale.German, de],
-  ]),
-);
+
+const { t } = useI18n([
+  [Locale.EnglishGB, en],
+  [Locale.German, de],
+]);
 
 const decoder = new TextDecoder();
 const markdown = useMarkdown();
@@ -207,10 +201,8 @@ const identicon = computed(() =>
 
 const settingsMenu = ref<HTMLElement | null>(null);
 
-const promptPlaceholder = computed(() =>
-  i18n.value.t(locale.value, "promptPlaceholder"),
-);
-const submitTitle = computed(() => i18n.value.t(locale.value, "submitTitle"));
+const promptPlaceholder = computed(() => t("promptPlaceholder"));
+const submitTitle = computed(() => t("submitTitle"));
 </script>
 
 <template>
