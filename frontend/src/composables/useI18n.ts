@@ -5,7 +5,9 @@ import { storeToRefs } from "pinia";
 const settings = useSettings();
 const { locale } = storeToRefs(settings);
 
-export function useI18n(translations: [Locale, RawTranslation][]) {
+export function useI18n(translations: [Locale, RawTranslation][]): {
+  t: (key: string, ...args: string[]) => string;
+} {
   const i18n = new I18n(translations);
 
   return {

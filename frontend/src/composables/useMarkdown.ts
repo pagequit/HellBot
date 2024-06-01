@@ -7,9 +7,9 @@ const marked = new Marked({
   breaks: true,
 });
 
-export function useMarkdown() {
+export function useMarkdown(): { parse: (content: string) => string } {
   return {
-    parse: (content: string) => {
+    parse: (content: string): string => {
       return DOMPurify.sanitize(marked.parse(content) as string);
     },
   };

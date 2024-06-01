@@ -2,7 +2,7 @@ export function onClickOutside(
   elements: Array<HTMLElement>,
   handler: (event: MouseEvent) => void,
 ): { destroy: () => void } {
-  function listener(event: MouseEvent) {
+  function listener(event: MouseEvent): void {
     if (
       elements.reduce(
         (isOutside, element) =>
@@ -17,7 +17,7 @@ export function onClickOutside(
   document.addEventListener("click", listener, true);
 
   return {
-    destroy() {
+    destroy(): void {
       document.removeEventListener("click", listener, true);
     },
   };

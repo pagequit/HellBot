@@ -14,12 +14,10 @@ function easyHash(key: string): number {
   return key.split("").reduce((h, c) => (h << 5) - h + c.charCodeAt(0), 0);
 }
 
-function generate(text: string) {
-  return createIdenticon(easyHash(text));
-}
-
-export function useIdenticon() {
+export function useIdenticon(): { generate: (text: string) => string } {
   return {
-    generate,
+    generate: (text: string): string => {
+      return createIdenticon(easyHash(text));
+    },
   };
 }

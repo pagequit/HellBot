@@ -17,14 +17,7 @@ import { storeToRefs } from "pinia";
 import { onMounted, ref, watch } from "vue";
 import { RouterLink, RouterView } from "vue-router";
 
-const { avatarURL, displayName } = defineProps<{
-  avatarURL: string;
-  displayName: string;
-}>();
-
-const user = useUser();
-user.avatarURL = avatarURL;
-user.displayName = displayName;
+const { avatarURL, displayName } = useUser();
 
 function logout() {
   window.location.href = `${origin}/auth/logout`;
