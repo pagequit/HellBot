@@ -2,7 +2,7 @@
 const model = defineModel<string>();
 const { label } = defineProps<{
   label: string;
-  type: "text" | "password" | "email";
+  type: "text" | "password";
 }>();
 </script>
 
