@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { Locale } from "@/core/i18n/I18n.ts";
-import Logout from "@/frontend/src/components/icons/Logout.vue";
-import Moon from "@/frontend/src/components/icons/Moon.vue";
-import Sun from "@/frontend/src/components/icons/Sun.vue";
+import Eye from "@/frontend/src/components/icons/Eye.vue";
+import EyeOff from "@/frontend/src/components/icons/EyeOff.vue";
+import Login from "@/frontend/src/components/icons/Login.vue";
 import { origin } from "@/frontend/src/composables/origin.ts";
 import { useI18n } from "@/frontend/src/composables/useI18n";
 import de from "@/frontend/src/views/translations/de.ts";
 import en from "@/frontend/src/views/translations/en.ts";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 
 type InputType = "password" | "text";
 
@@ -16,7 +16,7 @@ const { t } = useI18n([
   [Locale.German, de],
 ]);
 
-const inputType = ref<InputType>("text");
+const inputType = ref<InputType>("password");
 const inputModel = defineModel<string>();
 
 function toggleInputType(): void {
@@ -34,10 +34,10 @@ function signIn(): Promise<Response> {
 <template>
   <div class="index">
     <div class="input-group">
-      <label class="input-label">{{ t("inputLabel") }}</label>
+      <label for="authInput" class="input-label">{{ t("inputLabel") }}</label>
       <input
+        id="authInput"
         :type="inputType"
-        :placeholder="Math.random().toString(16).substring(2)"
         class="input"
         v-model="inputModel"
       />
@@ -46,11 +46,15 @@ function signIn(): Promise<Response> {
         class="input-prepend-btn btn"
         @click="toggleInputType"
       >
-        <Sun class="btn-icon" v-if="inputType === 'text'" />
-        <Moon class="btn-icon" v-else />
+        <Eye class="btn-icon" v-if="inputType === 'password'" />
+        <EyeOff class="btn-icon" v-else />
       </button>
-      <button @click.prevent="signIn" class="input-append-btn btn">
-        <Logout class="btn-icon" />
+      <button
+        @click.prevent="signIn"
+        class="input-append-btn btn"
+        :title="t('submitTitle')"
+      >
+        <Login class="btn-icon" />
       </button>
     </div>
   </div>
@@ -90,24 +94,31 @@ function signIn(): Promise<Response> {
     padding: var(--sp-2);
     grid-row: 2;
     grid-column: 1;
-    padding-left: calc(2.5rem + var(--sp-2));
-    padding-right: calc(2.5rem + var(--sp-2));
+    padding-left: calc(2.5rem + var(--sp-1));
+    padding-right: calc(2.5rem + var(--sp-1));
+  }
+
+  .btn {
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: var(--sp-2);
+    background: var(--c-bg-2);
+
+    &:hover {
+      background: var(--c-bg-1);
+    }
   }
 
   .input-prepend-btn {
     grid-row: 2;
     grid-column: 1;
     justify-self: start;
-    height: 2.5rem;
-    width: 2.5rem;
   }
 
   .input-append-btn {
     grid-row: 2;
     grid-column: 1;
     justify-self: end;
-    height: 2.5rem;
-    width: 2.5rem;
   }
 
   .btn-icon {
