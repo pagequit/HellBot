@@ -48,7 +48,7 @@ for (const feature of await loadFeatures(`${process.cwd()}/features`)) {
   }
 }
 
-client.login(process.env.DISCORD_TOKEN as string);
+// client.login(process.env.DISCORD_TOKEN as string);
 
 http
   .use(
