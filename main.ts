@@ -1,4 +1,3 @@
-import { serverURL } from "@/config.ts";
 import {
   chatInputCommands,
   chatInputGuildCommands,
@@ -33,7 +32,6 @@ client.on(Events.InteractionCreate, (interaction: Interaction) => {
   }
 
   try {
-    logger.log(`${interaction.commandName}`, interaction.commandName); // DELETEME
     command.unwrap().execute(interaction);
   } catch (error) {
     logger.error((error as Error).message, error);
@@ -48,7 +46,7 @@ for (const feature of await loadFeatures(`${process.cwd()}/features`)) {
   }
 }
 
-// client.login(process.env.DISCORD_TOKEN as string);
+client.login(process.env.DISCORD_TOKEN as string);
 
 http
   .use(
@@ -60,8 +58,8 @@ http
   .listen(process.env.SERVER_PORT);
 logger.log(`Listening on port ${process.env.SERVER_PORT}.`);
 
-// await removeAllSlashCommands();
-// deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
-// deployApplicationGuildCommands([
-//   ...chatInputGuildCommands.map((c) => c.data).values(),
-// ]);
+await removeAllSlashCommands();
+deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
+deployApplicationGuildCommands([
+  ...chatInputGuildCommands.map((c) => c.data).values(),
+]);

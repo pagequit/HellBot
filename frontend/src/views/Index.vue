@@ -7,7 +7,7 @@ import { origin } from "@/frontend/src/composables/origin.ts";
 import { useI18n } from "@/frontend/src/composables/useI18n";
 import de from "@/frontend/src/views/translations/de.ts";
 import en from "@/frontend/src/views/translations/en.ts";
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 
 type InputType = "password" | "text";
 
@@ -94,8 +94,8 @@ function signIn(): Promise<Response> {
     padding: var(--sp-2);
     grid-row: 2;
     grid-column: 1;
-    padding-left: calc(2.5rem + var(--sp-1));
-    padding-right: calc(2.5rem + var(--sp-1));
+    padding-left: calc(2.5rem + var(--sp-2));
+    padding-right: calc(2.5rem + var(--sp-2));
   }
 
   .btn {
