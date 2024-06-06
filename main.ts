@@ -13,6 +13,7 @@ import { http } from "@/core/http/http.ts";
 import { loadFeatures } from "@/core/loadFeatures";
 import { staticPlugin } from "@elysiajs/static";
 import { type Client, Events, type Interaction } from "discord.js";
+import { discord, port } from "./config";
 
 client.once(Events.ClientReady, (client: Client<true>) => {
   logger.log(`Logged in as ${client.user.tag}.`);
@@ -46,7 +47,7 @@ for (const feature of await loadFeatures(`${process.cwd()}/features`)) {
   }
 }
 
-client.login(process.env.DISCORD_TOKEN as string);
+client.login(discord.token);
 
 http
   .use(
@@ -55,11 +56,11 @@ http
       prefix: "/",
     }),
   )
-  .listen(process.env.SERVER_PORT);
-logger.log(`Listening on port ${process.env.SERVER_PORT}.`);
+  .listen(port);
+logger.log(`Listening on port ${port}.`);
 
-await removeAllSlashCommands();
-deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
-deployApplicationGuildCommands([
-  ...chatInputGuildCommands.map((c) => c.data).values(),
-]);
+// await removeAllSlashCommands();
+// deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
+// deployApplicationGuildCommands([
+//   ...chatInputGuildCommands.map((c) => c.data).values(),
+// ]);

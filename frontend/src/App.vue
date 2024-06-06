@@ -11,7 +11,7 @@ import Moon from "@/frontend/src/components/icons/Moon.vue";
 import Sun from "@/frontend/src/components/icons/Sun.vue";
 import { onClickOutside } from "@/frontend/src/composables/onClickOutside.ts";
 import { origin } from "@/frontend/src/composables/origin.ts";
-import { useSettings } from "@/frontend/src/stores/settings.ts";
+import { type Theme, useSettings } from "@/frontend/src/stores/settings.ts";
 import { useUser } from "@/frontend/src/stores/user.ts";
 import { storeToRefs } from "pinia";
 import { onMounted, ref, watch } from "vue";
@@ -29,7 +29,7 @@ const menuOpenClass = "menu-open";
 const themeLabelLight = "Light";
 const themeLabelDark = "Dark";
 
-const themes = new Map([
+const themes = new Map<string, Theme>([
   [themeLabelLight, "light"],
   [themeLabelDark, "dark"],
 ]);
@@ -45,7 +45,7 @@ watch(theme, (newTheme: string, oldTheme: string) => {
 
 document.body.classList.add(theme.value);
 
-const languages = new Map([
+const languages = new Map<string, Locale>([
   ["English", Locale.EnglishGB],
   ["Deutsch", Locale.German],
 ]);

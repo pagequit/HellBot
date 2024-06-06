@@ -4,6 +4,7 @@ import { defineStore } from "pinia";
 import { type Ref, ref } from "vue";
 
 export type Theme = "light" | "dark";
+
 export type Settings = {
   locale: Ref<Locale>;
   theme: Ref<Theme>;
@@ -21,7 +22,8 @@ const initialLocale = canUseLocalStorage()
   ? (localStorage.getItem("locale") as Locale) ?? defaultLocale
   : defaultLocale;
 
-const systemTheme = window.matchMedia("(prefers-color-scheme: light)").matches
+const systemTheme: Theme = window.matchMedia("(prefers-color-scheme: light)")
+  .matches
   ? "light"
   : "dark";
 

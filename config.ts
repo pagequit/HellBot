@@ -18,3 +18,4 @@ export const frontendURL = new URL(
 export const llamaURL = new URL(
   (process.env.LLAMA_ORIGIN as string) ?? "http://localhost:8080",
 );
+export const port = (process.env.SERVER_PORT as string) ?? "3000";

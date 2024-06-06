@@ -68,7 +68,7 @@ function signIn(): Promise<Response> {
   width: 100vw;
   height: 100vh;
   z-index: 100;
-  background: rgba(var(--rgb-black), 0.8);
+  background: var(--c-bg-0);
   display: flex;
   align-items: center;
   justify-content: center;
