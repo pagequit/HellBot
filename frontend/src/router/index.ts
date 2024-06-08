@@ -1,4 +1,4 @@
-import Index from "@/frontend/src/views/Index.vue";
+import Chats from "@/frontend/src/views/chat/Chats.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -7,13 +7,8 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "index",
-      component: Index,
-    },
-    {
-      path: "/chats",
       name: "chats",
-      component: () => import("@/frontend/src/views/chat/Chats.vue"),
+      component: Chats,
     },
     {
       path: "/commands",

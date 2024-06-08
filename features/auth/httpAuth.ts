@@ -1,3 +1,4 @@
+import { frontendURL } from "@/config.ts";
 import { client, createJwt, logger, store } from "@/core/mod.ts";
 import type { Guild } from "discord.js";
 import { Elysia } from "elysia";
@@ -26,6 +27,8 @@ const httpAuth = new Elysia({
     });
 
     store.delete(params.token);
+
+    set.redirect = frontendURL.origin;
   })
   .get("auth/user", async ({ jwt, set, cookie: { auth } }) => {
     const user = await jwt.verify(auth.value);

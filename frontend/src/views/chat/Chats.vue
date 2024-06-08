@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Locale } from "@/core/mod.ts";
+import { Locale } from "@/core/i18n/I18n.ts";
 import InputGroup from "@/frontend/src/components/InputGroup.vue";
 import RangeGroup from "@/frontend/src/components/RangeGroup.vue";
 import TextareaGroup from "@/frontend/src/components/TextareaGroup.vue";
