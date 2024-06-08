@@ -108,6 +108,22 @@ async function submitPrompt(): Promise<void> {
   const element = promptInput.value as HTMLTextAreaElement;
   element.style.height = "unset";
 
+  let userContent = localPrompt;
+  try {
+    userContent = markdown.parse(localPrompt);
+  } catch (error) {
+    console.error(error);
+  }
+
+  let rawContent = "";
+  const content = ref<string>("");
+  context.push({
+    role: "user",
+    content: userContent,
+  });
+  context.push({ role: "assistant", content });
+  content.value = "...";
+
   const response: Response | Error = await makePrompt({
     prompt: createPrompt(system, localPrompt, context),
     stop:
@@ -129,21 +145,6 @@ async function submitPrompt(): Promise<void> {
   if (response instanceof Error) {
     return;
   }
-
-  let userContent = localPrompt;
-  try {
-    userContent = markdown.parse(localPrompt);
-  } catch (error) {
-    console.error(error);
-  }
-
-  let rawContent = "";
-  const content = ref<string>("");
-  context.push({
-    role: "user",
-    content: userContent,
-  });
-  context.push({ role: "assistant", content });
 
   // @ts-ignore
   for await (const rawChunk of response.body) {
@@ -269,9 +270,9 @@ const submitTitle = computed(() => t("submitTitle"));
           :placeholder="promptPlaceholder"
           @input="setPromptInputHeight"
           @keydown="
-            (e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
+            (event) => {
+              if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
                 submitPrompt();
               }
             }
