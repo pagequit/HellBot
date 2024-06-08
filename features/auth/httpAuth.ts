@@ -82,7 +82,7 @@ const httpAuth = new Elysia({
       secure: isSecure,
     });
 
-    return `Bye ${user.id}`;
+    set.redirect = frontendURL.origin;
   });
 
 export { httpAuth };

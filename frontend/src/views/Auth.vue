@@ -29,7 +29,7 @@ function signIn(): void {
 </script>
 
 <template>
-  <div class="index">
+  <form class="index" @submit.prevent="signIn">
     <div class="input-group">
       <label for="authInput" class="input-label">{{ t("inputLabel") }}</label>
       <input
@@ -46,15 +46,11 @@ function signIn(): void {
         <Eye class="btn-icon" v-if="inputType === 'password'" />
         <EyeOff class="btn-icon" v-else />
       </button>
-      <button
-        @click.prevent="signIn"
-        class="input-append-btn btn"
-        :title="t('submitTitle')"
-      >
+      <button class="input-append-btn btn" :title="t('submitTitle')">
         <Login class="btn-icon" />
       </button>
     </div>
-  </div>
+  </form>
 </template>
 
 <style>
