@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import Toast from "@/frontend/src/components/Toast.vue";
 import { origin } from "@/frontend/src/composables/origin.ts";
 import { useSettings } from "@/frontend/src/stores/settings.ts";
+import { useToasts } from "@/frontend/src/stores/toasts.ts";
 import { useUser } from "@/frontend/src/stores/user";
 import Auth from "@/frontend/src/views/Auth.vue";
 import Index from "@/frontend/src/views/Index.vue";
 import Loading from "@/frontend/src/views/Loading.vue";
+import { storeToRefs } from "pinia";
 import { Transition, ref } from "vue";
 
 document.body.classList.add(useSettings().theme);
@@ -15,6 +18,9 @@ const components = {
   Index,
   Loading,
 };
+
+const t = useToasts();
+const { toasts } = storeToRefs(t);
 
 fetch(`${origin}/auth/user`, {
   credentials: "include",
@@ -37,6 +43,16 @@ fetch(`${origin}/auth/user`, {
   <Transition name="fade">
     <component :is="components[componentName]" />
   </Transition>
+
+  <div class="toasts">
+    <Toast
+      v-for="({ title, message, type }, index) in toasts"
+      :key="index"
+      :title="title"
+      :message="message"
+      :type="type"
+    />
+  </div>
 </template>
 
 <style>
@@ -48,5 +64,12 @@ fetch(`${origin}/auth/user`, {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.toasts {
+  position: fixed;
+  bottom: var(--sp-3);
+  right: var(--sp-3);
+  z-index: 999;
 }
 </style>

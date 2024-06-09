@@ -13,6 +13,7 @@ import { canUseLocalStorage } from "@/frontend/src/composables/canUseLocalStorag
 import { useI18n } from "@/frontend/src/composables/useI18n.ts";
 import { useIdenticon } from "@/frontend/src/composables/useIdenticon.ts";
 import { useMarkdown } from "@/frontend/src/composables/useMarkdown.ts";
+import { useToasts } from "@/frontend/src/stores/toasts.ts";
 import { useUser } from "@/frontend/src/stores/user.ts";
 import { computed, nextTick, onMounted, reactive, ref } from "vue";
 import type { Chat } from "./Chat.ts";
@@ -29,6 +30,8 @@ const { t } = useI18n([
   [Locale.EnglishGB, en],
   [Locale.German, de],
 ]);
+
+const { makeAToast } = useToasts();
 
 const user = useUser();
 
@@ -139,6 +142,7 @@ async function submitPrompt(): Promise<void> {
 
   nextTick(() => {
     entries.value?.scrollTo(0, entries.value.scrollHeight);
+    makeAToast("Test", "test message", "info");
   });
 
   const response: Response | Error = await makePrompt({
