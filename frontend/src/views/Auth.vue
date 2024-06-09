@@ -29,7 +29,7 @@ function signIn(): void {
 </script>
 
 <template>
-  <form class="index" @submit.prevent="signIn">
+  <form class="auth" @submit.prevent="signIn">
     <div class="input-group">
       <label for="authInput" class="input-label">{{ t("inputLabel") }}</label>
       <input
@@ -54,7 +54,7 @@ function signIn(): void {
 </template>
 
 <style>
-.index {
+.auth {
   position: absolute;
   left: 0;
   top: 0;

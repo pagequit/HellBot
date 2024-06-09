@@ -4,16 +4,16 @@ import { useSettings } from "@/frontend/src/stores/settings.ts";
 import { useUser } from "@/frontend/src/stores/user";
 import Auth from "@/frontend/src/views/Auth.vue";
 import Index from "@/frontend/src/views/Index.vue";
-import Loader from "@/frontend/src/views/Loader.vue";
+import Loading from "@/frontend/src/views/Loading.vue";
 import { Transition, ref } from "vue";
 
 document.body.classList.add(useSettings().theme);
 
-const componentName = ref<"Auth" | "Index" | "Loader">("Loader");
+const componentName = ref<"Auth" | "Index" | "Loading">("Loading");
 const components = {
   Auth,
   Index,
-  Loader,
+  Loading,
 };
 
 fetch(`${origin}/auth/user`, {
@@ -35,14 +35,14 @@ fetch(`${origin}/auth/user`, {
 
 <template>
   <Transition name="fade">
-    <component :is="components[componentName]"></component>
+    <component :is="components[componentName]" />
   </Transition>
 </template>
 
 <style>
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 359ms ease;
+  transition: opacity 233ms ease;
 }
 
 .fade-enter-from,

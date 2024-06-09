@@ -2,6 +2,7 @@ import type { Message } from "./Message.ts";
 
 export type Chat = {
   context: Array<Message>;
+  contextFormatted: Array<Message>;
   title: string; // "Chat"
   settings: {
     system: string; // "You are a helpful assistant."

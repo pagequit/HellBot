@@ -56,75 +56,83 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="menu" ref="menu">
-    <button
-      ref="toggle"
-      type="button"
-      class="menu-toggle btn"
-      title="Menu"
-      @click="menu!.classList.toggle(menuOpenClass)"
-    >
-      <Bars class="toggle-icon" />
-    </button>
+  <div class="index">
+    <div class="menu" ref="menu">
+      <button
+        ref="toggle"
+        type="button"
+        class="menu-toggle btn"
+        title="Menu"
+        @click="menu!.classList.toggle(menuOpenClass)"
+      >
+        <Bars class="toggle-icon" />
+      </button>
 
-    <nav class="menu-nav">
-      <RouterLink class="nav-item chat" title="Chats" to="/">
-        <Chat class="item-icon" /><span class="item-label">Chats</span>
-      </RouterLink>
-      <RouterLink class="nav-item commands" title="Commands" to="/commands">
-        <CodeBracket class="item-icon" /><span class="item-label"
-          >Commands</span
-        >
-      </RouterLink>
-    </nav>
+      <nav class="menu-nav">
+        <RouterLink class="nav-item chat" title="Chats" to="/">
+          <Chat class="item-icon" /><span class="item-label">Chats</span>
+        </RouterLink>
+        <RouterLink class="nav-item commands" title="Commands" to="/commands">
+          <CodeBracket class="item-icon" /><span class="item-label"
+            >Commands</span
+          >
+        </RouterLink>
+      </nav>
 
-    <div class="menu-gui">
-      <div class="gui-item">
-        <Select
-          title="Language"
-          :options="languages"
-          class="gui-select"
-          v-model="locale"
-          @change="setLocale(locale)"
-        ></Select>
-        <Language class="item-icon" />
+      <div class="menu-gui">
+        <div class="gui-item">
+          <Select
+            title="Language"
+            :options="languages"
+            class="gui-select"
+            v-model="locale"
+            @change="setLocale(locale)"
+          ></Select>
+          <Language class="item-icon" />
+        </div>
+
+        <div class="gui-item">
+          <Select
+            title="Theme"
+            :options="themes"
+            class="gui-select"
+            v-model="theme"
+            @change="setTheme(theme)"
+          ></Select>
+          <Moon class="item-icon" v-if="theme === 'light'" />
+          <Sun class="item-icon" v-if="theme === 'dark'" />
+        </div>
+
+        <Popover class="avatar pop-right" :title="displayName">
+          <template #trigger>
+            <button type="button" class="avatar-btn">
+              <img :src="avatarURL" alt="Avatar" class="avatar-img" />
+              <span class="avatar-name">{{ displayName }}</span>
+            </button>
+          </template>
+          <template #target>
+            <button @click="logout" class="btn logout-btn">
+              <Logout class="item-icon" />
+              <span class="logout-label">Logout</span>
+            </button>
+          </template>
+        </Popover>
       </div>
-
-      <div class="gui-item">
-        <Select
-          title="Theme"
-          :options="themes"
-          class="gui-select"
-          v-model="theme"
-          @change="setTheme(theme)"
-        ></Select>
-        <Moon class="item-icon" v-if="theme === 'light'" />
-        <Sun class="item-icon" v-if="theme === 'dark'" />
-      </div>
-
-      <Popover class="avatar pop-right" :title="displayName">
-        <template #trigger>
-          <button type="button" class="avatar-btn">
-            <img :src="avatarURL" alt="Avatar" class="avatar-img" />
-            <span class="avatar-name">{{ displayName }}</span>
-          </button>
-        </template>
-        <template #target>
-          <button @click="logout" class="btn logout-btn">
-            <Logout class="item-icon" />
-            <span class="logout-label">Logout</span>
-          </button>
-        </template>
-      </Popover>
     </div>
-  </div>
 
-  <div class="view">
-    <RouterView />
+    <div class="view">
+      <RouterView />
+    </div>
   </div>
 </template>
 
 <style>
+.index {
+  height: 100vh;
+  display: flex;
+  flex-flow: row nowrap;
+  position: relative;
+}
 .menu {
   position: absolute;
   z-index: 1;

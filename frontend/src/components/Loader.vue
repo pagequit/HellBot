@@ -1,21 +1,10 @@
 <template>
-  <div class="loader">
-    <div class="loader-inner"></div>
-  </div>
+  <div class="loader"></div>
 </template>
 
 <style>
 .loader {
-  background: var(--c-bg-0);
-  min-width: 100vw;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.loader-inner {
-  width: 4rem;
+  width: 1em;
   aspect-ratio: 4;
   --gradient: no-repeat
     radial-gradient(circle closest-side, var(--c-fg-2) 100%, var(--c-bg-0) 0%);
@@ -24,7 +13,7 @@
     var(--gradient) 50% 50%,
     var(--gradient) 100% 50%;
   background-size: calc(100% / 3) 100%;
-  animation: loader 509ms infinite linear;
+  animation: loader 610ms infinite linear;
 }
 @keyframes loader {
   33% {

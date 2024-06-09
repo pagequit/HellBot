@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Locale } from "@/core/i18n/I18n.ts";
 import InputGroup from "@/frontend/src/components/InputGroup.vue";
+import Loader from "@/frontend/src/components/Loader.vue";
 import RangeGroup from "@/frontend/src/components/RangeGroup.vue";
 import TextareaGroup from "@/frontend/src/components/TextareaGroup.vue";
 import Adjustments from "@/frontend/src/components/icons/Adjustments.vue";
@@ -13,9 +14,8 @@ import { useI18n } from "@/frontend/src/composables/useI18n.ts";
 import { useIdenticon } from "@/frontend/src/composables/useIdenticon.ts";
 import { useMarkdown } from "@/frontend/src/composables/useMarkdown.ts";
 import { useUser } from "@/frontend/src/stores/user.ts";
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, nextTick, onMounted, reactive, ref } from "vue";
 import type { Chat } from "./Chat.ts";
-import type { Message } from "./Message.ts";
 import { makePrompt } from "./llama.cpp/completion.ts";
 import { createPrompt } from "./llama.cpp/llama3/createPrompt.ts";
 import de from "./translations/de.ts";
@@ -25,50 +25,70 @@ type ChatComponent = {
   color: string;
 } & Chat;
 
-const user = useUser();
-
 const { t } = useI18n([
   [Locale.EnglishGB, en],
   [Locale.German, de],
 ]);
 
+const user = useUser();
+
+const { generate } = useIdenticon();
+
 const decoder = new TextDecoder();
 const markdown = useMarkdown();
 
+const colorClassGenerator = (function* createColorClassGenerator(): Generator<
+  string,
+  void,
+  unknown
+> {
+  let i = 0;
+  const colorClasses = [
+    "c-blurple",
+    "c-fuchsia",
+    "c-green",
+    "c-red",
+    "c-yellow",
+    "c-gray",
+  ];
+  while (true) {
+    yield colorClasses[i];
+    i = (i + 1) % colorClasses.length;
+  }
+})();
+
+const settingsMenu = ref<HTMLElement | null>(null);
 const entries = ref<HTMLElement | null>(null);
 const promptInput = ref<HTMLTextAreaElement | null>(null);
 
-function setPromptInputHeight(): void {
-  const element = promptInput.value as HTMLTextAreaElement;
-  element.style.height = "unset";
-  element.style.height = `${element.scrollHeight}px`;
+const promptPlaceholder = computed(() => t("promptPlaceholder"));
+const submitTitle = computed(() => t("submitTitle"));
+const identicon = computed(() =>
+  generate(reduceChatSettings(activeChat.value)),
+);
+
+let localChats: Array<ChatComponent> = [createChat("Chat")];
+if (canUseLocalStorage()) {
+  const fromLocalStorage = localStorage.getItem("chats");
+  try {
+    localChats = fromLocalStorage ? JSON.parse(fromLocalStorage) : localChats;
+    localStorage.setItem("chats", JSON.stringify(localChats));
+  } catch (error) {
+    console.error(error);
+  }
 }
 
-onMounted(() => {
-  entries.value?.scrollTo(0, entries.value.scrollHeight);
-});
-
+const chats: Array<ChatComponent> = reactive<Array<ChatComponent>>(localChats);
 const prompt = ref<string>("");
 const activeChatIndex = ref<number>(0);
 const activeChat = computed<ChatComponent>(() => chats[activeChatIndex.value]);
 
-function* createColorClassGenerator(): Generator<string, void, unknown> {
-  let i = 0;
-  while (true) {
-    yield ["c-blurple", "c-fuchsia", "c-green", "c-red", "c-yellow", "c-gray"][
-      i
-    ];
-    i = (i + 1) % 6;
-  }
-}
-
-const cCGen = createColorClassGenerator();
-
 function createChat(title: string): ChatComponent {
-  const color = cCGen.next().value as string;
+  const color = colorClassGenerator.next().value as string;
 
   return structuredClone({
     context: [],
+    contextFormatted: [],
     title,
     color,
     settings: {
@@ -85,19 +105,10 @@ function createChat(title: string): ChatComponent {
   });
 }
 
-let localChats: Array<ChatComponent> = [createChat("Chat")];
-
-if (canUseLocalStorage()) {
-  const lSLC = localStorage.getItem("chats");
-  localChats = lSLC ? JSON.parse(lSLC) : localChats;
-  localStorage.setItem("chats", JSON.stringify(localChats));
-}
-
-const chats: Array<ChatComponent> = reactive<Array<ChatComponent>>(localChats);
-
 async function submitPrompt(): Promise<void> {
-  const system: string = activeChat.value.settings.system;
-  const context: Array<Message> = activeChat.value.context;
+  const system = activeChat.value.settings.system;
+  const context = activeChat.value.context;
+  const contextFormatted = activeChat.value.contextFormatted;
 
   const localPrompt = prompt.value.trim();
   if (localPrompt.length === 0) {
@@ -108,21 +119,27 @@ async function submitPrompt(): Promise<void> {
   const element = promptInput.value as HTMLTextAreaElement;
   element.style.height = "unset";
 
-  let userContent = localPrompt;
-  try {
-    userContent = markdown.parse(localPrompt);
-  } catch (error) {
-    console.error(error);
-  }
-
-  let rawContent = "";
-  const content = ref<string>("");
   context.push({
     role: "user",
-    content: userContent,
+    content: localPrompt,
   });
-  context.push({ role: "assistant", content });
-  content.value = "...";
+  contextFormatted.push({
+    role: "user",
+    content: markdown.parse(localPrompt),
+  });
+
+  context.push({
+    role: "assistant",
+    content: "",
+  });
+  contextFormatted.push({
+    role: "assistant",
+    content: "",
+  });
+
+  nextTick(() => {
+    entries.value?.scrollTo(0, entries.value.scrollHeight);
+  });
 
   const response: Response | Error = await makePrompt({
     prompt: createPrompt(system, localPrompt, context),
@@ -143,9 +160,11 @@ async function submitPrompt(): Promise<void> {
   });
 
   if (response instanceof Error) {
+    // TODO: Error handling
     return;
   }
 
+  let content = "";
   // @ts-ignore
   for await (const rawChunk of response.body) {
     const chunks = decoder.decode(rawChunk).split("\n");
@@ -157,16 +176,18 @@ async function submitPrompt(): Promise<void> {
           if (data.stop) {
             console.log(data);
           }
-          rawContent += data.content;
-          content.value = markdown.parse(rawContent);
+          content += data.content;
+          contextFormatted[contextFormatted.length - 1].content =
+            markdown.parse(content);
         } catch (error) {
-          console.error(error);
+          console.error(error, message);
         }
         entries.value?.scrollTo(0, entries.value.scrollHeight);
       }
     }
   }
 
+  context[context.length - 1].content = content;
   saveChats();
 }
 
@@ -194,16 +215,15 @@ function deleteChat(index: number): void {
   saveChats();
 }
 
-const { generate } = useIdenticon();
+function setPromptInputHeight(): void {
+  const element = promptInput.value as HTMLTextAreaElement;
+  element.style.height = "unset";
+  element.style.height = `${element.scrollHeight}px`;
+}
 
-const identicon = computed(() =>
-  generate(reduceChatSettings(activeChat.value)),
-);
-
-const settingsMenu = ref<HTMLElement | null>(null);
-
-const promptPlaceholder = computed(() => t("promptPlaceholder"));
-const submitTitle = computed(() => t("submitTitle"));
+onMounted(() => {
+  entries.value?.scrollTo(0, entries.value.scrollHeight);
+});
 </script>
 
 <template>
@@ -241,7 +261,7 @@ const submitTitle = computed(() => t("submitTitle"));
 
       <div class="entries" ref="entries">
         <div
-          v-for="({ content }, index) in activeChat.context"
+          v-for="({ content }, index) in activeChat.contextFormatted"
           :key="index"
           class="entry"
         >
@@ -258,7 +278,14 @@ const submitTitle = computed(() => t("submitTitle"));
             v-html="identicon"
           ></div>
 
-          <div class="entry-content" v-html="content"></div>
+          <div
+            class="entry-content"
+            v-if="content.length > 0"
+            v-html="content"
+          ></div>
+          <div class="entry-content" v-else>
+            <Loader />
+          </div>
         </div>
       </div>
 
@@ -584,6 +611,10 @@ const submitTitle = computed(() => t("submitTitle"));
     box-shadow: 0 2px 4px 0 rgba(var(--rgb-black), 0.1);
     line-height: 1.5;
     overflow-x: auto;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: flex-start;
   }
 
   .entry-content p {
