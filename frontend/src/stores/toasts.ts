@@ -17,9 +17,9 @@ export const useToasts = defineStore("toasts", () => {
       type,
     });
 
-    setTimeout(() => {
-      toasts.value.pop();
-    }, 2584);
+    // setTimeout(() => {
+    //   toasts.value.pop();
+    // }, 2584);
   }
 
   return { toasts, makeAToast };

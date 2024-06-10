@@ -6,6 +6,7 @@ export const discord = {
 export const botlog = {
   token: process.env.BOTLOG_TOKEN as string,
   id: process.env.BOTLOG_ID as string,
+  channel: process.env.BOTLOG_CHANNEL_ID as string,
 };
 export const serverURL = new URL(
   (process.env.VITE_SERVER_ORIGIN as string) ?? "http://localhost:3000",
