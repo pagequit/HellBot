@@ -1,24 +1,37 @@
 <script setup lang="ts">
 import Close from "@/frontend/src/components/icons/Close.vue";
 import type { Toast } from "@/frontend/src/stores/toasts";
-import { ref } from "vue";
 import { useToasts } from "@/frontend/src/stores/toasts";
+import { storeToRefs } from "pinia";
+import { onMounted, ref } from "vue";
 
-const { toasts } = useToasts();
-const { id } = defineProps<Toast>();
-const ttl = 2584;
+const { id, message, type } = defineProps<Toast>();
+
+const t = useToasts();
+const { toasts } = storeToRefs(t);
+const ttl = 4181;
 const lastTouched = ref<number>(id);
+const titleMap: Record<Toast["type"], string> = {
+  info: "Info",
+  warning: "Warning",
+  success: "Success",
+  error: "Error",
+};
 
 function deleteSelf() {
-  toasts.delete(id);
+  toasts.value.delete(id);
 }
+
+onMounted(() => {
+  setTimeout(deleteSelf, ttl);
+});
 </script>
 
 <template>
   <div class="toast" :class="type">
-    <div class="toast-title">{{ title }}</div>
+    <div class="toast-title">{{ titleMap[type] }}</div>
     <div class="toast-message">{{ message }}</div>
-    <button type="button" class="toast-close" @click="">
+    <button type="button" class="toast-close" @click="deleteSelf">
       <Close class="toast-close-icon" />
     </button>
   </div>

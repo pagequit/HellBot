@@ -47,8 +47,9 @@ fetch(`${origin}/auth/user`, {
 
   <div class="toasts">
     <Toast
-      v-for="({ title, message, type }, index) in toasts"
-      :key="index"
+      v-for="[key, { id, title, message, type }] in toasts"
+      :key="key"
+      :id="id"
       :title="title"
       :message="message"
       :type="type"

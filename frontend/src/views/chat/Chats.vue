@@ -118,6 +118,8 @@ async function submitPrompt(): Promise<void> {
     return;
   }
 
+  makeAToast(localPrompt, "info");
+
   prompt.value = "";
   const element = promptInput.value as HTMLTextAreaElement;
   element.style.height = "unset";
@@ -142,10 +144,6 @@ async function submitPrompt(): Promise<void> {
 
   nextTick(() => {
     entries.value?.scrollTo(0, entries.value.scrollHeight);
-    makeAToast("Test", "test message", "info");
-    makeAToast("Test", "test message", "warning");
-    makeAToast("Test", "test message", "success");
-    makeAToast("Test", "test message", "error");
   });
 
   const response: Response | Error = await makePrompt({
