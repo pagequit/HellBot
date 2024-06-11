@@ -3,14 +3,13 @@ import Close from "@/frontend/src/components/icons/Close.vue";
 import type { Toast } from "@/frontend/src/stores/toasts";
 import { useToasts } from "@/frontend/src/stores/toasts";
 import { storeToRefs } from "pinia";
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
 
 const { id, message, type } = defineProps<Toast>();
 
 const t = useToasts();
 const { toasts } = storeToRefs(t);
 const ttl = 4181;
-const lastTouched = ref<number>(id);
 const titleMap: Record<Toast["type"], string> = {
   info: "Info",
   warning: "Warning",

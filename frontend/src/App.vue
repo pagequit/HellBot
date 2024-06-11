@@ -46,14 +46,16 @@ fetch(`${origin}/auth/user`, {
   </Transition>
 
   <div class="toasts">
-    <Toast
-      v-for="[key, { id, title, message, type }] in toasts"
-      :key="key"
-      :id="id"
-      :title="title"
-      :message="message"
-      :type="type"
-    />
+    <TransitionGroup name="fade" tag="div">
+      <Toast
+        v-for="[key, { id, title, message, type }] in toasts"
+        :key="key"
+        :id="id"
+        :title="title"
+        :message="message"
+        :type="type"
+      />
+    </TransitionGroup>
   </div>
 </template>
 
