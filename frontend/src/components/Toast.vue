@@ -43,7 +43,7 @@ onMounted(() => {
   border-radius: var(--sp-2);
   background: var(--c-bg-2);
   color: var(--c-fg-1);
-  border-left: 2px solid;
+  border-left: var(--sp-1) solid;
   display: grid;
   grid-gap: var(--sp-2);
   box-shadow: 8px 0 16px 0 rgba(var(--rgb-black), 0.2);

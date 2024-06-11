@@ -48,10 +48,9 @@ fetch(`${origin}/auth/user`, {
   <div class="toasts">
     <TransitionGroup name="fade" tag="div">
       <Toast
-        v-for="[key, { id, title, message, type }] in toasts"
+        v-for="[key, { id, message, type }] in toasts"
         :key="key"
         :id="id"
-        :title="title"
         :message="message"
         :type="type"
       />
