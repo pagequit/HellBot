@@ -1,25 +1,24 @@
 import { defineStore } from "pinia";
-import { type Ref, ref } from "vue";
+import { ref } from "vue";
 
 export type Toast = {
+  id: number;
   title: string;
   message: string;
   type: "info" | "warning" | "success" | "error";
 };
 
-export const useToasts = defineStore("toasts", () => {
-  const toasts = ref<Array<Toast>>([]);
+const toasts = ref<Map<number, Toast>>(new Map());
 
+export const useToasts = defineStore("toasts", () => {
   function makeAToast(title: string, message: string, type: Toast["type"]) {
-    toasts.value.push({
+    const id = Date.now();
+    toasts.value.set(id, {
+      id,
       title,
       message,
       type,
     });
-
-    // setTimeout(() => {
-    //   toasts.value.pop();
-    // }, 2584);
   }
 
   return { toasts, makeAToast };

@@ -1,8 +1,17 @@
 <script setup lang="ts">
 import Close from "@/frontend/src/components/icons/Close.vue";
 import type { Toast } from "@/frontend/src/stores/toasts";
+import { ref } from "vue";
+import { useToasts } from "@/frontend/src/stores/toasts";
 
-defineProps<Toast>();
+const { toasts } = useToasts();
+const { id } = defineProps<Toast>();
+const ttl = 2584;
+const lastTouched = ref<number>(id);
+
+function deleteSelf() {
+  toasts.delete(id);
+}
 </script>
 
 <template>
