@@ -15,9 +15,9 @@ import { staticPlugin } from "@elysiajs/static";
 import { type Client, Events, type Interaction } from "discord.js";
 import { discord, port } from "./config";
 
-client.once(Events.ClientReady, (client: Client<true>) => {
-  logger.log(`Logged in as ${client.user.tag}.`);
-});
+// client.once(Events.ClientReady, (client: Client<true>) => {
+//   logger.log(`Logged in as ${client.user.tag}.`);
+// });
 
 client.on(Events.InteractionCreate, (interaction: Interaction) => {
   if (!interaction.isChatInputCommand()) {
@@ -47,7 +47,7 @@ for (const feature of await loadFeatures(`${process.cwd()}/features`)) {
   }
 }
 
-client.login(discord.token);
+// client.login(discord.token);
 
 http
   .use(

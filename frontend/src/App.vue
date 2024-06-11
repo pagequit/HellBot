@@ -36,6 +36,7 @@ fetch(`${origin}/auth/user`, {
   .catch((error) => {
     console.error(error);
     componentName.value = "Auth";
+    componentName.value = "Index";
   });
 </script>
 
