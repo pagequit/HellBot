@@ -18,8 +18,8 @@ import { useUser } from "@/frontend/src/stores/user.ts";
 import { computed, nextTick, onMounted, reactive, ref } from "vue";
 import type { Chat } from "./Chat.ts";
 import { makePrompt } from "./llama.cpp/completion.ts";
-import { createPrompt } from "./llama.cpp/hermis2/createPrompt.ts";
-// import { createPrompt } from "./llama.cpp/llama3/createPrompt.ts";
+// import { createPrompt } from "./llama.cpp/hermes2/createPrompt.ts";
+import { createPrompt } from "./llama.cpp/llama3/createPrompt.ts";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
 
