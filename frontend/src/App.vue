@@ -26,7 +26,9 @@ fetch(`${origin}/auth/user`, {
   credentials: "include",
   mode: "cors",
 })
-  .then((response: Response) => response.json())
+  .then((response: Response) => {
+    return response.json();
+  })
   .then(({ data }: { data: { avatarURL: string; displayName: string } }) => {
     const user = useUser();
     user.avatarURL = data.avatarURL;
@@ -34,9 +36,9 @@ fetch(`${origin}/auth/user`, {
     componentName.value = "Index";
   })
   .catch((error) => {
-    console.error(error);
     componentName.value = "Auth";
-    componentName.value = "Index";
+    console.error(error);
+    t.makeAToast(error.message, "error");
   });
 </script>
 

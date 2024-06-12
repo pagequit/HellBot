@@ -17,6 +17,10 @@ const samplingParams = t.Object({
     minimum: 0.0, // disabled
     maximum: 1.0,
   }),
+  repeat_last_n: t.Number({
+    minimum: 0,
+    maximum: 128,
+  }),
   repeat_penalty: t.Number({
     minimum: 1.0, // disabled
     maximum: 2.0,
@@ -34,6 +38,7 @@ const samplingParams = t.Object({
 const completionRequestPartial = t.Object({
   prompt: t.String(),
   stop: t.Array(t.String()),
+  grammar: t.String(),
 });
 
 export const completionRequestBody = t.Composite([

@@ -18,7 +18,8 @@ import { useUser } from "@/frontend/src/stores/user.ts";
 import { computed, nextTick, onMounted, reactive, ref } from "vue";
 import type { Chat } from "./Chat.ts";
 import { makePrompt } from "./llama.cpp/completion.ts";
-import { createPrompt } from "./llama.cpp/llama3/createPrompt.ts";
+import { createPrompt } from "./llama.cpp/hermis2/createPrompt.ts";
+// import { createPrompt } from "./llama.cpp/llama3/createPrompt.ts";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
 
@@ -97,10 +98,12 @@ function createChat(title: string): ChatComponent {
     settings: {
       system: `I'm ${user.displayName}. You are HellBot. You are a helpful assistant.`,
       stop: "",
+      grammar: "",
       temperature: 0.8,
       top_k: 40,
       top_p: 0.95,
       min_p: 0.05,
+      repeat_last_n: 64,
       repeat_penalty: 1.1,
       presence_penalty: 0.0,
       frequency_penalty: 0.0,
@@ -152,10 +155,12 @@ async function submitPrompt(): Promise<void> {
       activeChat.value.settings.stop.trim().length > 0
         ? activeChat.value.settings.stop.trim().split(/\s/)
         : [],
+    grammar: activeChat.value.settings.grammar,
     temperature: activeChat.value.settings.temperature,
     top_k: activeChat.value.settings.top_k,
     top_p: activeChat.value.settings.top_p,
     min_p: activeChat.value.settings.min_p,
+    repeat_last_n: activeChat.value.settings.repeat_last_n,
     repeat_penalty: activeChat.value.settings.repeat_penalty,
     presence_penalty: activeChat.value.settings.presence_penalty,
     frequency_penalty: activeChat.value.settings.frequency_penalty,
@@ -333,6 +338,11 @@ onMounted(() => {
           v-model="activeChat.settings.stop"
         />
 
+        <TextareaGroup
+          :label="'Grammar'"
+          v-model="activeChat.settings.grammar"
+        />
+
         <RangeGroup
           :label="'Temperature'"
           :min="0"
@@ -363,6 +373,14 @@ onMounted(() => {
           :max="1"
           :step="0.05"
           v-model="activeChat.settings.min_p"
+        />
+
+        <RangeGroup
+          :label="'Penalty last N'"
+          :min="0"
+          :max="128"
+          :step="1"
+          v-model="activeChat.settings.repeat_last_n"
         />
 
         <RangeGroup
