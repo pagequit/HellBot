@@ -69,10 +69,14 @@ onMounted(() => {
       </button>
 
       <nav class="menu-nav">
-        <RouterLink class="nav-item chat" title="Chats" to="/">
+        <RouterLink class="nav-item nav-chat" title="Chats" to="/">
           <Chat class="item-icon" /><span class="item-label">Chats</span>
         </RouterLink>
-        <RouterLink class="nav-item commands" title="Commands" to="/commands">
+        <RouterLink
+          class="nav-item nav-commands"
+          title="Commands"
+          to="/commands"
+        >
           <CodeBracket class="item-icon" /><span class="item-label"
             >Commands</span
           >

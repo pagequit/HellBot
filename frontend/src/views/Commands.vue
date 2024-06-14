@@ -51,7 +51,12 @@ For each function call return a json object with function name and arguments wit
 
 <template>
   <div class="commands">
-    <h1 class="title">Commands</h1>
     <TextareaGroup label="Commands" v-model="system" />
   </div>
 </template>
+
+<style>
+.commands {
+  margin: var(--sp-3);
+}
+</style>

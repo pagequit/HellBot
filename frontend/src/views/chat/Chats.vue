@@ -17,9 +17,10 @@ import { useToasts } from "@/frontend/src/stores/toasts.ts";
 import { useUser } from "@/frontend/src/stores/user.ts";
 import { computed, nextTick, onMounted, reactive, ref } from "vue";
 import type { Chat } from "./Chat.ts";
+// import { createPrompt } from "./llama.cpp/llama3/createPrompt.ts";
+import MessageEntry from "./MessageEntry.vue";
 import { makePrompt } from "./llama.cpp/completion.ts";
 import { createPrompt } from "./llama.cpp/hermes2/createPrompt.ts";
-// import { createPrompt } from "./llama.cpp/llama3/createPrompt.ts";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
 
@@ -296,11 +297,18 @@ onMounted(() => {
             v-html="identicon"
           ></div>
 
-          <div
-            class="entry-content"
-            v-if="content.length > 0"
-            v-html="content"
-          ></div>
+          <div class="entry-content" v-if="content.length > 0">
+            <MessageEntry>
+              <template v-slot:md>
+                <div class="entry-md" v-html="content"></div>
+              </template>
+              <template v-slot:plain>
+                <code class="entry-text">{{
+                  activeChat.context[index].content
+                }}</code>
+              </template>
+            </MessageEntry>
+          </div>
           <div class="entry-content" v-else>
             <Loader />
           </div>
@@ -335,97 +343,92 @@ onMounted(() => {
     </div>
 
     <div ref="settingsMenu" class="settings-menu">
-      <div class="settings-item">
-        <InputGroup :label="'Title'" type="text" v-model="activeChat.title" />
+      <InputGroup :label="'Title'" type="text" v-model="activeChat.title" />
 
-        <TextareaGroup :label="'System'" v-model="activeChat.settings.system" />
+      <TextareaGroup :label="'System'" v-model="activeChat.settings.system" />
 
-        <InputGroup
-          :label="'Stop'"
-          type="text"
-          v-model="activeChat.settings.stop"
-        />
+      <InputGroup
+        :label="'Stop'"
+        type="text"
+        v-model="activeChat.settings.stop"
+      />
 
-        <TextareaGroup
-          :label="'Grammar'"
-          v-model="activeChat.settings.grammar"
-        />
+      <TextareaGroup :label="'Grammar'" v-model="activeChat.settings.grammar" />
 
-        <RangeGroup
-          :label="'Temperature'"
-          :min="0"
-          :max="2.0"
-          :step="0.1"
-          v-model="activeChat.settings.temperature"
-        />
+      <RangeGroup
+        :label="'Temperature'"
+        :min="0"
+        :max="2.0"
+        :step="0.1"
+        v-model="activeChat.settings.temperature"
+      />
 
-        <RangeGroup
-          :label="'Top K'"
-          :min="1"
-          :max="100"
-          :step="1"
-          v-model="activeChat.settings.top_k"
-        />
+      <RangeGroup
+        :label="'Top K'"
+        :min="1"
+        :max="100"
+        :step="1"
+        v-model="activeChat.settings.top_k"
+      />
 
-        <RangeGroup
-          :label="'Top P'"
-          :min="0.05"
-          :max="1"
-          :step="0.05"
-          v-model="activeChat.settings.top_p"
-        />
+      <RangeGroup
+        :label="'Top P'"
+        :min="0.05"
+        :max="1"
+        :step="0.05"
+        v-model="activeChat.settings.top_p"
+      />
 
-        <RangeGroup
-          :label="'Min P'"
-          :min="0"
-          :max="1"
-          :step="0.05"
-          v-model="activeChat.settings.min_p"
-        />
+      <RangeGroup
+        :label="'Min P'"
+        :min="0"
+        :max="1"
+        :step="0.05"
+        v-model="activeChat.settings.min_p"
+      />
 
-        <RangeGroup
-          :label="'Penalty last N'"
-          :min="0"
-          :max="128"
-          :step="1"
-          v-model="activeChat.settings.repeat_last_n"
-        />
+      <RangeGroup
+        :label="'Penalty last N'"
+        :min="0"
+        :max="128"
+        :step="1"
+        v-model="activeChat.settings.repeat_last_n"
+      />
 
-        <RangeGroup
-          :label="'Repeat Penalty'"
-          :min="0.1"
-          :max="2"
-          :step="0.05"
-          v-model="activeChat.settings.repeat_penalty"
-        />
+      <RangeGroup
+        :label="'Repeat Penalty'"
+        :min="0.1"
+        :max="2"
+        :step="0.05"
+        v-model="activeChat.settings.repeat_penalty"
+      />
 
-        <RangeGroup
-          :label="'Presence Penalty'"
-          :min="0"
-          :max="1"
-          :step="0.05"
-          v-model="activeChat.settings.presence_penalty"
-        />
+      <RangeGroup
+        :label="'Presence Penalty'"
+        :min="0"
+        :max="1"
+        :step="0.05"
+        v-model="activeChat.settings.presence_penalty"
+      />
 
-        <RangeGroup
-          :label="'Frequency Penalty'"
-          :min="0"
-          :max="1"
-          :step="0.05"
-          v-model="activeChat.settings.presence_penalty"
-        />
+      <RangeGroup
+        :label="'Frequency Penalty'"
+        :min="0"
+        :max="1"
+        :step="0.05"
+        v-model="activeChat.settings.presence_penalty"
+      />
 
-        <hr class="divider" />
+      <hr class="divider" />
 
-        <button
-          :disabled="chats.length === 1"
-          class="delete-btn btn"
-          @click="deleteChat(activeChatIndex)"
-        >
-          <Trash class="delete-icon" />
-          <span class="delete-label">Delete</span>
-        </button>
-      </div>
+      <button
+        :disabled="chats.length === 1"
+        class="delete-btn btn"
+        @click="deleteChat(activeChatIndex)"
+      >
+        <Trash class="delete-icon" />
+        <span class="delete-label">Delete</span>
+      </button>
     </div>
   </main>
 </template>
@@ -646,6 +649,18 @@ onMounted(() => {
     flex-flow: column nowrap;
     justify-content: center;
     align-items: flex-start;
+  }
+
+  .entry-md {
+    margin-bottom: var(--sp-1);
+  }
+
+  pre code,
+  .entry-text {
+    display: block;
+    background: var(--c-bg-0);
+    padding: var(--sp-1) var(--sp-2);
+    border-radius: var(--sp-1);
   }
 
   .entry-content p {
