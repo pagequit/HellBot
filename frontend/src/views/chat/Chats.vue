@@ -121,8 +121,6 @@ async function submitPrompt(): Promise<void> {
     return;
   }
 
-  makeAToast(localPrompt, "info");
-
   prompt.value = "";
   const element = promptInput.value as HTMLTextAreaElement;
   element.style.height = "unset";
@@ -149,51 +147,61 @@ async function submitPrompt(): Promise<void> {
     entries.value?.scrollTo(0, entries.value.scrollHeight);
   });
 
-  const response: Response | Error = await makePrompt({
-    prompt: createPrompt(system, localPrompt, context),
-    stop:
-      activeChat.value.settings.stop.trim().length > 0
-        ? activeChat.value.settings.stop.trim().split(/\s/)
-        : [],
-    grammar: activeChat.value.settings.grammar,
-    temperature: activeChat.value.settings.temperature,
-    top_k: activeChat.value.settings.top_k,
-    top_p: activeChat.value.settings.top_p,
-    min_p: activeChat.value.settings.min_p,
-    repeat_last_n: activeChat.value.settings.repeat_last_n,
-    repeat_penalty: activeChat.value.settings.repeat_penalty,
-    presence_penalty: activeChat.value.settings.presence_penalty,
-    frequency_penalty: activeChat.value.settings.frequency_penalty,
-  }).catch((error) => {
+  const controller = new AbortController();
+  const response: Response | Error = await makePrompt(
+    {
+      prompt: createPrompt(system, localPrompt, context),
+      stop:
+        activeChat.value.settings.stop.trim().length > 0
+          ? activeChat.value.settings.stop.trim().split(/\s/)
+          : [],
+      grammar: activeChat.value.settings.grammar,
+      temperature: activeChat.value.settings.temperature,
+      top_k: activeChat.value.settings.top_k,
+      top_p: activeChat.value.settings.top_p,
+      min_p: activeChat.value.settings.min_p,
+      repeat_last_n: activeChat.value.settings.repeat_last_n,
+      repeat_penalty: activeChat.value.settings.repeat_penalty,
+      presence_penalty: activeChat.value.settings.presence_penalty,
+      frequency_penalty: activeChat.value.settings.frequency_penalty,
+    },
+    controller,
+  ).catch((error) => {
     console.error(error);
     return error;
   });
 
   if (response instanceof Error) {
-    // TODO: Error handling
+    makeAToast(response.message, "error");
     return;
   }
 
   let content = "";
+  let leftover = "";
   // @ts-ignore
   for await (const rawChunk of response.body) {
-    const chunks = decoder.decode(rawChunk).split("\n");
-    for (const chunk of chunks) {
-      const message = chunk.trim();
-      if (message.length > 0) {
-        try {
-          const data = JSON.parse(message.substring(5));
-          if (data.stop) {
-            console.log(data);
-          }
-          content += data.content;
-          contextFormatted[contextFormatted.length - 1].content =
-            markdown.parse(content);
-        } catch (error) {
-          console.error(error, message);
-        }
-        entries.value?.scrollTo(0, entries.value.scrollHeight);
+    const text = leftover + decoder.decode(rawChunk);
+    const lines = text.split("\n");
+    // @ts-ignore
+    leftover = text.endsWith("\n") ? "" : lines.pop();
+
+    for (const line of lines) {
+      const message = line.trim();
+      if (message.length === 0) {
+        continue;
       }
+
+      try {
+        const data = JSON.parse(message.substring(5)); // "data: "
+        content += data.content;
+        contextFormatted[contextFormatted.length - 1].content =
+          markdown.parse(content);
+      } catch (error) {
+        console.error(error, message);
+        makeAToast((error as Error).message, "error");
+      }
+
+      entries.value?.scrollTo(0, entries.value.scrollHeight);
     }
   }
 
