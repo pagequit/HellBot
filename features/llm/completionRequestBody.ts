@@ -18,7 +18,7 @@ const samplingParams = t.Object({
     maximum: 1.0,
   }),
   repeat_last_n: t.Number({
-    minimum: 0,
+    minimum: 0, // disabled
     maximum: 128,
   }),
   repeat_penalty: t.Number({

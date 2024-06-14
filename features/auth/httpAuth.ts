@@ -1,4 +1,5 @@
 import { frontendURL } from "@/config.ts";
+import type { HttpJsonResponse } from "@/core/http/HttpJsonResponse";
 import { client, createJwt, logger, store } from "@/core/mod.ts";
 import type { Guild } from "discord.js";
 import { Elysia } from "elysia";
@@ -13,9 +14,18 @@ const httpAuth = new Elysia({
   .use(createJwt())
   .get("auth/:token", async ({ jwt, set, cookie: { auth }, params }) => {
     const userId = store.get(params.token);
+
     if (userId.isNone()) {
       set.status = 401;
-      return "Unauthorized";
+
+      return {
+        errors: [
+          {
+            status: set.status,
+            title: "Unauthorized",
+          },
+        ],
+      } satisfies HttpJsonResponse;
     }
 
     auth.set({
@@ -34,7 +44,15 @@ const httpAuth = new Elysia({
     const user = await jwt.verify(auth.value);
     if (!user) {
       set.status = 401;
-      return "Unauthorized";
+
+      return {
+        errors: [
+          {
+            status: set.status,
+            title: "Unauthorized",
+          },
+        ],
+      } satisfies HttpJsonResponse;
     }
 
     const guild = (await client.guilds
@@ -49,7 +67,15 @@ const httpAuth = new Elysia({
 
     if (!member) {
       set.status = 404;
-      return "Not Found";
+
+      return {
+        errors: [
+          {
+            status: set.status,
+            title: "Not Found",
+          },
+        ],
+      } satisfies HttpJsonResponse;
     }
 
     auth.set({
@@ -65,13 +91,21 @@ const httpAuth = new Elysia({
         avatarURL: member.displayAvatarURL(),
         displayName: member.displayName,
       },
-    };
+    } satisfies HttpJsonResponse;
   })
   .get("auth/logout", async ({ jwt, set, cookie: { auth } }) => {
     const user = await jwt.verify(auth.value);
     if (!user) {
       set.status = 401;
-      return "Unauthorized";
+
+      return {
+        errors: [
+          {
+            status: set.status,
+            title: "Unauthorized",
+          },
+        ],
+      } satisfies HttpJsonResponse;
     }
 
     auth.set({
