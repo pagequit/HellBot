@@ -1,0 +1,21 @@
+{
+  "type": "function",
+  "function": {
+    "name": "timer",
+    "description": "Set a timer in minutes to remind you on a certain subject.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "minutes": {
+          "type": "number",
+          "description": "Minutes to wait before the timer is up."
+        },
+        "subject": {
+          "type": "string",
+          "description": "Subject of the timer."
+        }
+      }
+    },
+    "required": ["minutes", "subject"]
+  }
+}

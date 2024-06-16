@@ -1,6 +1,6 @@
 import { discord } from "@/config.ts";
-import { logger } from "@/core/mod.ts";
 import { REST, Routes, type SlashCommandBuilder } from "discord.js";
+import { logger } from "./logger.ts";
 
 const rest = new REST({ version: "10" }).setToken(discord.token);
 

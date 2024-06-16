@@ -1,4 +1,6 @@
-import { type ChatInputCommand, Locale, useI18n } from "@/core/mod.ts";
+import type { ChatInputCommand } from "@/core/discord/ChatInputCommand.ts";
+import { Locale } from "@/core/i18n/I18n.ts";
+import { useI18n } from "@/core/i18n/useI18n.ts";
 import {
   ActionRowBuilder,
   ButtonBuilder,

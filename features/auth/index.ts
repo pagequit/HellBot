@@ -1,5 +1,6 @@
 import type { Feature } from "@/core/Feature.ts";
-import { http, registerChatInputCommand } from "@/core/mod.ts";
+import { registerChatInputCommand } from "@/core/discord/registerCommand.ts";
+import { http } from "@/core/http/http.ts";
 import { auth } from "./auth.ts";
 import { httpAuth } from "./httpAuth.ts";
 

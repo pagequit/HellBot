@@ -1,4 +1,5 @@
-import { http, type Feature } from "@/core/mod.ts";
+import type { Feature } from "@/core/Feature.ts";
+import { http } from "@/core/http/http.ts";
 import { llmHttpProxy } from "./llmHttpProxy.ts";
 
 export default ((): void => {

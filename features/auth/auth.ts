@@ -1,5 +1,6 @@
 import { frontendURL } from "@/config.ts";
-import { type ChatInputCommand, store } from "@/core/mod.ts";
+import type { ChatInputCommand } from "@/core/discord/ChatInputCommand.ts";
+import { store } from "@/core/store.ts";
 import {
   type ChatInputCommandInteraction,
   SlashCommandBuilder,

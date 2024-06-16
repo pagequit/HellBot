@@ -1,5 +1,5 @@
 import type { Feature } from "@/core/Feature.ts";
-import { registerChatInputCommand } from "@/core/mod";
+import { registerChatInputCommand } from "@/core/discord/registerCommand.ts";
 import {
   type ChatInputCommandInteraction,
   SlashCommandBuilder,
