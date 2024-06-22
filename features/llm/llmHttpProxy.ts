@@ -32,7 +32,7 @@ function pipe(stream: ReadableStream<Uint8Array>): ReadableStream<Uint8Array> {
           return;
         }
 
-        lib.symbols.parseFunctionCallables(value, value.length);
+        // lib.symbols.parseFunctionCallables(value, value.length);
 
         const text = leftover + decoder.decode(value);
         const lines = text.split("\n");
@@ -40,16 +40,16 @@ function pipe(stream: ReadableStream<Uint8Array>): ReadableStream<Uint8Array> {
         leftover = text.endsWith("\n") ? "" : lines.pop();
 
         for (const line of lines) {
-          const message = line.trim();
-          if (message.length === 0) {
+          const match = line.match(/(\w+):(.*)/);
+          if (!match) {
             continue;
           }
 
           try {
-            const data = JSON.parse(message.substring(5)); // "data: "
+            const data = JSON.parse(match[2].trim());
             buffer += data.content;
           } catch (error) {
-            console.error(error, message);
+            console.error(error, `${match[1]}: ${match[2]}`);
           }
 
           controller.enqueue(value);

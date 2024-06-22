@@ -1,37 +1,58 @@
 const std = @import("std");
 const expect = std.testing.expect;
 
-test "while if bla test" {
-    var sum: u8 = 0;
-    var i: u8 = 0;
-    while (i <= 3) : (i += 1) {
-        sum += if (i == 2) 0 else i;
+const Suit = enum {
+    clubs,
+    spades,
+    diamonds,
+    hearts,
+    pub fn isClubs(self: Suit) bool {
+        return self == Suit.clubs;
     }
+};
 
-    try expect(sum == 4);
+const Mode = enum {
+    var count: u32 = 0;
+    on,
+    off,
+};
+
+test "hmm" {
+    Mode.count += 1;
+    try expect(Mode.count == 1);
 }
 
-test "defer" {
-    var x: f32 = 5;
-    {
-        defer x += 2;
-        defer x /= 2;
+const Vec4 = struct { x: f32 = 0, y: f32 = 0, z: f32 = 0, w: f32 = 0 };
+
+test "struct default" {
+    const my_vector = Vec4{
+        .x = 25,
+        .y = -50,
+    };
+    _ = my_vector;
+}
+
+const Tagged = union(enum) { a: u8, b: f32, c: bool };
+
+test "switch on tagged union" {
+    var value = Tagged{ .b = 1.5 };
+    switch (value) {
+        .a => |*byte| byte.* += 1,
+        .b => |*float| float.* *= 2,
+        .c => |*b| b.* = !b.*,
     }
-    try expect(x == 4.5);
+    try expect(value.b == 3);
 }
 
-const AllocationError = error{OutOfMemory};
-
-test "coerce error from a subset to a superset" {
-    const err: FileOpenError = AllocationError.OutOfMemory;
-    try expect(err == FileOpenError.OutOfMemory);
+test "well defined overflow" {
+    var a: u8 = 255;
+    a +%= 1;
+    try expect(a == 0);
 }
 
-test "error union" {
-    const maybe_error: AllocationError!u16 = 10;
-    cont no_error = maybe_error catch 0;
-
-    try expect(@TypeOf(no_error) == u16);
-    try expect(no_error == 10);
+test "int-float conversion" {
+    const a: f32 = 1.5;
+    const b: i32 = @intFromFloat(a);
+    try expect(b == 1);
 }
 
