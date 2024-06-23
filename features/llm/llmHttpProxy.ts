@@ -20,7 +20,6 @@ const lib = dlopen(path, {
 function pipe(stream: ReadableStream<Uint8Array>): ReadableStream<Uint8Array> {
   const reader = stream.getReader();
   let leftover = "";
-  let buffer = "";
 
   return new ReadableStream({
     start(controller) {
@@ -47,14 +46,12 @@ function pipe(stream: ReadableStream<Uint8Array>): ReadableStream<Uint8Array> {
 
           try {
             const data = JSON.parse(match[2].trim());
-            buffer += data.content;
+            console.log(data.content);
           } catch (error) {
             console.error(error, `${match[1]}: ${match[2]}`);
           }
 
           controller.enqueue(value);
-
-          buffer = "";
           return pump();
         }
       }
