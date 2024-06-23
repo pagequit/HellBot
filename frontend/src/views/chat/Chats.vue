@@ -40,7 +40,6 @@ const user = useUser();
 
 const { generate } = useIdenticon();
 
-const decoder = new TextDecoder();
 const markdown = useMarkdown();
 
 const colorClassGenerator = (function* createColorClassGenerator(): Generator<
@@ -206,6 +205,7 @@ function reduceChatSettings(chat: ChatComponent): string {
 
 function addChat(): void {
   chats.unshift(createChat(`Chat ${chats.length + 1}`));
+  activeChatIndex.value = 0;
   saveChats();
 }
 
