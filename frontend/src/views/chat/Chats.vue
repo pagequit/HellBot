@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Locale } from "@/core/i18n/I18n.ts";
+import { parseStreamToCompletionResult } from "@/features/llm/parseStreamToCompletionResult.ts";
 import InputGroup from "@/frontend/src/components/InputGroup.vue";
 import Loader from "@/frontend/src/components/Loader.vue";
 import RangeGroup from "@/frontend/src/components/RangeGroup.vue";
@@ -17,10 +18,10 @@ import { useToasts } from "@/frontend/src/stores/toasts.ts";
 import { useUser } from "@/frontend/src/stores/user.ts";
 import { computed, nextTick, onMounted, reactive, ref } from "vue";
 import type { Chat } from "./Chat.ts";
-// import { createPrompt } from "./llama.cpp/llama3/createPrompt.ts";
 import MessageEntry from "./MessageEntry.vue";
 import { makePrompt } from "./llama.cpp/completion.ts";
 import { createPrompt } from "./llama.cpp/hermes2/createPrompt.ts";
+// import { createPrompt } from "./llama.cpp/llama3/createPrompt.ts";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
 
@@ -178,32 +179,12 @@ async function submitPrompt(): Promise<void> {
   }
 
   let content = "";
-  let leftover = "";
   // @ts-ignore
-  for await (const rawChunk of response.body) {
-    const text = leftover + decoder.decode(rawChunk);
-    const lines = text.split("\n");
-    // @ts-ignore
-    leftover = text.endsWith("\n") ? "" : lines.pop();
-
-    for (const line of lines) {
-      const message = line.trim();
-      if (message.length === 0) {
-        continue;
-      }
-
-      try {
-        const data = JSON.parse(message.substring(5)); // "data: "
-        content += data.content;
-        contextFormatted[contextFormatted.length - 1].content =
-          markdown.parse(content);
-      } catch (error) {
-        console.error(error, message);
-        makeAToast((error as Error).message, "error");
-      }
-
-      entries.value?.scrollTo(0, entries.value.scrollHeight);
-    }
+  for await (const result of parseStreamToCompletionResult(response.body)) {
+    content += result.content;
+    contextFormatted[contextFormatted.length - 1].content =
+      markdown.parse(content);
+    entries.value?.scrollTo(0, entries.value.scrollHeight);
   }
 
   context[context.length - 1].content = content;

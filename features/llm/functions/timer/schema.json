@@ -1,7 +1,7 @@
 {
   "type": "function",
   "function": {
-    "name": "timer",
+    "name": "set_timer",
     "description": "Set a timer in minutes to remind you on a certain subject.",
     "parameters": {
       "type": "object",

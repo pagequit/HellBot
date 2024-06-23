@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import TextareaGroup from "@/frontend/src/components/TextareaGroup.vue";
 
-const system = `
-<|im_start|>system
+const system = `<|im_start|>system
 You are a function calling AI model.
 You are provided with function signatures within <tools></tools> XML tags.
 You may call one or more functions to assist with the user query.
@@ -12,17 +11,22 @@ Here are the available tools:
 {
   "type": "function",
   "function": {
-    "name": "get_stock_fundamentals",
-    "description":"get_stock_fundamentals(symbol: str) -> dict - Get fundamental data for a given stock symbol using yfinance API.",
+    "name": "set_timer",
+    "description": "Set a timer in minutes to remind you on a certain subject.",
     "parameters": {
       "type": "object",
       "properties": {
-        "symbol": {
-          "type": "string"
+        "minutes": {
+          "type": "number",
+          "description": "Minutes to wait before the timer is up."
+        },
+        "subject": {
+          "type": "string",
+          "description": "Subject of the timer."
         }
-      },
-      "required": ["symbol"]
-    }
+      }
+    },
+    "required": ["minutes", "subject"]
   }
 }
 </tools>
@@ -45,8 +49,7 @@ Use the following pydantic model json schema for each tool call you will make:
 For each function call return a json object with function name and arguments within <tool_call></tool_call> XML tags as follows:
 <tool_call>
 {"arguments": <args-dict>, "name": <function-name>}
-</tool_call><|im_end|>
-`;
+</tool_call><|im_end|>`;
 </script>
 
 <template>
