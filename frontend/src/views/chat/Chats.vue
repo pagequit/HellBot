@@ -27,6 +27,7 @@ import en from "./translations/en.ts";
 
 type ChatComponent = {
   color: string;
+  isLoading: boolean;
 } & Chat;
 
 const { t } = useI18n([
@@ -89,13 +90,12 @@ const activeChatIndex = ref<number>(0);
 const activeChat = computed<ChatComponent>(() => chats[activeChatIndex.value]);
 
 function createChat(title: string): ChatComponent {
-  const color = colorClassGenerator.next().value as string;
-
   return structuredClone({
+    isLoading: false,
+    color: colorClassGenerator.next().value as string,
     context: [],
     contextFormatted: [],
     title,
-    color,
     settings: {
       system: `I'm ${user.displayName}. You are HellBot. You are a helpful assistant.`,
       stop: "",
@@ -149,6 +149,7 @@ async function submitPrompt(): Promise<void> {
   });
 
   const controller = new AbortController();
+  activeChat.value.isLoading = true;
   const response: Response | Error = await makePrompt(
     {
       prompt: createPrompt(system, localPrompt, context),
@@ -174,6 +175,7 @@ async function submitPrompt(): Promise<void> {
 
   if (response instanceof Error) {
     makeAToast(response.message, "error");
+    activeChat.value.isLoading = false;
     return;
   }
 
@@ -187,6 +189,7 @@ async function submitPrompt(): Promise<void> {
   }
 
   context[context.length - 1].content = content;
+  activeChat.value.isLoading = false;
   saveChats();
 }
 
@@ -278,7 +281,7 @@ onMounted(() => {
             v-html="identicon"
           ></div>
 
-          <div class="entry-content" v-if="content.length > 0">
+          <div class="entry-content">
             <MessageEntry>
               <template v-slot:md>
                 <div class="entry-md" v-html="content"></div>
@@ -289,9 +292,11 @@ onMounted(() => {
                 }}</code>
               </template>
             </MessageEntry>
-          </div>
-          <div class="entry-content" v-else>
-            <Loader />
+            <Loader
+              v-if="
+                activeChat.isLoading && index === activeChat.context.length - 1
+              "
+            />
           </div>
         </div>
       </div>
