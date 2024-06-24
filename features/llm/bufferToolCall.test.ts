@@ -2,8 +2,20 @@ import { expect, test } from "bun:test";
 import { bufferToolCall } from "./parseStreamToCompletionResult";
 
 test("testBufferToolCall", () => {
-  const buffer = { ref: "" };
-  const parse = bufferToolCall(buffer);
+  let result = "";
+  let startCount = 0;
+  let abortCount = 0;
+  const parse = bufferToolCall(
+    () => {
+      startCount += 1;
+    },
+    () => {
+      abortCount += 1;
+    },
+    (r: string) => {
+      result += r;
+    },
+  );
 
   for (const chunk of [
     "<",
@@ -22,27 +34,82 @@ test("testBufferToolCall", () => {
     parse(chunk);
   }
 
-  expect(buffer.ref).toBe("hello");
+  expect(result).toBe("hello");
+  expect(startCount).toBe(1);
+  expect(abortCount).toBe(0);
 });
 
 test("testBufferShittyToolCall", () => {
-  const buffer = { ref: "" };
-  const parse = bufferToolCall(buffer);
+  let result = "";
+  let startCount = 0;
+  let abortCount = 0;
+  const parse = bufferToolCall(
+    () => {
+      startCount += 1;
+    },
+    () => {
+      abortCount += 1;
+    },
+    (r: string) => {
+      result += r;
+    },
+  );
 
   for (const char of "<t>Okey, here we go: {T ool_call>hello<tool_call>world</tool_(c)all></tool_call></t><br>") {
     parse(char);
   }
 
-  expect(buffer.ref).toBe("world</tool_(c)all>");
+  expect(result).toBe("world</tool_(c)all>");
+  expect(startCount).toBe(4);
+  expect(abortCount).toBe(3);
 });
 
 test("testBufferMultiToolCall", () => {
-  const buffer = { ref: "" };
-  const parse = bufferToolCall(buffer);
+  let result = "";
+  let startCount = 0;
+  let abortCount = 0;
+  const parse = bufferToolCall(
+    () => {
+      startCount += 1;
+    },
+    () => {
+      abortCount += 1;
+    },
+    (r: string) => {
+      result += r;
+    },
+  );
 
   for (const char of "<tool_call>hello</tool_call> <t</t>> <tool_call>_world</tool_call>") {
     parse(char);
   }
 
-  expect(buffer.ref).toBe("hello_world");
+  expect(result).toBe("hello_world");
+  expect(startCount).toBe(3);
+  expect(abortCount).toBe(1);
+});
+
+test("testBufferDoubleToolCall", () => {
+  let result = "";
+  let startCount = 0;
+  let abortCount = 0;
+  const parse = bufferToolCall(
+    () => {
+      startCount += 1;
+    },
+    () => {
+      abortCount += 1;
+    },
+    (r: string) => {
+      result += r;
+    },
+  );
+
+  for (const char of "<tool_call>hello</tool_call><tool_call>_world</tool_call>") {
+    parse(char);
+  }
+
+  expect(result).toBe("hello_world");
+  expect(startCount).toBe(2);
+  expect(abortCount).toBe(0);
 });
