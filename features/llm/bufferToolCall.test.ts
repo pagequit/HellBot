@@ -80,36 +80,11 @@ test("testBufferMultiToolCall", () => {
     },
   );
 
-  for (const char of "<tool_call>hello</tool_call> <t</t>> <tool_call>_world</tool_call>") {
+  for (const char of "<tool_call>hello</tool_call> <t</t>> <tool_call>_world</tool_call><tool_call>_foo</tool_call>") {
     parse(char);
   }
 
-  expect(result).toBe("hello_world");
-  expect(startCount).toBe(3);
+  expect(result).toBe("hello_world_foo");
+  expect(startCount).toBe(4);
   expect(abortCount).toBe(1);
-});
-
-test("testBufferDoubleToolCall", () => {
-  let result = "";
-  let startCount = 0;
-  let abortCount = 0;
-  const parse = bufferToolCall(
-    () => {
-      startCount += 1;
-    },
-    () => {
-      abortCount += 1;
-    },
-    (r: string) => {
-      result += r;
-    },
-  );
-
-  for (const char of "<tool_call>hello</tool_call><tool_call>_world</tool_call>") {
-    parse(char);
-  }
-
-  expect(result).toBe("hello_world");
-  expect(startCount).toBe(2);
-  expect(abortCount).toBe(0);
 });
