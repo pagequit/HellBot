@@ -179,10 +179,31 @@ async function submitPrompt(): Promise<void> {
     return;
   }
 
+  const decoder = new TextDecoder();
   let content = "";
+  let leftover = "";
   // @ts-ignore
-  for await (const result of parseStreamToCompletionResult(response.body)) {
-    content += result.content;
+  for await (const value of response.body) {
+    const text = leftover + decoder.decode(value);
+    const lines = text.split("\n");
+    leftover = text.endsWith("\n") ? "" : (lines.pop() as string);
+
+    for (const line of lines) {
+      const match = line.match(/(\w+):(.*)/);
+      if (!match) {
+        continue;
+      }
+
+      try {
+        const data = JSON.parse(match[2].trim());
+        console.log(data);
+        content += data.content;
+      } catch (error) {
+        console.error(error, `${match[1]}: ${match[2]}`);
+        makeAToast((error as Error).message, "error");
+      }
+    }
+
     contextFormatted[contextFormatted.length - 1].content =
       markdown.parse(content);
     entries.value?.scrollTo(0, entries.value.scrollHeight);

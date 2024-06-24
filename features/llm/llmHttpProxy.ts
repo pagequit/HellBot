@@ -1,17 +1,9 @@
-// import { FFIType, dlopen, suffix } from "bun:ffi";
 import { llamaURL } from "@/config.ts";
 import type { HttpJsonResponse } from "@/core/http/HttpJsonResponse.ts";
 import { createJwt } from "@/core/http/createJwt.ts";
+import { parseStreamToCompletionResult } from "@/features/llm/parseStreamToCompletionResult.ts";
 import { Elysia } from "elysia";
 import { completionRequestBody } from "./completionRequestBody.ts";
-
-// const path = `${process.cwd()}/features/llm/libfunction_call.${suffix}`;
-// const lib = dlopen(path, {
-//   parseFunctionCallables: {
-//     args: [FFIType.ptr, FFIType.u16],
-//     returns: FFIType.void,
-//   },
-// });
 
 const llmHttpProxy = new Elysia({
   name: "llmHttpProxy",
@@ -34,11 +26,15 @@ const llmHttpProxy = new Elysia({
         } satisfies HttpJsonResponse;
       }
 
-      return fetch(`${llamaURL.origin}/completion`, {
+      const response = await fetch(`${llamaURL.origin}/completion`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ stream: true, ...body }),
       });
+
+      return parseStreamToCompletionResult(
+        response.body as ReadableStream<Uint8Array>,
+      );
     },
     {
       body: completionRequestBody,
