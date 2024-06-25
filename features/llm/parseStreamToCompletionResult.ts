@@ -9,16 +9,22 @@ export function parseStreamToCompletionResult(
   const reader = stream.getReader();
   const decoder = new TextDecoder();
   let leftover = "";
-  const buffer: CompletoinResult[] = [];
+  const buffer: Array<Uint8Array> = [];
   const functionCallParsing = false;
+  const parse = bufferToolCall(
+    () => {
+      // buffer.capture(value)
+    },
+    () => {
+      // buffer.release()
+    },
+    (result: string) => {},
+  );
 
   return new ReadableStream({
     async start(controller) {
       while (true) {
         const { done, value } = await reader.read();
-        if (functionCallParsing) {
-        }
-
         if (done) {
           controller.close();
           reader.releaseLock();
@@ -37,13 +43,24 @@ export function parseStreamToCompletionResult(
 
           try {
             const data = JSON.parse(match[2].trim());
-            buffer.push(data);
+            parse(data.content);
           } catch (error) {
             console.error(error, `${match[1]}: ${match[2]}`);
           }
         }
 
-        controller.enqueue(value);
+        if (/* capturing */) {
+          if (/* complete */) {
+            // for result
+            // enqueue
+          }
+          if (/* abort */) {
+            // for captured
+            // enqueue
+          }
+        } else {
+          controller.enqueue(value);
+        }
       }
     },
   });
