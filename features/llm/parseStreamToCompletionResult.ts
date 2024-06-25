@@ -10,19 +10,24 @@ export function parseStreamToCompletionResult(
   const decoder = new TextDecoder();
   let leftover = "";
   const buffer: Array<Uint8Array> = [];
-  const functionCallParsing = false;
+  let functionCall = "";
+  let functionCallParsingStart = false;
+  let functionCallParsingAbort = false;
   const parse = bufferToolCall(
     () => {
-      // buffer.capture(value)
+      functionCallParsingStart = true;
     },
     () => {
-      // buffer.release()
+      functionCallParsingAbort = true;
     },
-    (result: string) => {},
+    (result: string) => {
+      functionCall = result;
+    },
   );
 
   return new ReadableStream({
     async start(controller) {
+      // TODO: prevent deadlock if no closing tag is found
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
@@ -49,14 +54,27 @@ export function parseStreamToCompletionResult(
           }
         }
 
-        if (/* capturing */) {
-          if (/* complete */) {
-            // for result
-            // enqueue
+        if (functionCallParsingStart) {
+          buffer.push(value);
+
+          if (functionCall.length > 0) {
+            functionCallParsingStart = false;
+
+            console.log(functionCall);
+            functionCall = "";
+
+            for (const chunk of buffer) {
+              controller.enqueue(chunk);
+            }
           }
-          if (/* abort */) {
-            // for captured
-            // enqueue
+
+          if (functionCallParsingAbort) {
+            functionCallParsingAbort = false;
+            functionCallParsingStart = false;
+
+            for (const chunk of buffer) {
+              controller.enqueue(chunk);
+            }
           }
         } else {
           controller.enqueue(value);
