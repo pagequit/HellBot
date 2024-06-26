@@ -1,8 +1,3 @@
-export type CompletoinResult = {
-  content: string;
-  stop: boolean;
-};
-
 export function parseStreamToCompletionResult(
   stream: ReadableStream<Uint8Array>,
 ): ReadableStream<Uint8Array> {
@@ -27,7 +22,6 @@ export function parseStreamToCompletionResult(
 
   return new ReadableStream({
     async start(controller) {
-      // TODO: prevent deadlock if no closing tag is found
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
