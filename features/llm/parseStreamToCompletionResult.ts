@@ -1,8 +1,12 @@
+import { type Collection, None } from "unwrap/mod";
+
 export function parseStreamToCompletionResult(
   stream: ReadableStream<Uint8Array>,
+  functions: Collection<string, (args: any) => string>,
 ): ReadableStream<Uint8Array> {
   const reader = stream.getReader();
   const decoder = new TextDecoder();
+  const encoder = new TextEncoder();
   let leftover = "";
   const buffer: Array<Uint8Array> = [];
   let functionCall = "";
@@ -54,12 +58,14 @@ export function parseStreamToCompletionResult(
           if (functionCall.length > 0) {
             functionCallParsingStart = false;
 
-            console.log(functionCall);
+            let res = "";
+            const fc = JSON.parse(functionCall);
+            functions.get(fc.name).map((fn) => {
+              res = fn(fc.arguments);
+            });
             functionCall = "";
 
-            for (const chunk of buffer) {
-              controller.enqueue(chunk);
-            }
+            controller.enqueue(encoder.encode(`data: {"content": "${res}"}\n`));
           }
 
           if (functionCallParsingAbort) {

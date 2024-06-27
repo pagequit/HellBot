@@ -3,6 +3,7 @@ import type { HttpJsonResponse } from "@/core/http/HttpJsonResponse.ts";
 import { createJwt } from "@/core/http/createJwt.ts";
 import { parseStreamToCompletionResult } from "@/features/llm/parseStreamToCompletionResult.ts";
 import { Elysia } from "elysia";
+import { Collection } from "unwrap/mod.ts";
 import { completionRequestBody } from "./completionRequestBody.ts";
 
 const llmHttpProxy = new Elysia({
@@ -34,6 +35,14 @@ const llmHttpProxy = new Elysia({
 
       return parseStreamToCompletionResult(
         response.body as ReadableStream<Uint8Array>,
+        Collection.from([
+          [
+            "set_timer",
+            ({ minutes, subject }: { minutes: number; subject: string }) => {
+              return `Timer for ${subject} is set to ${minutes} minutes.`;
+            },
+          ],
+        ]),
       );
     },
     {

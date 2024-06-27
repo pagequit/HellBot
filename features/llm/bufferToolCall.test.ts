@@ -1,35 +1,5 @@
 import { expect, test } from "bun:test";
-import {
-  bufferToolCall,
-  parseStreamToCompletionResult,
-} from "./parseStreamToCompletionResult";
-
-test("parseStreamToCompletionResult", () => {
-  const testStream = new ReadableStream<Uint8Array>({
-    start(controller) {
-      for (const chunk of [
-        "<",
-        "tool",
-        "_",
-        "call",
-        ">",
-        "hello",
-        "<",
-        "/",
-        "tool",
-        "_",
-        "call",
-        ">",
-      ]) {
-        const buffer = Uint8Array.from(chunk.split("").map((c) => parseInt(c)));
-        controller.enqueue(buffer);
-      }
-      controller.close();
-    },
-  });
-
-  const _ = parseStreamToCompletionResult(testStream);
-});
+import { bufferToolCall } from "./parseStreamToCompletionResult";
 
 test("testBufferToolCall", () => {
   let result = "";
