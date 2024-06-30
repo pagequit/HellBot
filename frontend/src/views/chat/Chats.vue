@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Locale } from "@/core/i18n/I18n.ts";
-import { parseStreamToCompletionResult } from "@/features/llm/parseStreamToCompletionResult.ts";
+// import { parseStreamToCompletionResult } from "@/features/llm/parseStreamToCompletionResult.ts";
 import InputGroup from "@/frontend/src/components/InputGroup.vue";
 import Loader from "@/frontend/src/components/Loader.vue";
 import RangeGroup from "@/frontend/src/components/RangeGroup.vue";

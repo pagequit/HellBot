@@ -1,4 +1,4 @@
-import type { Message } from "./Message.ts";
+import type { Message } from "../../../../features/llm/Message.ts";
 
 export type Chat = {
   context: Array<Message>;

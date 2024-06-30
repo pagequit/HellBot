@@ -1,4 +1,9 @@
-import { type Collection, None } from "unwrap/mod";
+import type { Collection } from "unwrap/mod";
+
+function makeFunctionCallRoundtrip(response: string): void {
+  const toolResponseTemplate = `<tool_response>\n${response}\n</tool_response>\n`;
+  const chatMLTemplate = `<|im_start|>tool\n${toolResponseTemplate}<|im_end|>\n`;
+}
 
 export function parseStreamToCompletionResult(
   stream: ReadableStream<Uint8Array>,

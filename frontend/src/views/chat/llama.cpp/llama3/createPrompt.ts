@@ -1,4 +1,4 @@
-import type { Message } from "../../Message";
+import type { Message } from "@/features/llm/Message.ts";
 
 export function createPrompt(
   system: string,

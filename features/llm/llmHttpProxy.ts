@@ -39,7 +39,7 @@ const llmHttpProxy = new Elysia({
           [
             "set_timer",
             ({ minutes, subject }: { minutes: number; subject: string }) => {
-              return `Timer for ${subject} is set to ${minutes} minutes.`;
+              return `{"name": "set_timer", "content": { "minutes": ${minutes}, "subject": "${subject}" }}`;
             },
           ],
         ]),
