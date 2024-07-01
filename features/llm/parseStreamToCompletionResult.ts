@@ -1,17 +1,30 @@
+import { llamaURL } from "@/config.ts";
 import type { Collection } from "unwrap/mod";
 
-function makeFunctionCallRoundtrip(response: string): void {
-  const toolResponseTemplate = `<tool_response>\n${response}\n</tool_response>\n`;
-  const chatMLTemplate = `<|im_start|>tool\n${toolResponseTemplate}<|im_end|>\n`;
+export async function makeFunctionCallRoundtrip(
+  result: string,
+  body: any,
+): Promise<ReadableStream<Uint8Array>> {
+  const toolResponseTemplate = `<tool_response>\n${result}\n</tool_response>\n`;
+  body.prompt += `<|im_start|>tool\n${toolResponseTemplate}<|im_end|>\n`;
+
+  const response = await fetch(`${llamaURL.origin}/completion`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ stream: true, ...body }),
+  });
+
+  return response.body as ReadableStream<Uint8Array>;
 }
 
 export function parseStreamToCompletionResult(
   stream: ReadableStream<Uint8Array>,
+  body: any,
   functions: Collection<string, (args: any) => string>,
 ): ReadableStream<Uint8Array> {
   const reader = stream.getReader();
   const decoder = new TextDecoder();
-  const encoder = new TextEncoder();
+  const encoder = new TextEncoder(); // TODO
   let leftover = "";
   const buffer: Array<Uint8Array> = [];
   let functionCall = "";
@@ -70,7 +83,17 @@ export function parseStreamToCompletionResult(
             });
             functionCall = "";
 
-            controller.enqueue(encoder.encode(`data: {"content": "${res}"}\n`));
+            const rs = await makeFunctionCallRoundtrip(res, body);
+            const rsReader = rs.getReader();
+            while (true) {
+              const { done, value } = await rsReader.read();
+              if (done) {
+                rsReader.releaseLock();
+                break;
+              }
+
+              controller.enqueue(value);
+            }
           }
 
           if (functionCallParsingAbort) {
