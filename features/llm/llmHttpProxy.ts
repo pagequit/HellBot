@@ -3,8 +3,8 @@ import { createJwt } from "@/core/http/createJwt.ts";
 import { parseStreamToCompletionResult } from "@/features/llm/parseStreamToCompletionResult.ts";
 import { Elysia } from "elysia";
 import { Collection } from "unwrap/mod.ts";
-import { completionRequestBody } from "./completionRequestBody.ts";
 import { completionRequest } from "./completionRequest.ts";
+import { completionRequestBody } from "./completionRequestBody.ts";
 
 const llmHttpProxy = new Elysia({
   name: "llmHttpProxy",

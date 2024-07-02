@@ -1,9 +1,11 @@
+import { logger } from "@/core/discord/logger.ts";
 import type { Collection } from "unwrap/mod";
 import { completionRequest } from "./completionRequest.ts";
+import type { CompletionRequestBody } from "./completionRequestBody.ts";
 
 export async function makeFunctionCallRoundtrip(
   result: string,
-  body: any,
+  body: CompletionRequestBody,
 ): Promise<ReadableStream<Uint8Array>> {
   const toolResponseTemplate = `<tool_response>\n${result}\n</tool_response>\n`;
   body.prompt += `<|im_start|>tool\n${toolResponseTemplate}<|im_end|>\n`;
@@ -14,12 +16,11 @@ export async function makeFunctionCallRoundtrip(
 
 export function parseStreamToCompletionResult(
   stream: ReadableStream<Uint8Array>,
-  body: any,
+  body: CompletionRequestBody,
   functions: Collection<string, (args: any) => string>,
 ): ReadableStream<Uint8Array> {
   const reader = stream.getReader();
   const decoder = new TextDecoder();
-  const encoder = new TextEncoder(); // TODO
   let leftover = "";
   const buffer: Array<Uint8Array> = [];
   let functionCall = "";
@@ -61,7 +62,10 @@ export function parseStreamToCompletionResult(
             const data = JSON.parse(match[2].trim());
             parse(data.content);
           } catch (error) {
-            console.error(error, `${match[1]}: ${match[2]}`);
+            logger.error(
+              `${(error as Error).message}. Error at: "${match[1]}: ${match[2]}".`,
+              error,
+            );
           }
         }
 
@@ -72,10 +76,17 @@ export function parseStreamToCompletionResult(
             functionCallParsingStart = false;
 
             let res = "";
-            const fc = JSON.parse(functionCall);
-            functions.get(fc.name).map((fn) => {
-              res = fn(fc.arguments);
-            });
+            try {
+              const fc = JSON.parse(functionCall);
+              functions.get(fc.name).map((fn) => {
+                res = fn(fc.arguments);
+              });
+            } catch (error) {
+              logger.error(
+                `${(error as Error).message}. Error at: "${functionCall}"`,
+                error,
+              );
+            }
             functionCall = "";
 
             const rs = await makeFunctionCallRoundtrip(res, body);
