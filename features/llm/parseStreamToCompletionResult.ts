@@ -1,5 +1,5 @@
-import { llamaURL } from "@/config.ts";
 import type { Collection } from "unwrap/mod";
+import { completionRequest } from "./completionRequest.ts";
 
 export async function makeFunctionCallRoundtrip(
   result: string,
@@ -8,12 +8,7 @@ export async function makeFunctionCallRoundtrip(
   const toolResponseTemplate = `<tool_response>\n${result}\n</tool_response>\n`;
   body.prompt += `<|im_start|>tool\n${toolResponseTemplate}<|im_end|>\n`;
 
-  const response = await fetch(`${llamaURL.origin}/completion`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ stream: true, ...body }),
-  });
-
+  const response = await completionRequest(body);
   return response.body as ReadableStream<Uint8Array>;
 }
 

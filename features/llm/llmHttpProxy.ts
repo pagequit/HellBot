@@ -1,10 +1,10 @@
-import { llamaURL } from "@/config.ts";
 import type { HttpJsonResponse } from "@/core/http/HttpJsonResponse.ts";
 import { createJwt } from "@/core/http/createJwt.ts";
 import { parseStreamToCompletionResult } from "@/features/llm/parseStreamToCompletionResult.ts";
 import { Elysia } from "elysia";
 import { Collection } from "unwrap/mod.ts";
 import { completionRequestBody } from "./completionRequestBody.ts";
+import { completionRequest } from "./completionRequest.ts";
 
 const llmHttpProxy = new Elysia({
   name: "llmHttpProxy",
@@ -27,11 +27,7 @@ const llmHttpProxy = new Elysia({
         } satisfies HttpJsonResponse;
       }
 
-      const response = await fetch(`${llamaURL.origin}/completion`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ stream: true, ...body }),
-      });
+      const response = await completionRequest(body);
 
       return parseStreamToCompletionResult(
         response.body as ReadableStream<Uint8Array>,
