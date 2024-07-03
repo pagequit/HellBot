@@ -21,6 +21,7 @@ export function parseStreamToCompletionResult(
 ): ReadableStream<Uint8Array> {
   const reader = stream.getReader();
   const decoder = new TextDecoder();
+  const encoder = new TextEncoder();
   let leftover = "";
   const buffer: Array<Uint8Array> = [];
   let functionCall = "";
@@ -80,6 +81,9 @@ export function parseStreamToCompletionResult(
               const fc = JSON.parse(functionCall);
               functions.get(fc.name).map((fn) => {
                 res = fn(fc.arguments);
+                controller.enqueue(
+                  encoder.encode(`event: functionCall\ndata: ${res}\n`),
+                );
               });
             } catch (error) {
               logger.error(

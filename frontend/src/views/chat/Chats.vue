@@ -81,6 +81,7 @@ if (canUseLocalStorage()) {
     localStorage.setItem("chats", JSON.stringify(localChats));
   } catch (error) {
     console.error(error);
+    makeAToast((error as Error).message, "error");
   }
 }
 
@@ -179,6 +180,40 @@ async function submitPrompt(): Promise<void> {
     return;
   }
 
+  const eventSource = new EventTarget();
+
+  eventSource.addEventListener("message", (event) => {
+    const message = (event as MessageEvent).data;
+    console.log(message);
+
+    try {
+      const data = JSON.parse(message.trim());
+      content += data.content;
+    } catch (error) {
+      console.error(error);
+      makeAToast((error as Error).message, "error");
+    }
+
+    contextFormatted[contextFormatted.length - 1].content =
+      markdown.parse(content);
+    entries.value?.scrollTo(0, entries.value.scrollHeight);
+  });
+
+  eventSource.addEventListener("functionCall", (event) => {
+    const message = (event as CustomEvent).detail;
+    try {
+      const data = JSON.parse(message.trim());
+      console.log(data);
+      makeAToast(
+        `Function call "${data.name}" with has been executed.`,
+        "info",
+      );
+    } catch (error) {
+      console.error(error);
+      makeAToast((error as Error).message, "error");
+    }
+  });
+
   const decoder = new TextDecoder();
   let content = "";
   let leftover = "";
@@ -187,6 +222,7 @@ async function submitPrompt(): Promise<void> {
     const text = leftover + decoder.decode(value);
     const lines = text.split("\n");
     leftover = text.endsWith("\n") ? "" : (lines.pop() as string);
+    const fields = new Map<string, string>();
 
     for (const line of lines) {
       const match = line.match(/(\w+):(.*)/);
@@ -194,19 +230,21 @@ async function submitPrompt(): Promise<void> {
         continue;
       }
 
-      try {
-        const data = JSON.parse(match[2].trim());
-        console.log(data);
-        content += data.content;
-      } catch (error) {
-        console.error(error, `${match[1]}: ${match[2]}`);
-        makeAToast((error as Error).message, "error");
-      }
+      fields.set(match[1], match[2]);
     }
 
-    contextFormatted[contextFormatted.length - 1].content =
-      markdown.parse(content);
-    entries.value?.scrollTo(0, entries.value.scrollHeight);
+    if (fields.has("event")) {
+      console.log(fields.get("event"), fields.get("data"));
+      eventSource.dispatchEvent(
+        new CustomEvent((fields.get("event") as string).trim(), {
+          detail: fields.get("data"),
+        }),
+      );
+    } else {
+      eventSource.dispatchEvent(
+        new MessageEvent("message", { data: fields.get("data") }),
+      );
+    }
   }
 
   context[context.length - 1].content = content;
