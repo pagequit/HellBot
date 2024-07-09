@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Locale } from "@/core/i18n/I18n.ts";
-// import { parseStreamToCompletionResult } from "@/features/llm/parseStreamToCompletionResult.ts";
 import InputGroup from "@/frontend/src/components/InputGroup.vue";
 import Loader from "@/frontend/src/components/Loader.vue";
 import RangeGroup from "@/frontend/src/components/RangeGroup.vue";
@@ -184,7 +183,6 @@ async function submitPrompt(): Promise<void> {
 
   eventSource.addEventListener("message", (event) => {
     const message = (event as MessageEvent).data;
-    console.log(message);
 
     try {
       const data = JSON.parse(message.trim());
@@ -201,13 +199,11 @@ async function submitPrompt(): Promise<void> {
 
   eventSource.addEventListener("functionCall", (event) => {
     const message = (event as CustomEvent).detail;
+
     try {
       const data = JSON.parse(message.trim());
-      console.log(data);
-      makeAToast(
-        `Function call "${data.name}" with has been executed.`,
-        "info",
-      );
+      console.log(data.content); //
+      makeAToast("Function call executed.", "info");
     } catch (error) {
       console.error(error);
       makeAToast((error as Error).message, "error");
@@ -234,7 +230,6 @@ async function submitPrompt(): Promise<void> {
     }
 
     if (fields.has("event")) {
-      console.log(fields.get("event"), fields.get("data"));
       eventSource.dispatchEvent(
         new CustomEvent((fields.get("event") as string).trim(), {
           detail: fields.get("data"),

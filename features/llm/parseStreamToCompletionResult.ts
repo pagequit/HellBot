@@ -3,31 +3,62 @@ import type { Collection } from "unwrap/mod";
 import { completionRequest } from "./completionRequest.ts";
 import type { CompletionRequestBody } from "./completionRequestBody.ts";
 
-export async function makeFunctionCallRoundtrip(
-  result: string,
-  body: CompletionRequestBody,
-): Promise<ReadableStream<Uint8Array>> {
-  const toolResponseTemplate = `<tool_response>\n${result}\n</tool_response>\n`;
-  body.prompt += `<|im_start|>tool\n${toolResponseTemplate}<|im_end|>\n`;
+const decoder = new TextDecoder();
+const encoder = new TextEncoder();
 
-  const response = await completionRequest(body);
+function surroundWithToolResponseTemplate(response: string): string {
+  return `<|im_start|>tool\n<tool_response>\n${response}\n</tool_response>\n<|im_end|>\n`;
+}
+
+async function makeFunctionCallRoundtrip(
+  requestBody: CompletionRequestBody,
+): Promise<ReadableStream<Uint8Array>> {
+  const response = await completionRequest(requestBody);
   return response.body as ReadableStream<Uint8Array>;
+}
+
+async function processFunctionCall(
+  functionCall: string,
+  controller: ReadableStreamDefaultController,
+  functions: Collection<string, (args: any) => string>,
+  requestBody: CompletionRequestBody,
+  responseContent: string,
+): Promise<ReadableStream<Uint8Array>> {
+  let res = "";
+  try {
+    const fc = JSON.parse(functionCall);
+    functions.get(fc.name).map((fn) => {
+      res = fn(fc.arguments);
+    });
+  } catch (error) {
+    logger.error(
+      `${(error as Error).message}. Error at: "${functionCall}"`,
+      error,
+    );
+  }
+
+  let data = `<|im_start|>assistant\n${responseContent}<|im_end|>\n`;
+  data = JSON.stringify({
+    content: `${data}${surroundWithToolResponseTemplate(res)}`,
+  });
+  controller.enqueue(encoder.encode(`event: functionCall\ndata: ${data}\n`));
+
+  return await makeFunctionCallRoundtrip(requestBody);
 }
 
 export function parseStreamToCompletionResult(
   stream: ReadableStream<Uint8Array>,
-  body: CompletionRequestBody,
+  requestBody: CompletionRequestBody,
   functions: Collection<string, (args: any) => string>,
 ): ReadableStream<Uint8Array> {
   const reader = stream.getReader();
-  const decoder = new TextDecoder();
-  const encoder = new TextEncoder();
   let leftover = "";
   const buffer: Array<Uint8Array> = [];
+  let responseContent = "";
   let functionCall = "";
   let functionCallParsingStart = false;
   let functionCallParsingAbort = false;
-  const parse = bufferToolCall(
+  const parseToolCall = bufferToolCall(
     () => {
       functionCallParsingStart = true;
     },
@@ -61,7 +92,8 @@ export function parseStreamToCompletionResult(
 
           try {
             const data = JSON.parse(match[2].trim());
-            parse(data.content);
+            responseContent += data.content;
+            parseToolCall(data.content);
           } catch (error) {
             logger.error(
               `${(error as Error).message}. Error at: "${match[1]}: ${match[2]}".`,
@@ -73,37 +105,29 @@ export function parseStreamToCompletionResult(
         if (functionCallParsingStart) {
           buffer.push(value);
 
+          // It's either empty or completed, nothing in between.
           if (functionCall.length > 0) {
-            functionCallParsingStart = false;
+            const processedResponse = await processFunctionCall(
+              functionCall,
+              controller,
+              functions,
+              requestBody,
+              responseContent,
+            );
 
-            let res = "";
-            try {
-              const fc = JSON.parse(functionCall);
-              functions.get(fc.name).map((fn) => {
-                res = fn(fc.arguments);
-                controller.enqueue(
-                  encoder.encode(`event: functionCall\ndata: ${res}\n`),
-                );
-              });
-            } catch (error) {
-              logger.error(
-                `${(error as Error).message}. Error at: "${functionCall}"`,
-                error,
-              );
-            }
-            functionCall = "";
-
-            const rs = await makeFunctionCallRoundtrip(res, body);
-            const rsReader = rs.getReader();
+            const prr = processedResponse.getReader();
             while (true) {
-              const { done, value } = await rsReader.read();
+              const { done, value } = await prr.read();
               if (done) {
-                rsReader.releaseLock();
+                prr.releaseLock();
                 break;
               }
 
               controller.enqueue(value);
             }
+
+            functionCall = "";
+            functionCallParsingStart = false;
           }
 
           if (functionCallParsingAbort) {
