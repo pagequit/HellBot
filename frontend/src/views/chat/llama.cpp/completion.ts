@@ -1,8 +1,8 @@
 import type { CompletionRequestBody } from "@/features/llm/completionRequestBody.ts";
 import { origin } from "@/frontend/src/composables/origin.ts";
 
-export function makePrompt(
-  body: CompletionRequestBody,
+export function makeCompletionRequest(
+  requestBody: CompletionRequestBody,
   conttroller: AbortController,
 ): Promise<Response> {
   return fetch(`${origin}/completion`, {
@@ -10,7 +10,7 @@ export function makePrompt(
     mode: "cors",
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify(requestBody),
     signal: conttroller.signal,
   });
 }

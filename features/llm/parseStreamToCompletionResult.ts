@@ -3,6 +3,11 @@ import type { Collection } from "unwrap/mod";
 import { completionRequest } from "./completionRequest.ts";
 import type { CompletionRequestBody } from "./completionRequestBody.ts";
 
+export type FunctionCallEventData = {
+  response: string;
+  functionCall: string;
+};
+
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
@@ -39,8 +44,9 @@ async function processFunctionCall(
 
   let data = `<|im_start|>assistant\n${responseContent}<|im_end|>\n`;
   data = JSON.stringify({
-    content: `${data}${surroundWithToolResponseTemplate(res)}`,
-  });
+    response: `${data}${surroundWithToolResponseTemplate(res)}`,
+    functionCall,
+  } satisfies FunctionCallEventData);
   controller.enqueue(encoder.encode(`event: functionCall\ndata: ${data}\n`));
 
   return await makeFunctionCallRoundtrip(requestBody);

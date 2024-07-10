@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Locale } from "@/core/i18n/I18n.ts";
+import type { FunctionCallEventData } from "@/features/llm/parseStreamToCompletionResult.ts";
 import InputGroup from "@/frontend/src/components/InputGroup.vue";
 import Loader from "@/frontend/src/components/Loader.vue";
 import RangeGroup from "@/frontend/src/components/RangeGroup.vue";
@@ -18,16 +19,11 @@ import { useUser } from "@/frontend/src/stores/user.ts";
 import { computed, nextTick, onMounted, reactive, ref } from "vue";
 import type { Chat } from "./Chat.ts";
 import MessageEntry from "./MessageEntry.vue";
-import { makePrompt } from "./llama.cpp/completion.ts";
+import { makeCompletionRequest } from "./llama.cpp/completion.ts";
 import { createPrompt } from "./llama.cpp/hermes2/createPrompt.ts";
 // import { createPrompt } from "./llama.cpp/llama3/createPrompt.ts";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
-
-type ChatComponent = {
-  color: string;
-  isLoading: boolean;
-} & Chat;
 
 const { t } = useI18n([
   [Locale.EnglishGB, en],
@@ -72,7 +68,7 @@ const identicon = computed(() =>
   generate(reduceChatSettings(activeChat.value)),
 );
 
-let localChats: Array<ChatComponent> = [createChat("Chat")];
+let localChats: Array<Chat> = [createChat("Chat")];
 if (canUseLocalStorage()) {
   const fromLocalStorage = localStorage.getItem("chats");
   try {
@@ -84,17 +80,18 @@ if (canUseLocalStorage()) {
   }
 }
 
-const chats: Array<ChatComponent> = reactive<Array<ChatComponent>>(localChats);
+const chats: Array<Chat> = reactive<Array<Chat>>(localChats);
 const prompt = ref<string>("");
 const activeChatIndex = ref<number>(0);
-const activeChat = computed<ChatComponent>(() => chats[activeChatIndex.value]);
+const activeChat = computed<Chat>(() => chats[activeChatIndex.value]);
 
-function createChat(title: string): ChatComponent {
+function createChat(title: string): Chat {
   return structuredClone({
     isLoading: false,
     color: colorClassGenerator.next().value as string,
     context: [],
     contextFormatted: [],
+    functionCalls: new Map<number, string>(),
     title,
     settings: {
       system: `I'm ${user.displayName}. You are HellBot. You are a helpful assistant.`,
@@ -150,7 +147,7 @@ async function submitPrompt(): Promise<void> {
 
   const controller = new AbortController();
   activeChat.value.isLoading = true;
-  const response: Response | Error = await makePrompt(
+  const response: Response | Error = await makeCompletionRequest(
     {
       prompt: createPrompt(system, localPrompt, context),
       stop:
@@ -201,9 +198,9 @@ async function submitPrompt(): Promise<void> {
     const message = (event as CustomEvent).detail;
 
     try {
-      const data = JSON.parse(message.trim());
-      console.log(data.content); //
-      makeAToast("Function call executed.", "info");
+      const data: FunctionCallEventData = JSON.parse(message.trim());
+      console.log(data.response);
+      makeAToast(`Function call "${data.functionCall}" executed.`, "info");
     } catch (error) {
       console.error(error);
       makeAToast((error as Error).message, "error");
@@ -216,6 +213,7 @@ async function submitPrompt(): Promise<void> {
   // @ts-ignore
   for await (const value of response.body) {
     const text = leftover + decoder.decode(value);
+    console.log(text);
     const lines = text.split("\n");
     leftover = text.endsWith("\n") ? "" : (lines.pop() as string);
     const fields = new Map<string, string>();
@@ -253,7 +251,7 @@ function saveChats(): void {
   }
 }
 
-function reduceChatSettings(chat: ChatComponent): string {
+function reduceChatSettings(chat: Chat): string {
   return Object.values(chat.settings).reduce<string>(
     (acc, cur) => `${acc}${cur}`,
     "",

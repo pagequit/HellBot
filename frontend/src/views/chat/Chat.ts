@@ -1,9 +1,12 @@
-import type { Message } from "../../../../features/llm/Message.ts";
+import type { Message } from "@/features/llm/Message.ts";
 
 export type Chat = {
   context: Array<Message>;
   contextFormatted: Array<Message>;
-  title: string; // "Chat"
+  functionCalls: Map<number, string>;
+  title: string;
+  color: string;
+  isLoading: boolean;
   settings: {
     system: string; // "You are a helpful assistant."
     temperature: number; // 0.8
