@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Locale } from "@/core/i18n/I18n.ts";
+import type { Message } from "@/features/llm/Message.ts";
 import type { FunctionCallEventData } from "@/features/llm/parseStreamToCompletionResult.ts";
 import InputGroup from "@/frontend/src/components/InputGroup.vue";
 import Loader from "@/frontend/src/components/Loader.vue";
@@ -91,7 +92,7 @@ function createChat(title: string): Chat {
     color: colorClassGenerator.next().value as string,
     context: [],
     contextFormatted: [],
-    functionCalls: new Map<number, string>(),
+    functionCalls: new Map<number, Array<Message>>(),
     title,
     settings: {
       system: `I'm ${user.displayName}. You are HellBot. You are a helpful assistant.`,
@@ -107,6 +108,17 @@ function createChat(title: string): Chat {
       frequency_penalty: 0.0,
     },
   });
+}
+
+function injectFunctionCalls(
+  context: Array<Message>,
+  functionCalls: Map<number, Array<Message>>,
+): Array<Message> {
+  for (const [index, payload] of functionCalls.entries()) {
+    context.splice(index, 0, ...payload);
+  }
+
+  return context;
 }
 
 async function submitPrompt(): Promise<void> {
@@ -149,7 +161,11 @@ async function submitPrompt(): Promise<void> {
   activeChat.value.isLoading = true;
   const response: Response | Error = await makeCompletionRequest(
     {
-      prompt: createPrompt(system, localPrompt, context),
+      prompt: createPrompt(
+        system,
+        localPrompt,
+        injectFunctionCalls(context, activeChat.value.functionCalls),
+      ),
       stop:
         activeChat.value.settings.stop.trim().length > 0
           ? activeChat.value.settings.stop.trim().split(/\s/)
@@ -200,6 +216,10 @@ async function submitPrompt(): Promise<void> {
     try {
       const data: FunctionCallEventData = JSON.parse(message.trim());
       console.log(data.response);
+      activeChat.value.functionCalls.set(
+        activeChat.value.context.length,
+        data.response,
+      );
       makeAToast(`Function call "${data.functionCall}" executed.`, "info");
     } catch (error) {
       console.error(error);

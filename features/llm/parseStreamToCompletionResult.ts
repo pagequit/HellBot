@@ -1,19 +1,16 @@
 import { logger } from "@/core/discord/logger.ts";
 import type { Collection } from "unwrap/mod";
+import type { Message } from "./Message.ts";
 import { completionRequest } from "./completionRequest.ts";
 import type { CompletionRequestBody } from "./completionRequestBody.ts";
 
 export type FunctionCallEventData = {
-  response: string;
+  response: Array<Message>;
   functionCall: string;
 };
 
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
-
-function surroundWithToolResponseTemplate(response: string): string {
-  return `<|im_start|>tool\n<tool_response>\n${response}\n</tool_response>\n<|im_end|>\n`;
-}
 
 async function makeFunctionCallRoundtrip(
   requestBody: CompletionRequestBody,
@@ -29,11 +26,11 @@ async function processFunctionCall(
   requestBody: CompletionRequestBody,
   responseContent: string,
 ): Promise<ReadableStream<Uint8Array>> {
-  let res = "";
+  let functionCallResponse = "";
   try {
     const fc = JSON.parse(functionCall);
     functions.get(fc.name).map((fn) => {
-      res = fn(fc.arguments);
+      functionCallResponse = fn(fc.arguments);
     });
   } catch (error) {
     logger.error(
@@ -42,9 +39,17 @@ async function processFunctionCall(
     );
   }
 
-  let data = `<|im_start|>assistant\n${responseContent}<|im_end|>\n`;
-  data = JSON.stringify({
-    response: `${data}${surroundWithToolResponseTemplate(res)}`,
+  const assistantMessage: Message = {
+    role: "assistant",
+    content: responseContent,
+  };
+  const toolMessage: Message = {
+    role: "tool",
+    content: `<tool_reponse>\n${functionCallResponse}\n</tool_response>\n`,
+  };
+
+  const data = JSON.stringify({
+    response: [assistantMessage, toolMessage],
     functionCall,
   } satisfies FunctionCallEventData);
   controller.enqueue(encoder.encode(`event: functionCall\ndata: ${data}\n`));
