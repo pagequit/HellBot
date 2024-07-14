@@ -3,7 +3,7 @@ import type { Message } from "@/features/llm/Message.ts";
 export type Chat = {
   context: Array<Message>;
   contextFormatted: Array<Message>;
-  functionCalls: Map<number, Array<Message>>;
+  functionCalls: { [key: number]: Array<Message> };
   title: string;
   color: string;
   isLoading: boolean;

@@ -92,7 +92,7 @@ function createChat(title: string): Chat {
     color: colorClassGenerator.next().value as string,
     context: [],
     contextFormatted: [],
-    functionCalls: new Map<number, Array<Message>>(),
+    functionCalls: {},
     title,
     settings: {
       system: `I'm ${user.displayName}. You are HellBot. You are a helpful assistant.`,
@@ -112,14 +112,58 @@ function createChat(title: string): Chat {
 
 function injectFunctionCalls(
   context: Array<Message>,
-  functionCalls: Map<number, Array<Message>>,
+  functionCalls: { [key: number]: Array<Message> },
 ): Array<Message> {
-  for (const [index, payload] of functionCalls.entries()) {
-    context.splice(index, 0, ...payload);
+  console.info("injectFunctionCalls", context, functionCalls);
+  for (const [index, payload] of Object.entries(functionCalls)) {
+    context.splice(Number.parseInt(index), 0, ...payload);
   }
 
   return context;
 }
+/*
+<|im_start|>system\n
+You are a function calling AI model.\n
+You are provided with function signatures within <tools></tools> XML tags.\n
+You may call one or more functions to assist with the user query.\n
+Don't make assumptions about what values to plug into functions.\n
+Here are the available tools:\n
+<tools>\n{\n  \"type\": \"function\",\n  \"function\": {\n    \"name\": \"set_timer\",\n    \"description\": \"Set a timer in minutes to remind you on a certain subject.\",\n    \"parameters\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"minutes\": {\n          \"type\": \"number\",\n          \"description\": \"Minutes to wait before the timer is up.\"\n        },\n        \"subject\": {\n          \"type\": \"string\",\n          \"description\": \"Subject of the timer.\"\n        }\n      }\n    },\n    \"required\": [\"minutes\", \"subject\"]\n  }\n}\n</tools>\nUse the following pydantic model json schema for each tool call you will make:\n{\n  \"properties\": {\n    \"arguments\": {\n      \"title\": \"Arguments\",\n      \"type\": \"object\"\n    },\n    \"name\": {\n      \"title\": \"Name\",\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\"arguments\", \"name\"],\n  \"title\": \"FunctionCall\",\n  \"type\": \"object\"\n}\nFor each function call return a json object with function name and arguments within <tool_call></tool_call> XML tags as follows:\n<tool_call>\n{\"arguments\": <args-dict>, \"name\": <function-name>}\n</tool_call><|im_end|>\n
+
+<|im_start|>user\n
+hey there :D<|im_end|>\n
+
+<|im_start|>assistant\n
+Hi there! How can I help you today? Would you like to set a timer for something?<|im_end|>\n
+
+<|im_start|>user\n
+can you please set a timer about 10 minutes for me to remind me to go to bed?<|im_end|>\n
+
+<|im_start|>assistant\n
+<tool_call>\n{\"arguments\": {\"minutes\": 10, \"subject\": \"go to bed\"}, \"name\": \"set_timer\"}\n
+</tool_call><|im_end|>\n
+
+<|im_start|>assistant\n
+<tool_call>\n{\"arguments\": {\"minutes\": 10, \"subject\": \"Bed Time Reminder\"}, \"name\": \"set_timer\"}\n
+</tool_call><|im_end|>\n
+
+<|im_start|>tool\n
+<tool_reponse>\n
+{\"name\":\"set_timer\",\"content\":{\"minutes\":10,\"subject\":\"Bed Time Reminder\"}}\n
+</tool_response>\n
+<|im_end|>\n
+
+<|im_start|>user\n
+thanks!<|im_end|>\n
+
+<|im_start|>assistant\n
+<|im_end|>\n
+
+<|im_start|>user\n
+thanks!<|im_end|>\n
+
+<|im_start|>assistant\n
+*/
 
 async function submitPrompt(): Promise<void> {
   const system = activeChat.value.settings.system;
@@ -159,13 +203,19 @@ async function submitPrompt(): Promise<void> {
 
   const controller = new AbortController();
   activeChat.value.isLoading = true;
+  const prompt2 = createPrompt(
+    system,
+    localPrompt,
+    injectFunctionCalls(context, activeChat.value.functionCalls),
+  );
+
+  console.info(localPrompt);
+  console.info(prompt);
+  console.info(prompt2);
+
   const response: Response | Error = await makeCompletionRequest(
     {
-      prompt: createPrompt(
-        system,
-        localPrompt,
-        injectFunctionCalls(context, activeChat.value.functionCalls),
-      ),
+      prompt: prompt2,
       stop:
         activeChat.value.settings.stop.trim().length > 0
           ? activeChat.value.settings.stop.trim().split(/\s/)
@@ -216,10 +266,9 @@ async function submitPrompt(): Promise<void> {
     try {
       const data: FunctionCallEventData = JSON.parse(message.trim());
       console.log(data.response);
-      activeChat.value.functionCalls.set(
-        activeChat.value.context.length,
-        data.response,
-      );
+      activeChat.value.functionCalls[activeChat.value.context.length] =
+        data.response;
+
       makeAToast(`Function call "${data.functionCall}" executed.`, "info");
     } catch (error) {
       console.error(error);
