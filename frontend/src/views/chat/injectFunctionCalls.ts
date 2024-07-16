@@ -4,9 +4,10 @@ export function injectFunctionCalls(
   context: Array<Message>,
   functionCalls: { [key: number]: Array<Message> },
 ): Array<Message> {
+  const contextCopy = [...context];
   for (const [index, payload] of Object.entries(functionCalls)) {
-    context.splice(Number.parseInt(index) + 1, 0, ...payload);
+    contextCopy.splice(Number.parseInt(index), 0, ...payload);
   }
 
-  return context;
+  return contextCopy;
 }

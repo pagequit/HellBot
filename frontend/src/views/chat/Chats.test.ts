@@ -7,13 +7,13 @@ test("injectFunctionCalls", () => {
   const context: Array<Message> = [
     { role: "user", content: "foo" },
     { role: "assistant", content: "bar" },
-    { role: "user", content: "hello" },
+    { role: "user", content: "hello" }, // function call happens here
     { role: "assistant", content: "world" },
     { role: "user", content: "thx" },
   ];
 
   const functionCalls: { [key: number]: Array<Message> } = {
-    2: [
+    [3]: [
       {
         role: "assistant",
         content: '<tool_call>\n{ "name": "hello" }\n</tool_call>',
@@ -70,11 +70,11 @@ test("createPrompt second round", () => {
 test("createPromt with injectFunctionCalls", () => {
   const context: Array<Message> = [
     { role: "user", content: "hello" },
-    { role: "assistant", content: "world" },
+    { role: "assistant", content: "world" }, // function call happens here
   ];
 
   const functionCalls: { [key: number]: Array<Message> } = {
-    0: [
+    [1]: [
       {
         role: "assistant",
         content: '<tool_call>\n{ "name": "hello" }\n</tool_call>',
@@ -98,25 +98,76 @@ test("createPromt with injectFunctionCalls", () => {
 });
 
 /*
-<|im_start|>user
-Hello :)<|im_end|>
+<|im_start|>user\n
+please remind me on my pizza in five minutes.<|im_end|>\n
 
-<|im_start|>assistant
-Hello there! How can I assist you today?<|im_end|>
+<|im_start|>assistant\n
+<tool_call>\n
+{\"arguments\": {\"minutes\": 5, \"subject\": \"pizza\"}, \"name\": \"set_timer\"}\n
+</tool_call><|im_end|>\n
 
-<|im_start|>user
-could you please remind me on my pizza in five?<|im_end|>
+<|im_start|>tool\n
+<tool_reponse>\n
+{\"name\":\"set_timer\",\"content\":{\"minutes\":5,\"subject\":\"pizza\"}}\n
+</tool_response>\n
+<|im_end|>\n
 
-<|im_start|>assistant
-I can do that. Let me set a timer for you.\n\nSure thing! I can set a timer for you. Here's the function call:\n<tool_call>\n{\"arguments\": {\"minutes\": 5, \"subject\": \"pizza\"}, \"name\": \"set_timer\"}\n</tool_call><|im_end|>
+<|im_start|>assistant\n
+<tool_call>\n
+{\"arguments\": {\"minutes\": 5, \"subject\": \"pizza\"}, \"name\": \"set_timer\"}\n
+</tool_call><|im_end|>\n
 
-<|im_start|>assistant
-I can do that. Let me set a timer for you.\n\n<tool_call>\n{\"arguments\": {\"minutes\": 5, \"subject\": \"pizza\"}, \"name\": \"set_timer\"}\n</tool_call><|im_end|>
+<|im_start|>user\n
+excuse me?<|im_end|>\n
 
-<|im_start|>tool\n<tool_reponse>\n{\"name\":\"set_timer\",\"content\":{\"minutes\":5,\"subject\":\"pizza\"}}\n</tool_response>\n<|im_end|>
+<|im_start|>assistant\n
+I've set a timer for 5 minutes to remind you about your pizza. You'll be notified when the time is up.<|im_end|>\n
 
-<|im_start|>user
-ehm, thanks<|im_end|>
+<|im_start|>user\n
+thanks :D<|im_end|>\n
+
+<|im_start|>assistant\n
+You're welcome! Enjoy your pizza.<|im_end|>\n
+
+<|im_start|>user\n
+Oh, damn. I forgot to turn on the oven, could you please set the again?<|im_end|>\n
+
+<|im_start|>assistant\n
+Of course! I'll reset the timer for another 5 minutes. You should have plenty of time to get your pizza in the oven before it's ready.<|im_end|>\n
+
+<|im_start|>user\n
+You doesn't set the timer, don't you?<|im_end|>\n
+
+<|im_start|>assistant\n
+I apologize for the confusion earlier. Here is the correct response:\n
+\n
+<tool_call>\n
+{\"arguments\": {\"minutes\": 5, \"subject\": \"pizza\"}, \"name\": \"set_timer\"}\n
+</tool_call><|im_end|>\n
+
+<|im_start|>tool\n
+<tool_reponse>\n
+{\"name\":\"set_timer\",\"content\":{\"minutes\":5,\"subject\":\"pizza\"}}\n
+</tool_response>\n
+<|im_end|>\n
+
+<|im_start|>assistant\n
+Apologies for the mistake. Let me set the timer again. I'll reset it for 5 minutes to remind you about your pizza.<|im_end|>\n
+
+<|im_start|>user\n
+You need to respond with this JSON stuff inside these tool_call tags, you remember?<|im_end|>\n
+
+<|im_start|>assistant\n
+I apologize for the confusion earlier. Here is the correct response:\n
+\n
+I apologize for the confusion. Here's the correct response:\n
+\n
+<tool_call>\n
+{\"arguments\": {\"minutes\": 5, \"subject\": \"pizza\"}, \"name\": \"set_timer\"}\n
+</tool_call><|im_end|>\n
+
+<|im_start|>user\n
+thank you<|im_end|>\n
 
 <|im_start|>assistant\n
 */

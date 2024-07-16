@@ -2,7 +2,7 @@ import type { Message } from "@/features/llm/Message.ts";
 
 export type Chat = {
   context: Array<Message>;
-  contextFormatted: Array<Message>;
+  contextView: Array<Message>;
   functionCalls: { [key: number]: Array<Message> };
   title: string;
   color: string;

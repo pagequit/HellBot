@@ -91,7 +91,7 @@ function createChat(title: string): Chat {
     isLoading: false,
     color: colorClassGenerator.next().value as string,
     context: [],
-    contextFormatted: [],
+    contextView: [],
     functionCalls: {},
     title,
     settings: {
@@ -113,7 +113,7 @@ function createChat(title: string): Chat {
 async function submitPrompt(): Promise<void> {
   const system = activeChat.value.settings.system;
   const context = activeChat.value.context;
-  const contextFormatted = activeChat.value.contextFormatted;
+  const contextView = activeChat.value.contextView;
 
   const rawPrompt = prompt.value.trim();
   if (rawPrompt.length === 0) {
@@ -134,7 +134,7 @@ async function submitPrompt(): Promise<void> {
     role: "user",
     content: rawPrompt,
   });
-  contextFormatted.push({
+  contextView.push({
     role: "user",
     content: markdown.parse(rawPrompt),
   });
@@ -143,7 +143,7 @@ async function submitPrompt(): Promise<void> {
     role: "assistant",
     content: "",
   });
-  contextFormatted.push({
+  contextView.push({
     role: "assistant",
     content: "",
   });
@@ -197,8 +197,7 @@ async function submitPrompt(): Promise<void> {
       makeAToast((error as Error).message, "error");
     }
 
-    contextFormatted[contextFormatted.length - 1].content =
-      markdown.parse(content);
+    contextView[contextView.length - 1].content = markdown.parse(content);
     entries.value?.scrollTo(0, entries.value.scrollHeight);
   });
 
@@ -207,8 +206,8 @@ async function submitPrompt(): Promise<void> {
 
     try {
       const data: FunctionCallEventData = JSON.parse(message.trim());
-      console.log(data.response);
-      activeChat.value.functionCalls[activeChat.value.context.length] =
+      console.info(data.functionCall, data.response);
+      activeChat.value.functionCalls[activeChat.value.context.length - 1] =
         data.response;
 
       makeAToast(`Function call "${data.functionCall}" executed.`, "info");
@@ -327,7 +326,7 @@ onMounted(() => {
 
       <div class="entries" ref="entries">
         <div
-          v-for="({ content }, index) in activeChat.contextFormatted"
+          v-for="({ content }, index) in activeChat.contextView"
           :key="index"
           class="entry"
         >
