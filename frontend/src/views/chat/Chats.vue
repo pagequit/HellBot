@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Locale } from "@/core/i18n/I18n.ts";
 import type { FunctionCallEventData } from "@/features/llm/parseStreamToCompletionResult.ts";
+import { createPrompt } from "@/features/llm/templates/ChatML/createPrompt.ts";
 import InputGroup from "@/frontend/src/components/InputGroup.vue";
 import Loader from "@/frontend/src/components/Loader.vue";
 import RangeGroup from "@/frontend/src/components/RangeGroup.vue";
@@ -11,6 +12,7 @@ import PaperPlane from "@/frontend/src/components/icons/PaperPlane.vue";
 import Plus from "@/frontend/src/components/icons/Plus.vue";
 import Trash from "@/frontend/src/components/icons/Trash.vue";
 import { canUseLocalStorage } from "@/frontend/src/composables/canUseLocalStorage.ts";
+import { createColorClassGenerator } from "@/frontend/src/composables/createColorClassGenerator.ts";
 import { useI18n } from "@/frontend/src/composables/useI18n.ts";
 import { useIdenticon } from "@/frontend/src/composables/useIdenticon.ts";
 import { useMarkdown } from "@/frontend/src/composables/useMarkdown.ts";
@@ -19,10 +21,8 @@ import { useUser } from "@/frontend/src/stores/user.ts";
 import { computed, nextTick, onMounted, reactive, ref } from "vue";
 import type { Chat } from "./Chat.ts";
 import MessageEntry from "./MessageEntry.vue";
+import { makeCompletionRequest } from "./completion.ts";
 import { injectFunctionCalls } from "./injectFunctionCalls.ts";
-import { makeCompletionRequest } from "./llama.cpp/completion.ts";
-import { createPrompt } from "./llama.cpp/hermes2/createPrompt.ts";
-// import { createPrompt } from "./llama.cpp/llama3/createPrompt.ts";
 import de from "./translations/de.ts";
 import en from "./translations/en.ts";
 
@@ -32,32 +32,10 @@ const { t } = useI18n([
 ]);
 
 const { makeAToast } = useToasts();
-
 const user = useUser();
-
 const { generate } = useIdenticon();
-
 const markdown = useMarkdown();
-
-const colorClassGenerator = (function* createColorClassGenerator(): Generator<
-  string,
-  void,
-  unknown
-> {
-  let i = 0;
-  const colorClasses = [
-    "c-blurple",
-    "c-fuchsia",
-    "c-green",
-    "c-red",
-    "c-yellow",
-    "c-gray",
-  ];
-  while (true) {
-    yield colorClasses[i];
-    i = (i + 1) % colorClasses.length;
-  }
-})();
+const colorClassGenerator = createColorClassGenerator();
 
 const settingsMenu = ref<HTMLElement | null>(null);
 const entries = ref<HTMLElement | null>(null);
