@@ -206,10 +206,14 @@ async function submitPrompt(): Promise<void> {
 
     try {
       const data: FunctionCallEventData = JSON.parse(message.trim());
-      console.info(data.functionCall, data.response);
-      activeChat.value.functionCalls[activeChat.value.context.length - 1] =
-        data.response;
+      const index = activeChat.value.context.length - 1;
 
+      activeChat.value.functionCalls[index] = data.response;
+      activeChat.value.context[index].content = "";
+      activeChat.value.contextView[index].content = "";
+      content = "";
+
+      console.info(data.functionCall);
       makeAToast(`Function call "${data.functionCall}" executed.`, "info");
     } catch (error) {
       console.error(error);

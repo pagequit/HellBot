@@ -9,7 +9,7 @@ const { id, message, type } = defineProps<Toast>();
 
 const t = useToasts();
 const { toasts } = storeToRefs(t);
-const ttl = 4181;
+const ttl = 6765;
 const titleMap: Record<Toast["type"], string> = {
   info: "Info",
   warning: "Warning",

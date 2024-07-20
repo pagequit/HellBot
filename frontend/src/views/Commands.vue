@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import TextareaGroup from "@/frontend/src/components/TextareaGroup.vue";
 
-const system = `<|im_start|>system
-You are a function calling AI model.
+const system = `You are a function calling AI model.
 You are provided with function signatures within <tools></tools> XML tags.
 You may call one or more functions to assist with the user query.
 Don't make assumptions about what values to plug into functions.
@@ -49,7 +48,7 @@ Use the following pydantic model json schema for each tool call you will make:
 For each function call return a json object with function name and arguments within <tool_call></tool_call> XML tags as follows:
 <tool_call>
 {"arguments": <args-dict>, "name": <function-name>}
-</tool_call><|im_end|>`;
+</tool_call>`;
 </script>
 
 <template>

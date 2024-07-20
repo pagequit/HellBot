@@ -22,9 +22,9 @@ async function makeFunctionCallRoundtrip(
 async function processFunctionCall(
   functionCall: string,
   controller: ReadableStreamDefaultController,
+  // biome-ignore lint/suspicious/noExplicitAny: there is no way to type this properly
   functions: Collection<string, (args: any) => string>,
   requestBody: CompletionRequestBody,
-  responseContent: string,
 ): Promise<ReadableStream<Uint8Array>> {
   let functionCallResponse = "";
   try {
@@ -41,7 +41,7 @@ async function processFunctionCall(
 
   const assistantMessage: Message = {
     role: "assistant",
-    content: responseContent,
+    content: `<tool_call>\n${functionCall}\n</tool_call>\n`,
   };
   const toolMessage: Message = {
     role: "tool",
@@ -60,6 +60,7 @@ async function processFunctionCall(
 export function parseStreamToCompletionResult(
   stream: ReadableStream<Uint8Array>,
   requestBody: CompletionRequestBody,
+  // biome-ignore lint/suspicious/noExplicitAny: there is no way to type this properly
   functions: Collection<string, (args: any) => string>,
 ): ReadableStream<Uint8Array> {
   const reader = stream.getReader();
@@ -77,7 +78,7 @@ export function parseStreamToCompletionResult(
       functionCallParsingAbort = true;
     },
     (result: string) => {
-      functionCall = result;
+      functionCall = result.trim();
     },
   );
 
@@ -123,7 +124,6 @@ export function parseStreamToCompletionResult(
               controller,
               functions,
               requestBody,
-              responseContent,
             );
 
             const prr = processedResponse.getReader();

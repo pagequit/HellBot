@@ -76,7 +76,6 @@ fetch(`${origin}/auth/user`, {
   bottom: var(--sp-3);
   right: var(--sp-3);
   z-index: 999;
-  height: 100vh;
   overflow-y: auto;
   display: flex;
   flex-flow: column nowrap;
