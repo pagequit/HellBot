@@ -1,6 +1,7 @@
-import { Database, type Statement } from "bun:sqlite";
+import type { Statement } from "bun:sqlite";
+import { useDB } from "./useDB.ts";
 
-const db = new Database("db.sqlite", { create: true });
+const db = useDB();
 
 export default class Table<T extends {}> {
   readonly name: string;
