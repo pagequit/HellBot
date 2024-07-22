@@ -1,0 +1,16 @@
+{
+  "alter": [
+    {
+      "chats": {
+        "rename": {
+          "contextFormatted": "contextView"
+        },
+        "add": {
+          "functionCalls": {
+            "default": []
+          }
+        }
+      }
+    }
+  ]
+}
