@@ -12,26 +12,26 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/dompurify": "^3.0.5",
-    "@vitejs/plugin-vue": "^5.0.5",
+    "@vitejs/plugin-vue": "^5.1.2",
     "@vue/tsconfig": "^0.5.1",
-    "prettier": "^3.3.2",
-    "vite": "^5.3.3",
-    "vue-tsc": "^2.0.26"
+    "prettier": "^3.3.3",
+    "vite": "^5.3.5",
+    "vue-tsc": "^2.0.29"
   },
   "peerDependencies": {
     "typescript": "^5.5.2"
   },
   "dependencies": {
-    "@elysiajs/cors": "^1.0.4",
+    "@elysiajs/cors": "^1.1.0",
     "@elysiajs/jwt": "^0.8.0",
-    "@elysiajs/static": "^1.0.3",
+    "@elysiajs/static": "^1.1.0",
     "discord.js": "^14.15.3",
     "dompurify": "^3.1.6",
     "elysia": "^0.8.17",
     "marked": "^12.0.2",
-    "pinia": "^2.1.7",
+    "pinia": "^2.2.0",
     "unwrap": "git+https://github.com/pagequit/unwrap.git",
-    "vue": "^3.4.31",
-    "vue-router": "^4.4.0"
+    "vue": "^3.4.35",
+    "vue-router": "^4.4.2"
   }
 }
