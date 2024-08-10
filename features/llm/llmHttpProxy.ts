@@ -5,6 +5,7 @@ import { Elysia } from "elysia";
 import { Collection } from "unwrap/mod.ts";
 import { completionRequest } from "./completionRequest.ts";
 import { completionRequestBody } from "./completionRequestBody.ts";
+import { set_timer } from "./functions/set_timer.ts";
 
 const llmHttpProxy = new Elysia({
   name: "llmHttpProxy",
@@ -32,18 +33,7 @@ const llmHttpProxy = new Elysia({
       return parseStreamToCompletionResult(
         response.body as ReadableStream<Uint8Array>,
         body,
-        Collection.from([
-          [
-            "set_timer",
-            ({ minutes, subject }: { minutes: number; subject: string }) => {
-              console.log(`set_timer: ${minutes}, ${subject}`);
-              return JSON.stringify({
-                name: "set_timer",
-                content: { minutes, subject },
-              });
-            },
-          ],
-        ]),
+        Collection.from([["set_timer", set_timer]]),
       );
     },
     {
