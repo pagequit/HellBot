@@ -59,8 +59,8 @@ http
   .listen(port);
 logger.log(`Listening on port ${port}.`);
 
-// await removeAllSlashCommands();
-// deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
-// deployApplicationGuildCommands([
-//   ...chatInputGuildCommands.map((c) => c.data).values(),
-// ]);
+await removeAllSlashCommands();
+deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
+deployApplicationGuildCommands([
+  ...chatInputGuildCommands.map((c) => c.data).values(),
+]);
