@@ -163,6 +163,7 @@ async function submitPrompt(): Promise<void> {
   }
 
   const eventSource = new EventTarget();
+  let content = "";
 
   eventSource.addEventListener("message", (event) => {
     const message = (event as MessageEvent).data;
@@ -200,7 +201,6 @@ async function submitPrompt(): Promise<void> {
   });
 
   const decoder = new TextDecoder();
-  let content = "";
   let leftover = "";
   // @ts-ignore
   for await (const value of response.body) {
@@ -208,7 +208,7 @@ async function submitPrompt(): Promise<void> {
     console.log(text);
     const lines = text.split("\n");
     leftover = text.endsWith("\n") ? "" : (lines.pop() as string);
-    const fields = new Map<string, string>();
+    const fields = new Map<string, string[]>();
 
     for (const line of lines) {
       const match = line.match(/(\w+):(.*)/);
@@ -216,12 +216,34 @@ async function submitPrompt(): Promise<void> {
         continue;
       }
 
-      fields.set(match[1], match[2]);
+      // FIXME: the key may occur multiple times
+      if (fields.has(match[1])) {
+        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+        fields.get(match[1])!.push(match[2]);
+      } else {
+        fields.set(match[1], [match[2]]);
+      }
     }
+    // this is might be one chunck
+    /*
+    event: userconnect
+    data: {"username": "bobby", "time": "02:33:48"}
+
+    data: Here's a system message of some kind that will get used
+    data: to accomplish some task.
+
+    event: usermessage
+    data: {"username": "bobby", "time": "02:34:11", "text": "Hi everyone."}
+    */
+    // https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#event_stream_format
+
+    // TODO: write a damn test for this
 
     if (fields.has("event")) {
       eventSource.dispatchEvent(
-        new CustomEvent((fields.get("event") as string).trim(), {
+        // assume there is only one event
+        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+        new CustomEvent((fields.get("event")![0] as string).trim(), {
           detail: fields.get("data"),
         }),
       );
