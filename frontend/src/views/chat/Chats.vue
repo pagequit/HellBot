@@ -208,23 +208,7 @@ async function submitPrompt(): Promise<void> {
     console.log(text);
     const lines = text.split("\n");
     leftover = text.endsWith("\n") ? "" : (lines.pop() as string);
-    const fields = new Map<string, string[]>();
-
-    for (const line of lines) {
-      const match = line.match(/(\w+):(.*)/);
-      if (!match) {
-        continue;
-      }
-
-      // FIXME: the key may occur multiple times
-      if (fields.has(match[1])) {
-        // biome-ignore lint/style/noNonNullAssertion: <explanation>
-        fields.get(match[1])!.push(match[2]);
-      } else {
-        fields.set(match[1], [match[2]]);
-      }
-    }
-    // this is might be one chunck
+    const fields = new Map<string, string>();
     /*
     event: userconnect
     data: {"username": "bobby", "time": "02:33:48"}
@@ -235,15 +219,32 @@ async function submitPrompt(): Promise<void> {
     event: usermessage
     data: {"username": "bobby", "time": "02:34:11", "text": "Hi everyone."}
     */
-    // https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#event_stream_format
+    for (const line of lines) {
+      const match = line.match(/(\w+):(.*)/);
+      if (!match) {
+        continue;
+      }
 
-    // TODO: write a damn test for this
+      if (fields.has(match[1])) {
+        if (fields.has("event")) {
+          eventSource.dispatchEvent(
+            new CustomEvent((fields.get("event") as string).trim(), {
+              detail: fields.get("data"),
+            }),
+          );
+        } else {
+          eventSource.dispatchEvent(
+            new MessageEvent("message", { data: fields.get("data") }),
+          );
+        }
+
+        fields.set(match[1], match[2]);
+      }
+    }
 
     if (fields.has("event")) {
       eventSource.dispatchEvent(
-        // assume there is only one event
-        // biome-ignore lint/style/noNonNullAssertion: <explanation>
-        new CustomEvent((fields.get("event")![0] as string).trim(), {
+        new CustomEvent((fields.get("event") as string).trim(), {
           detail: fields.get("data"),
         }),
       );
