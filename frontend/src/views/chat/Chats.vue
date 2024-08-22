@@ -200,48 +200,7 @@ async function submitPrompt(): Promise<void> {
     }
   });
 
-  const decoder = new TextDecoder();
-  let leftover = "";
-  // @ts-ignore
-  for await (const value of response.body) {
-    const text = leftover + decoder.decode(value);
-    console.log(text);
-    const lines = text.split("\n");
-    leftover = text.endsWith("\n") ? "" : (lines.pop() as string);
-    const fields = new Map<string, string>();
-    /*
-    event: userconnect
-    data: {"username": "bobby", "time": "02:33:48"}
-
-    data: Here's a system message of some kind that will get used
-    data: to accomplish some task.
-
-    event: usermessage
-    data: {"username": "bobby", "time": "02:34:11", "text": "Hi everyone."}
-    */
-    for (const line of lines) {
-      const match = line.match(/(\w+):(.*)/);
-      if (!match) {
-        continue;
-      }
-
-      if (fields.has(match[1])) {
-        if (fields.has("event")) {
-          eventSource.dispatchEvent(
-            new CustomEvent((fields.get("event") as string).trim(), {
-              detail: fields.get("data"),
-            }),
-          );
-        } else {
-          eventSource.dispatchEvent(
-            new MessageEvent("message", { data: fields.get("data") }),
-          );
-        }
-
-        fields.set(match[1], match[2]);
-      }
-    }
-
+  function dispatchEvent(fields: Map<string, string>): void {
     if (fields.has("event")) {
       eventSource.dispatchEvent(
         new CustomEvent((fields.get("event") as string).trim(), {
@@ -253,6 +212,32 @@ async function submitPrompt(): Promise<void> {
         new MessageEvent("message", { data: fields.get("data") }),
       );
     }
+  }
+
+  const decoder = new TextDecoder();
+  let leftover = "";
+  // @ts-ignore
+  for await (const value of response.body) {
+    const text = leftover + decoder.decode(value);
+    console.log(text);
+    const lines = text.split("\n");
+    leftover = text.endsWith("\n") ? "" : (lines.pop() as string);
+    const fields = new Map<string, string>();
+
+    for (const line of lines) {
+      const match = line.match(/(\w+):(.*)/);
+      if (!match) {
+        continue;
+      }
+
+      if (fields.has(match[1])) {
+        dispatchEvent(fields);
+      }
+
+      fields.set(match[1], match[2]);
+    }
+
+    dispatchEvent(fields);
   }
 
   context[context.length - 1].content = content;
