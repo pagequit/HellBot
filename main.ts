@@ -59,8 +59,10 @@ http
   .listen(port);
 logger.log(`Listening on port ${port}.`);
 
-await removeAllSlashCommands();
-deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
-deployApplicationGuildCommands([
-  ...chatInputGuildCommands.map((c) => c.data).values(),
-]);
+// await removeAllSlashCommands();
+// deployApplicationCommands([...chatInputCommands.map((c) => c.data).values()]);
+// deployApplicationGuildCommands([
+//   ...chatInputGuildCommands.map((c) => c.data).values(),
+// ]);
+
+// ./llama-server -m ../../../llm/Hermes-3-Llama-3.1-8B.Q5_K_M.gguf -n 512 -ngl 512

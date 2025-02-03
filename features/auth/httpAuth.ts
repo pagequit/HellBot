@@ -5,7 +5,7 @@ import type { HttpJsonResponse } from "@/core/http/HttpJsonResponse";
 import { createJwt } from "@/core/http/createJwt.ts";
 import { store } from "@/core/store.ts";
 import type { Guild } from "discord.js";
-import { Elysia } from "elysia";
+import { Elysia, redirect } from "elysia";
 
 const maxAge = 7 * 86400;
 const rootPath = "/";
@@ -41,7 +41,7 @@ const httpAuth = new Elysia({
 
     store.delete(params.token);
 
-    set.redirect = frontendURL.origin;
+    return redirect(frontendURL.origin);
   })
   .get("auth/user", async ({ jwt, set, cookie: { auth } }) => {
     const user = await jwt.verify(auth.value);
